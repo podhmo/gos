@@ -10,7 +10,7 @@ type Builder struct {
 	// TODO: storing types
 }
 
-func (b *Builder) Type(name string, fields ...*Field) *Type {
+func (b *Builder) Type(name string, fields ...Field) *Type {
 	return &Type{
 		impl: &TypeImpl{
 			Name:   name,
@@ -19,23 +19,23 @@ func (b *Builder) Type(name string, fields ...*Field) *Type {
 	}
 }
 
-func (b *Builder) Field(name string, typ *Type) *Field {
-	return &Field{}
-}
-
-func (b *Builder) String(name string) *Field {
-	return &Field{
-		impl: &FieldImpl{
-			Name: name,
-			Type: "string",
+func (b *Builder) String(name string) *StringField {
+	return &StringField{
+		Field: &field[any]{
+			Impl: &FieldImpl{
+				Name: name,
+				Type: "string",
+			},
 		},
 	}
 }
-func (b *Builder) Integer(name string) *Field {
-	return &Field{
-		impl: &FieldImpl{
-			Name: name,
-			Type: "integer",
+func (b *Builder) Integer(name string) *IntegerField {
+	return &IntegerField{
+		Field: &field[any]{
+			Impl: &FieldImpl{
+				Name: name,
+				Type: "string",
+			},
 		},
 	}
 }
@@ -55,7 +55,7 @@ func (t *Type) As(name string) *Type {
 
 type TypeImpl struct {
 	Name        string
-	Fields      []*Field
+	Fields      []Field
 	Description string
 }
 
@@ -65,13 +65,31 @@ type FieldImpl struct {
 	Description string
 }
 
-type Field struct {
-	impl *FieldImpl
+type Field interface {
+	impl() *FieldImpl
+}
+type field[T any] struct {
+	Impl *FieldImpl
 }
 
-func (f *Field) Description(stmts ...string) *Field {
-	f.impl.Description = strings.Join(stmts, "\n")
-	return f
+func (f *field[T]) impl() *FieldImpl {
+	return f.Impl
 }
+
+var _ Field = (*field[any])(nil)
 
 // https://swagger.io/docs/specification/data-models/data-types/
+type StringField struct {
+	Field
+
+	MinLength int64
+	MaxLength int64
+	Pattern   string
+}
+type IntegerField struct {
+	Field
+
+	// minimum ≤ value ≤ maximum
+	Maximum int64
+	Minimum int64
+}
