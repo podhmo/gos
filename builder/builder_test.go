@@ -9,8 +9,8 @@ func TestIt(*testing.T) {
 	b := New()
 
 	Person := b.Type("Person",
-		b.String("name").MinLength(1).MaxLength(255),
-		b.Integer("age").Minimum(0).Required(true).Doc("hoho"),
+		b.Field("name").String().MinLength(1).MaxLength(255),
+		b.Field("age").Integer().Minimum(0).Required(true).Doc("hoho"),
 	).Doc(
 		"this is summary",
 		"",

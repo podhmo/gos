@@ -10,8 +10,8 @@ type Builder struct {
 	// TODO: storing types
 }
 
-func (b *Builder) Type(name string, fields ...Field) *type_ {
-	return &type_{
+func (b *Builder) Type(name string, fields ...Field) *object {
+	return &object{
 		impl: &TypeImpl{
 			Name:   name,
 			Fields: fields,
@@ -19,36 +19,15 @@ func (b *Builder) Type(name string, fields ...Field) *type_ {
 	}
 }
 
-func (b *Builder) String(name string) *StringField {
-	f := &StringField{
-		field: &field[*StringField]{
+func (b *Builder) Field(name string) *UntypedField {
+	f := &UntypedField{
+		field: &field[*UntypedField]{
 			impl: &FieldImpl{
 				Name: name,
 			},
 		},
-		String: &String[*StringField]{
-			typ:  &TypeImpl{},
-			impl: &StringImpl{},
-		},
 	}
 	f.field.retval = f
-	f.String.retval = f
-	return f
-}
-func (b *Builder) Integer(name string) *IntegerField {
-	f := &IntegerField{
-		field: &field[*IntegerField]{
-			impl: &FieldImpl{
-				Name: name,
-			},
-		},
-		Integer: &Integer[*IntegerField]{
-			typ:  &TypeImpl{},
-			impl: &IntegerImpl{},
-		},
-	}
-	f.field.retval = f
-	f.Integer.retval = f
 	return f
 }
 
@@ -56,18 +35,18 @@ type Type interface {
 	typeimpl() *TypeImpl
 }
 
-type type_ struct {
+type object struct {
 	impl *TypeImpl
 }
 
-func (t *type_) typeimpl() *TypeImpl {
+func (t *object) typeimpl() *TypeImpl {
 	return t.impl
 }
-func (t *type_) Doc(stmts ...string) *type_ {
+func (t *object) Doc(stmts ...string) *object {
 	t.impl.Description = strings.Join(stmts, "\n")
 	return t
 }
-func (t *type_) As(name string) *type_ {
+func (t *object) As(name string) *object {
 	t.impl.Name = name
 	return t
 }
@@ -106,6 +85,42 @@ func (t *field[R]) Required(v bool) R {
 }
 
 var _ Field = (*field[any])(nil)
+
+type UntypedField struct {
+	*field[*UntypedField]
+}
+
+func (uf *UntypedField) String() *StringField {
+	f := &StringField{
+		field: &field[*StringField]{
+			impl: uf.impl,
+		},
+		String: &String[*StringField]{
+			typ:  &TypeImpl{},
+			impl: &StringImpl{},
+		},
+	}
+	f.field.retval = f
+	f.String.retval = f
+	return f
+}
+
+func (uf *UntypedField) Integer() *IntegerField {
+	f := &IntegerField{
+		field: &field[*IntegerField]{
+			impl: uf.impl,
+		},
+		Integer: &Integer[*IntegerField]{
+			typ:  &TypeImpl{},
+			impl: &IntegerImpl{},
+		},
+	}
+	f.field.retval = f
+	f.Integer.retval = f
+	return f
+}
+
+var _ Field = (*IntegerField)(nil)
 
 // https://swagger.io/docs/specification/data-models/data-types/
 type StringField struct {
