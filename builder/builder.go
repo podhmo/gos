@@ -10,9 +10,9 @@ type Builder struct {
 	// TODO: storing types
 }
 
-func (b *Builder) Type(name string, fields ...Field) *object {
-	return &object{
-		impl: &TypeImpl{
+func (b *Builder) Type(name string, fields ...FieldBuilder) *type_ {
+	return &type_{
+		value: &Type{
 			Name:   name,
 			Fields: fields,
 		},
@@ -22,69 +22,69 @@ func (b *Builder) Type(name string, fields ...Field) *object {
 func (b *Builder) Field(name string) *UntypedField {
 	f := &UntypedField{
 		field: &field[*UntypedField]{
-			impl: &FieldImpl{
+			value: &Field{
 				Name: name,
 			},
 		},
 	}
-	f.field.retval = f
+	f.field.ret = f
 	return f
 }
 
-type Type interface {
-	typeimpl() *TypeImpl
+type TypeBuilder interface {
+	typevalue() *Type
 }
 
-type object struct {
-	impl *TypeImpl
+type type_ struct {
+	value *Type
 }
 
-func (t *object) typeimpl() *TypeImpl {
-	return t.impl
+func (t *type_) typevalue() *Type {
+	return t.value
 }
-func (t *object) Doc(stmts ...string) *object {
-	t.impl.Description = strings.Join(stmts, "\n")
+func (t *type_) Doc(stmts ...string) *type_ {
+	t.value.Description = strings.Join(stmts, "\n")
 	return t
 }
-func (t *object) As(name string) *object {
-	t.impl.Name = name
+func (t *type_) As(name string) *type_ {
+	t.value.Name = name
 	return t
 }
 
-type TypeImpl struct {
+type Type struct {
 	Name        string
-	Fields      []Field
+	Fields      []FieldBuilder
 	Description string
 }
 
-type FieldImpl struct {
+type Field struct {
 	Name        string
 	Description string
 	Required    bool
 }
 
-type Field interface {
-	fieldimpl() *FieldImpl
+type FieldBuilder interface {
+	fieldvalue() *Field
 }
 type field[R any] struct {
-	impl   *FieldImpl
-	retval R
+	value *Field
+	ret   R
 }
 
-func (f *field[R]) fieldimpl() *FieldImpl {
-	return f.impl
+func (f *field[R]) fieldvalue() *Field {
+	return f.value
 }
 func (t *field[R]) Doc(stmts ...string) R {
-	t.impl.Description = strings.Join(stmts, "\n")
-	return t.retval
+	t.value.Description = strings.Join(stmts, "\n")
+	return t.ret
 }
 
 func (t *field[R]) Required(v bool) R {
-	t.impl.Required = v
-	return t.retval
+	t.value.Required = v
+	return t.ret
 }
 
-var _ Field = (*field[any])(nil)
+var _ FieldBuilder = (*field[any])(nil)
 
 type UntypedField struct {
 	*field[*UntypedField]
@@ -93,68 +93,68 @@ type UntypedField struct {
 func (uf *UntypedField) String() *StringField {
 	f := &StringField{
 		field: &field[*StringField]{
-			impl: uf.impl,
+			value: uf.value,
 		},
-		String: &String[*StringField]{
-			typ:  &TypeImpl{},
-			impl: &StringImpl{},
+		StringBuilder: &StringBuilder[*StringField]{
+			typ:   &Type{},
+			value: &String{},
 		},
 	}
-	f.field.retval = f
-	f.String.retval = f
+	f.field.ret = f
+	f.StringBuilder.ret = f
 	return f
 }
 
 func (uf *UntypedField) Integer() *IntegerField {
 	f := &IntegerField{
 		field: &field[*IntegerField]{
-			impl: uf.impl,
+			value: uf.value,
 		},
-		Integer: &Integer[*IntegerField]{
-			typ:  &TypeImpl{},
-			impl: &IntegerImpl{},
+		IntegerBuilder: &IntegerBuilder[*IntegerField]{
+			typ:   &Type{},
+			value: &Integer{},
 		},
 	}
-	f.field.retval = f
-	f.Integer.retval = f
+	f.field.ret = f
+	f.IntegerBuilder.ret = f
 	return f
 }
 
-var _ Field = (*IntegerField)(nil)
+var _ FieldBuilder = (*IntegerField)(nil)
 
 // https://swagger.io/docs/specification/data-models/data-types/
 type StringField struct {
 	*field[*StringField]
-	*String[*StringField]
+	*StringBuilder[*StringField]
 }
 
-var _ Field = (*StringField)(nil)
+var _ FieldBuilder = (*StringField)(nil)
 
-type String[R any] struct {
-	typ    *TypeImpl
-	impl   *StringImpl
-	retval R
+type StringBuilder[R any] struct {
+	typ   *Type
+	value *String
+	ret   R
 }
 
-var _ Type = (*String[any])(nil)
+var _ TypeBuilder = (*StringBuilder[any])(nil)
 
-func (t *String[R]) typeimpl() *TypeImpl {
+func (t *StringBuilder[R]) typevalue() *Type {
 	return t.typ
 }
-func (t *String[R]) MinLength(n int64) R {
-	t.impl.MinLength = n
-	return t.retval
+func (t *StringBuilder[R]) MinLength(n int64) R {
+	t.value.MinLength = n
+	return t.ret
 }
-func (t *String[R]) MaxLength(n int64) R {
-	t.impl.MaxLength = n
-	return t.retval
+func (t *StringBuilder[R]) MaxLength(n int64) R {
+	t.value.MaxLength = n
+	return t.ret
 }
-func (t *String[R]) Pattern(s string) R {
-	t.impl.Pattern = s
-	return t.retval
+func (t *StringBuilder[R]) Pattern(s string) R {
+	t.value.Pattern = s
+	return t.ret
 }
 
-type StringImpl struct {
+type String struct {
 	MinLength int64
 	MaxLength int64
 	Pattern   string
@@ -162,32 +162,32 @@ type StringImpl struct {
 
 type IntegerField struct {
 	*field[*IntegerField]
-	*Integer[*IntegerField]
+	*IntegerBuilder[*IntegerField]
 }
 
-var _ Field = (*IntegerField)(nil)
+var _ FieldBuilder = (*IntegerField)(nil)
 
-type Integer[R any] struct {
-	typ    *TypeImpl
-	impl   *IntegerImpl
-	retval R
+type IntegerBuilder[R any] struct {
+	typ   *Type
+	value *Integer
+	ret   R
 }
 
-var _ Type = (*Integer[any])(nil)
+var _ TypeBuilder = (*IntegerBuilder[any])(nil)
 
-func (t *Integer[R]) typeimpl() *TypeImpl {
+func (t *IntegerBuilder[R]) typevalue() *Type {
 	return t.typ
 }
-func (t *Integer[R]) Minimum(n int64) R {
-	t.impl.Minimum = n
-	return t.retval
+func (t *IntegerBuilder[R]) Minimum(n int64) R {
+	t.value.Minimum = n
+	return t.ret
 }
-func (t *Integer[R]) Maximum(n int64) R {
-	t.impl.Maximum = n
-	return t.retval
+func (t *IntegerBuilder[R]) Maximum(n int64) R {
+	t.value.Maximum = n
+	return t.ret
 }
 
-type IntegerImpl struct {
+type Integer struct {
 	// minimum ≤ value ≤ maximum
 	Maximum int64
 	Minimum int64
