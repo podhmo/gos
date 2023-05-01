@@ -10,8 +10,8 @@ type Builder struct {
 	// TODO: storing types
 }
 
-func (b *Builder) Type(name string, fields ...Field) *Type {
-	return &Type{
+func (b *Builder) Type(name string, fields ...Field) Type {
+	return &type_{
 		impl: &TypeImpl{
 			Name:   name,
 			Fields: fields,
@@ -20,35 +20,46 @@ func (b *Builder) Type(name string, fields ...Field) *Type {
 }
 
 func (b *Builder) String(name string) *StringField {
-	return &StringField{
+	f := &StringField{
 		field: &field[string]{
 			impl: &FieldImpl{
 				Name: name,
 			},
 		},
-		impl: &StringFieldImpl{},
+		String: &String[*StringField]{typ: &TypeImpl{}, impl: &StringImpl{}},
 	}
+	f.String.retval = f
+	return f
 }
 func (b *Builder) Integer(name string) *IntegerField {
-	return &IntegerField{
-		field: &field[int]{
+	f := &IntegerField{
+		field: &field[int64]{
 			impl: &FieldImpl{
 				Name: name,
 			},
 		},
-		impl: &IntegerFieldImpl{},
+		Integer: &Integer[*IntegerField]{typ: &TypeImpl{}, impl: &IntegerImpl{}},
 	}
+	f.Integer.retval = f
+	return f
 }
 
-type Type struct {
+type Type interface {
+	typeimpl() *TypeImpl
+}
+
+type type_ struct {
 	impl *TypeImpl
 }
 
-func (t *Type) Doc(stmts ...string) *Type {
+func (t *type_) typeimpl() *TypeImpl {
+	return t.impl
+}
+func (t *type_) Doc(stmts ...string) *type_ {
 	t.impl.Description = strings.Join(stmts, "\n")
 	return t
 }
-func (t *Type) As(name string) *Type {
+func (t *type_) As(name string) *type_ {
 	t.impl.Name = name
 	return t
 }
@@ -84,45 +95,69 @@ var _ Field = (*field[any])(nil)
 // https://swagger.io/docs/specification/data-models/data-types/
 type StringField struct {
 	*field[string]
-	impl *StringFieldImpl
+	*String[*StringField]
 }
 
 var _ Field = (*StringField)(nil)
 
-func (f *StringField) MinLength(n int64) *StringField {
-	f.impl.MinLength = n
-	return f
-}
-func (f *StringField) MaxLength(n int64) *StringField {
-	f.impl.MaxLength = n
-	return f
-}
-func (f *StringField) Pattern(s string) *StringField {
-	f.impl.Pattern = s
-	return f
+type String[R any] struct {
+	typ    *TypeImpl
+	impl   *StringImpl
+	retval R
 }
 
-type StringFieldImpl struct {
+var _ Type = (*String[any])(nil)
+
+func (t *String[R]) typeimpl() *TypeImpl {
+	return t.typ
+}
+func (t *String[R]) MinLength(n int64) R {
+	t.impl.MinLength = n
+	return t.retval
+}
+func (t *String[R]) MaxLength(n int64) R {
+	t.impl.MaxLength = n
+	return t.retval
+}
+func (t *String[R]) Pattern(s string) R {
+	t.impl.Pattern = s
+	return t.retval
+}
+
+type StringImpl struct {
 	MinLength int64
 	MaxLength int64
 	Pattern   string
 }
 
 type IntegerField struct {
-	*field[int]
-	impl *IntegerFieldImpl
+	*field[int64]
+	*Integer[*IntegerField]
 }
 
-func (f *IntegerField) Minimum(n int64) *IntegerField {
-	f.impl.Minimum = n
-	return f
-}
-func (f *IntegerField) Maximum(n int64) *IntegerField {
-	f.impl.Maximum = n
-	return f
+var _ Field = (*IntegerField)(nil)
+
+type Integer[R any] struct {
+	typ    *TypeImpl
+	impl   *IntegerImpl
+	retval R
 }
 
-type IntegerFieldImpl struct {
+var _ Type = (*Integer[any])(nil)
+
+func (t *Integer[R]) typeimpl() *TypeImpl {
+	return t.typ
+}
+func (t *Integer[R]) Minimum(n int64) R {
+	t.impl.Minimum = n
+	return t.retval
+}
+func (t *Integer[R]) Maximum(n int64) R {
+	t.impl.Maximum = n
+	return t.retval
+}
+
+type IntegerImpl struct {
 	// minimum ≤ value ≤ maximum
 	Maximum int64
 	Minimum int64
