@@ -19,8 +19,8 @@ func main() {
 	b := builder.New()
 
 	Person := b.Type("Person",
-		b.String("name"),
-		b.Integer("age"),
+		b.String("name").MinLength(1).MaxLength(255),
+		b.Integer("age").Minimum(0),
 	)
 	fmt.Println(Person)
 }

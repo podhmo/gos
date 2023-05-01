@@ -21,22 +21,22 @@ func (b *Builder) Type(name string, fields ...Field) *Type {
 
 func (b *Builder) String(name string) *StringField {
 	return &StringField{
-		Field: &field[any]{
-			Impl: &FieldImpl{
+		field: &field[string]{
+			impl: &FieldImpl{
 				Name: name,
-				Type: "string",
 			},
 		},
+		impl: &StringFieldImpl{},
 	}
 }
 func (b *Builder) Integer(name string) *IntegerField {
 	return &IntegerField{
-		Field: &field[any]{
-			Impl: &FieldImpl{
+		field: &field[int]{
+			impl: &FieldImpl{
 				Name: name,
-				Type: "string",
 			},
 		},
+		impl: &IntegerFieldImpl{},
 	}
 }
 
@@ -61,34 +61,68 @@ type TypeImpl struct {
 
 type FieldImpl struct {
 	Name        string
-	Type        string
 	Description string
 }
 
 type Field interface {
-	impl() *FieldImpl
+	fieldimpl() *FieldImpl
 }
 type field[T any] struct {
-	Impl *FieldImpl
+	impl *FieldImpl
 }
 
-func (f *field[T]) impl() *FieldImpl {
-	return f.Impl
+func (f *field[T]) fieldimpl() *FieldImpl {
+	return f.impl
+}
+func (t *field[T]) Doc(stmts ...string) *field[T] {
+	t.impl.Description = strings.Join(stmts, "\n")
+	return t
 }
 
 var _ Field = (*field[any])(nil)
 
 // https://swagger.io/docs/specification/data-models/data-types/
 type StringField struct {
-	Field
+	*field[string]
+	impl *StringFieldImpl
+}
 
+var _ Field = (*StringField)(nil)
+
+func (f *StringField) MinLength(n int64) *StringField {
+	f.impl.MinLength = n
+	return f
+}
+func (f *StringField) MaxLength(n int64) *StringField {
+	f.impl.MaxLength = n
+	return f
+}
+func (f *StringField) Pattern(s string) *StringField {
+	f.impl.Pattern = s
+	return f
+}
+
+type StringFieldImpl struct {
 	MinLength int64
 	MaxLength int64
 	Pattern   string
 }
-type IntegerField struct {
-	Field
 
+type IntegerField struct {
+	*field[int]
+	impl *IntegerFieldImpl
+}
+
+func (f *IntegerField) Minimum(n int64) *IntegerField {
+	f.impl.Minimum = n
+	return f
+}
+func (f *IntegerField) Maximum(n int64) *IntegerField {
+	f.impl.Maximum = n
+	return f
+}
+
+type IntegerFieldImpl struct {
 	// minimum ≤ value ≤ maximum
 	Maximum int64
 	Minimum int64
