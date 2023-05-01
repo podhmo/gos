@@ -10,7 +10,7 @@ type Builder struct {
 	// TODO: storing types
 }
 
-func (b *Builder) Type(name string, fields ...Field) Type {
+func (b *Builder) Type(name string, fields ...Field) *type_ {
 	return &type_{
 		impl: &TypeImpl{
 			Name:   name,
@@ -21,25 +21,33 @@ func (b *Builder) Type(name string, fields ...Field) Type {
 
 func (b *Builder) String(name string) *StringField {
 	f := &StringField{
-		field: &field[string]{
+		field: &field[*StringField]{
 			impl: &FieldImpl{
 				Name: name,
 			},
 		},
-		String: &String[*StringField]{typ: &TypeImpl{}, impl: &StringImpl{}},
+		String: &String[*StringField]{
+			typ:  &TypeImpl{},
+			impl: &StringImpl{},
+		},
 	}
+	f.field.retval = f
 	f.String.retval = f
 	return f
 }
 func (b *Builder) Integer(name string) *IntegerField {
 	f := &IntegerField{
-		field: &field[int64]{
+		field: &field[*IntegerField]{
 			impl: &FieldImpl{
 				Name: name,
 			},
 		},
-		Integer: &Integer[*IntegerField]{typ: &TypeImpl{}, impl: &IntegerImpl{}},
+		Integer: &Integer[*IntegerField]{
+			typ:  &TypeImpl{},
+			impl: &IntegerImpl{},
+		},
 	}
+	f.field.retval = f
 	f.Integer.retval = f
 	return f
 }
@@ -73,28 +81,35 @@ type TypeImpl struct {
 type FieldImpl struct {
 	Name        string
 	Description string
+	Required    bool
 }
 
 type Field interface {
 	fieldimpl() *FieldImpl
 }
-type field[T any] struct {
-	impl *FieldImpl
+type field[R any] struct {
+	impl   *FieldImpl
+	retval R
 }
 
-func (f *field[T]) fieldimpl() *FieldImpl {
+func (f *field[R]) fieldimpl() *FieldImpl {
 	return f.impl
 }
-func (t *field[T]) Doc(stmts ...string) *field[T] {
+func (t *field[R]) Doc(stmts ...string) R {
 	t.impl.Description = strings.Join(stmts, "\n")
-	return t
+	return t.retval
+}
+
+func (t *field[R]) Required(v bool) R {
+	t.impl.Required = v
+	return t.retval
 }
 
 var _ Field = (*field[any])(nil)
 
 // https://swagger.io/docs/specification/data-models/data-types/
 type StringField struct {
-	*field[string]
+	*field[*StringField]
 	*String[*StringField]
 }
 
@@ -131,7 +146,7 @@ type StringImpl struct {
 }
 
 type IntegerField struct {
-	*field[int64]
+	*field[*IntegerField]
 	*Integer[*IntegerField]
 }
 
