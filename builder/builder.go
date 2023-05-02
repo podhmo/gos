@@ -19,13 +19,14 @@ func (b *Builder) Object(name string, fields ...FieldBuilder) *type_ {
 	}
 }
 
-func (b *Builder) Field(name string) *UntypedField {
-	f := &UntypedField{
-		field: &field[*UntypedField]{
+func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
+	f := &TypedField{
+		field: &field[*TypedField]{
 			value: &Field{
 				Name: name,
 			},
 		},
+		typ: typ,
 	}
 	f.field.ret = f
 	return f
@@ -138,49 +139,12 @@ func (t *field[R]) Required(v bool) R {
 
 var _ FieldBuilder = (*field[any])(nil)
 
-type UntypedField struct {
-	*field[*UntypedField]
+type TypedField struct {
+	*field[*TypedField]
+	typ TypeBuilder
 }
-
-func (uf *UntypedField) String() *StringField {
-	f := &StringField{
-		field: &field[*StringField]{
-			value: uf.value,
-		},
-		StringBuilder: &StringBuilder[*StringField]{
-			typ:   &Type{},
-			value: &String{},
-		},
-	}
-	f.field.ret = f
-	f.StringBuilder.ret = f
-	return f
-}
-
-func (uf *UntypedField) Integer() *IntegerField {
-	f := &IntegerField{
-		field: &field[*IntegerField]{
-			value: uf.value,
-		},
-		IntegerBuilder: &IntegerBuilder[*IntegerField]{
-			typ:   &Type{},
-			value: &Integer{},
-		},
-	}
-	f.field.ret = f
-	f.IntegerBuilder.ret = f
-	return f
-}
-
-var _ FieldBuilder = (*IntegerField)(nil)
 
 // https://swagger.io/docs/specification/data-models/data-types/
-type StringField struct {
-	*field[*StringField]
-	*StringBuilder[*StringField]
-}
-
-var _ FieldBuilder = (*StringField)(nil)
 
 type StringBuilder[R any] struct {
 	typ   *Type
@@ -211,13 +175,6 @@ type String struct {
 	MaxLength int64
 	Pattern   string
 }
-
-type IntegerField struct {
-	*field[*IntegerField]
-	*IntegerBuilder[*IntegerField]
-}
-
-var _ FieldBuilder = (*IntegerField)(nil)
 
 type IntegerBuilder[R any] struct {
 	typ   *Type

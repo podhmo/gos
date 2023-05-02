@@ -11,8 +11,9 @@ func TestIt(*testing.T) {
 	b := builder.New()
 
 	Person := b.Object("Person",
-		b.Field("name").String().MinLength(1).MaxLength(255),
-		b.Field("age").Integer().Minimum(0).Required(true).Doc("hoho"),
+		b.Field("name", b.String().MinLength(1).MaxLength(255)),
+		b.Field("age", b.Integer().Minimum(0)).Required(true).Doc("hoho"),
+		// b.Field("age", b.Integer().Minimum(0).Doc("hoho")).Required(true), // TODO:
 	).Doc(
 		"this is summary",
 		"",
