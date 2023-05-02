@@ -10,7 +10,7 @@ type Builder struct {
 	// TODO: storing types
 }
 
-func (b *Builder) Type(name string, fields ...FieldBuilder) *type_ {
+func (b *Builder) Object(name string, fields ...FieldBuilder) *type_ {
 	return &type_{
 		value: &Type{
 			Name:   name,
@@ -29,6 +29,58 @@ func (b *Builder) Field(name string) *UntypedField {
 	}
 	f.field.ret = f
 	return f
+}
+
+func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
+	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
+		typ: &Type{},
+		value: &Array[TypeBuilder]{
+			Items: typ,
+		},
+	}}
+	t.ArrayBuilder.ret = t
+	return t
+}
+
+type ArrayType[T TypeBuilder] struct {
+	*ArrayBuilder[T, *ArrayType[T]]
+}
+
+func (t *ArrayType[T]) typevalue() *Type {
+	return t.ArrayBuilder.typ
+}
+
+func (b *Builder) String() *StringType {
+	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
+		typ:   &Type{},
+		value: &String{},
+	}}
+	t.StringBuilder.ret = t
+	return t
+}
+
+type StringType struct {
+	*StringBuilder[*StringType]
+}
+
+func (t *StringType) typevalue() *Type {
+	return t.StringBuilder.typ
+}
+func (b *Builder) Integer() *IntegerType {
+	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
+		typ:   &Type{},
+		value: &Integer{},
+	}}
+	t.IntegerBuilder.ret = t
+	return t
+}
+
+type IntegerType struct {
+	*IntegerBuilder[*IntegerType]
+}
+
+func (t *IntegerType) typevalue() *Type {
+	return t.IntegerBuilder.typ
 }
 
 type TypeBuilder interface {
@@ -191,4 +243,30 @@ type Integer struct {
 	// minimum ≤ value ≤ maximum
 	Maximum int64
 	Minimum int64
+}
+
+// composite type
+type ArrayBuilder[T TypeBuilder, R any] struct {
+	typ   *Type
+	value *Array[T]
+	ret   R
+}
+
+func (t *ArrayBuilder[T, R]) typevalue() *Type {
+	return t.typ
+}
+func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
+	t.value.MinItems = n
+	return t.ret
+}
+func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
+	t.value.MaxItems = n
+	return t.ret
+}
+
+type Array[T TypeBuilder] struct {
+	MaxItems int64
+	MinItems int64
+
+	Items T
 }
