@@ -6,6 +6,13 @@ func New() *Builder {
 	return &Builder{}
 }
 
+type TypeBuilder interface {
+	typevalue() *Type
+}
+type FieldBuilder interface {
+	fieldvalue() *Field
+}
+
 type Builder struct {
 	// TODO: storing types
 }
@@ -79,10 +86,6 @@ type IntegerType struct {
 	*IntegerBuilder[*IntegerType]
 }
 
-type TypeBuilder interface {
-	typevalue() *Type
-}
-
 type type_[R any] struct {
 	value *Type
 	ret   R
@@ -119,9 +122,6 @@ type Field struct {
 	Required    bool
 }
 
-type FieldBuilder interface {
-	fieldvalue() *Field
-}
 type field[R any] struct {
 	value *Field
 	ret   R
