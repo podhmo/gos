@@ -10,13 +10,19 @@ type Builder struct {
 	// TODO: storing types
 }
 
-func (b *Builder) Object(name string, fields ...FieldBuilder) *type_ {
-	return &type_{
-		value: &Type{
-			Name:   name,
-			Fields: fields,
+type ObjectType struct {
+	*ObjectBuilder[*ObjectType]
+}
+
+func (b *Builder) Object(name string, fields ...FieldBuilder) *ObjectType {
+	t := &ObjectType{
+		ObjectBuilder: &ObjectBuilder[*ObjectType]{
+			type_: &type_{value: &Type{}},
+			value: &Object{Fields: fields},
 		},
 	}
+	t.ObjectBuilder.ret = t
+	return t
 }
 
 func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
@@ -95,7 +101,6 @@ func (t *type_) As(name string) *type_ {
 
 type Type struct {
 	Name        string
-	Fields      []FieldBuilder
 	Description string
 }
 
@@ -186,6 +191,23 @@ type Integer struct {
 }
 
 // composite type
+type ObjectBuilder[R any] struct {
+	*type_
+	value *Object
+	ret   R
+}
+
+func (b *ObjectBuilder[R]) String(v bool) R {
+	b.value.Strict = v
+	return b.ret
+}
+
+type Object struct {
+	Strict bool
+
+	Fields []FieldBuilder
+}
+
 type ArrayBuilder[T TypeBuilder, R any] struct {
 	*type_
 	value *Array[T]
