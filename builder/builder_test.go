@@ -20,6 +20,11 @@ func TestIt(*testing.T) {
 		"this is long description\nhehehhe",
 	)
 	fmt.Println(Person)
+
+	b.EachTypes(func(t builder.TypeBuilder) error {
+		fmt.Println(builder.ToString(t))
+		return nil
+	})
 }
 
 func TestToString(t *testing.T) {

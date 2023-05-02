@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 )
 
 func New() *Builder {
@@ -19,13 +20,37 @@ type FieldBuilder interface {
 }
 
 type Builder struct {
-	// TODO: storing types
+	mu         sync.Mutex
+	namedTypes []TypeBuilder
+}
+
+func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
+	for _, t := range b.namedTypes {
+		if err := fn(t); err != nil {
+			return fmt.Errorf("error on %s -- %w", ToString(t), err)
+		}
+	}
+	return nil
+}
+
+func (b *Builder) storeType(typ TypeBuilder) {
+	val := typ.typevalue()
+	if !val.IsNewType {
+		return
+	}
+
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	id := len(b.namedTypes) + 1
+	val.id = id
+	b.namedTypes = append(b.namedTypes, typ)
+	// TODO: name conflict check
 }
 
 func (b *Builder) Object(fields ...FieldBuilder) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_: &type_[*ObjectType]{value: &Type{Name: "object", underlying: "object"}},
+			type_: &type_[*ObjectType]{builder: b, value: &Type{Name: "object", underlying: "object"}},
 			value: &Object{Fields: fields},
 		},
 	}
@@ -50,7 +75,7 @@ func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
-		type_: &type_[*ArrayType[TypeBuilder]]{value: &Type{Name: "array", underlying: "array"}},
+		type_: &type_[*ArrayType[TypeBuilder]]{builder: b, value: &Type{Name: "array", underlying: "array"}},
 		items: typ,
 		value: &Array{},
 	}}
@@ -64,7 +89,7 @@ type ArrayType[T TypeBuilder] struct {
 
 func (b *Builder) Map(valtyp TypeBuilder) *MapType[TypeBuilder] { // TODO: specialized
 	t := &MapType[TypeBuilder]{MapBuilder: &MapBuilder[TypeBuilder, *MapType[TypeBuilder]]{
-		type_: &type_[*MapType[TypeBuilder]]{value: &Type{Name: "map[string]", underlying: "map[string]"}},
+		type_: &type_[*MapType[TypeBuilder]]{builder: b, value: &Type{Name: "map[string]", underlying: "map[string]"}},
 		items: valtyp,
 		value: &Map{},
 	}}
@@ -78,7 +103,7 @@ type MapType[T TypeBuilder] struct {
 
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
-		type_: &type_[*StringType]{value: &Type{Name: "string", underlying: "string"}},
+		type_: &type_[*StringType]{builder: b, value: &Type{Name: "string", underlying: "string"}},
 		value: &String{},
 	}}
 	t.StringBuilder.ret = t
@@ -91,7 +116,7 @@ type StringType struct {
 
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
-		type_: &type_[*IntegerType]{value: &Type{Name: "integer", underlying: "integer"}},
+		type_: &type_[*IntegerType]{builder: b, value: &Type{Name: "integer", underlying: "integer"}},
 		value: &Integer{},
 	}}
 	t.IntegerBuilder.ret = t
@@ -102,9 +127,11 @@ type IntegerType struct {
 	*IntegerBuilder[*IntegerType]
 }
 
-type type_[R any] struct {
+type type_[R TypeBuilder] struct {
 	value *Type
 	ret   R
+
+	builder *Builder
 }
 
 func (t *type_[R]) typevalue() *Type {
@@ -127,10 +154,12 @@ func (t *type_[R]) Format(v string) R {
 func (t *type_[R]) As(name string) R {
 	t.value.Name = name
 	t.value.IsNewType = true
+	t.builder.storeType(t.ret)
 	return t.ret
 }
 
 type Type struct {
+	id          int
 	Name        string
 	Description string
 	Format      string
@@ -164,7 +193,7 @@ func (t *field[R]) Required(v bool) R {
 	return t.ret
 }
 
-var _ FieldBuilder = (*field[any])(nil)
+var _ FieldBuilder = (*field[TypeBuilder])(nil)
 
 type TypedField struct {
 	*field[*TypedField]
@@ -173,12 +202,12 @@ type TypedField struct {
 
 // https://swagger.io/docs/specification/data-models/data-types/
 
-type StringBuilder[R any] struct {
+type StringBuilder[R TypeBuilder] struct {
 	*type_[R]
 	value *String
 }
 
-var _ TypeBuilder = (*StringBuilder[any])(nil)
+var _ TypeBuilder = (*StringBuilder[TypeBuilder])(nil)
 
 func (t *StringBuilder[R]) MinLength(n int64) R {
 	t.value.MinLength = n
@@ -199,12 +228,12 @@ type String struct {
 	Pattern   string
 }
 
-type IntegerBuilder[R any] struct {
+type IntegerBuilder[R TypeBuilder] struct {
 	*type_[R]
 	value *Integer
 }
 
-var _ TypeBuilder = (*IntegerBuilder[any])(nil)
+var _ TypeBuilder = (*IntegerBuilder[TypeBuilder])(nil)
 
 func (t *IntegerBuilder[R]) Minimum(n int64) R {
 	t.value.Minimum = n
@@ -222,7 +251,7 @@ type Integer struct {
 }
 
 // composite type
-type ObjectBuilder[R any] struct {
+type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
 	value *Object
 }
@@ -262,7 +291,7 @@ type Object struct {
 	Fields []FieldBuilder
 }
 
-type ArrayBuilder[T TypeBuilder, R any] struct {
+type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
 	items T
 	value *Array
@@ -299,7 +328,7 @@ type Array struct {
 }
 
 // string only map
-type MapBuilder[V TypeBuilder, R any] struct {
+type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
 	items V
 	value *Map
