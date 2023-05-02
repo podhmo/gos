@@ -34,7 +34,7 @@ func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
-		typ: &Type{},
+		type_: &type_{value: &Type{}},
 		value: &Array[TypeBuilder]{
 			Items: typ,
 		},
@@ -47,13 +47,9 @@ type ArrayType[T TypeBuilder] struct {
 	*ArrayBuilder[T, *ArrayType[T]]
 }
 
-func (t *ArrayType[T]) typevalue() *Type {
-	return t.ArrayBuilder.typ
-}
-
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
-		typ:   &Type{},
+		type_: &type_{value: &Type{}},
 		value: &String{},
 	}}
 	t.StringBuilder.ret = t
@@ -64,12 +60,9 @@ type StringType struct {
 	*StringBuilder[*StringType]
 }
 
-func (t *StringType) typevalue() *Type {
-	return t.StringBuilder.typ
-}
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
-		typ:   &Type{},
+		type_: &type_{value: &Type{}},
 		value: &Integer{},
 	}}
 	t.IntegerBuilder.ret = t
@@ -78,10 +71,6 @@ func (b *Builder) Integer() *IntegerType {
 
 type IntegerType struct {
 	*IntegerBuilder[*IntegerType]
-}
-
-func (t *IntegerType) typevalue() *Type {
-	return t.IntegerBuilder.typ
 }
 
 type TypeBuilder interface {
@@ -147,16 +136,13 @@ type TypedField struct {
 // https://swagger.io/docs/specification/data-models/data-types/
 
 type StringBuilder[R any] struct {
-	typ   *Type
+	*type_
 	value *String
 	ret   R
 }
 
 var _ TypeBuilder = (*StringBuilder[any])(nil)
 
-func (t *StringBuilder[R]) typevalue() *Type {
-	return t.typ
-}
 func (t *StringBuilder[R]) MinLength(n int64) R {
 	t.value.MinLength = n
 	return t.ret
@@ -177,16 +163,13 @@ type String struct {
 }
 
 type IntegerBuilder[R any] struct {
-	typ   *Type
+	*type_
 	value *Integer
 	ret   R
 }
 
 var _ TypeBuilder = (*IntegerBuilder[any])(nil)
 
-func (t *IntegerBuilder[R]) typevalue() *Type {
-	return t.typ
-}
 func (t *IntegerBuilder[R]) Minimum(n int64) R {
 	t.value.Minimum = n
 	return t.ret
@@ -204,14 +187,11 @@ type Integer struct {
 
 // composite type
 type ArrayBuilder[T TypeBuilder, R any] struct {
-	typ   *Type
+	*type_
 	value *Array[T]
 	ret   R
 }
 
-func (t *ArrayBuilder[T, R]) typevalue() *Type {
-	return t.typ
-}
 func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
 	t.value.MinItems = n
 	return t.ret
@@ -230,13 +210,9 @@ type Array[T TypeBuilder] struct {
 
 // string only map
 type MapBuilder[T TypeBuilder, R any] struct {
-	typ   *Type
+	*type_
 	value *Map[T]
 	ret   R
-}
-
-func (t *MapBuilder[T, R]) typevalue() *Type {
-	return t.typ
 }
 
 func (t *MapBuilder[T, R]) PatternProperties(s string) R {
