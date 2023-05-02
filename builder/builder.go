@@ -1,6 +1,10 @@
 package builder
 
-import "strings"
+import (
+	"fmt"
+	"io"
+	"strings"
+)
 
 func New() *Builder {
 	return &Builder{}
@@ -8,6 +12,7 @@ func New() *Builder {
 
 type TypeBuilder interface {
 	typevalue() *Type
+	WriteType(io.Writer) error
 }
 type FieldBuilder interface {
 	fieldvalue() *Field
@@ -17,11 +22,7 @@ type Builder struct {
 	// TODO: storing types
 }
 
-type ObjectType struct {
-	*ObjectBuilder[*ObjectType]
-}
-
-func (b *Builder) Object(name string, fields ...FieldBuilder) *ObjectType {
+func (b *Builder) Object(fields ...FieldBuilder) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
 			type_: &type_[*ObjectType]{value: &Type{Name: "object"}},
@@ -32,12 +33,14 @@ func (b *Builder) Object(name string, fields ...FieldBuilder) *ObjectType {
 	return t
 }
 
+type ObjectType struct {
+	*ObjectBuilder[*ObjectType]
+}
+
 func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 	f := &TypedField{
 		field: &field[*TypedField]{
-			value: &Field{
-				Name: name,
-			},
+			value: &Field{Name: name, Required: true},
 		},
 		typ: typ,
 	}
@@ -48,9 +51,8 @@ func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
 		type_: &type_[*ArrayType[TypeBuilder]]{value: &Type{Name: "array"}},
-		value: &Array[TypeBuilder]{
-			Items: typ,
-		},
+		items: typ,
+		value: &Array{},
 	}}
 	t.ArrayBuilder.ret = t
 	return t
@@ -58,6 +60,20 @@ func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: spec
 
 type ArrayType[T TypeBuilder] struct {
 	*ArrayBuilder[T, *ArrayType[T]]
+}
+
+func (b *Builder) Map(valtyp TypeBuilder) *MapType[TypeBuilder] { // TODO: specialized
+	t := &MapType[TypeBuilder]{MapBuilder: &MapBuilder[TypeBuilder, *MapType[TypeBuilder]]{
+		type_: &type_[*MapType[TypeBuilder]]{value: &Type{Name: "map[string]"}},
+		items: valtyp,
+		value: &Map{},
+	}}
+	t.MapBuilder.ret = t
+	return t
+}
+
+type MapType[T TypeBuilder] struct {
+	*MapBuilder[T, *MapType[T]]
 }
 
 func (b *Builder) String() *StringType {
@@ -93,6 +109,12 @@ type type_[R any] struct {
 
 func (t *type_[R]) typevalue() *Type {
 	return t.value
+}
+func (t *type_[R]) WriteType(w io.Writer) error {
+	if _, err := io.WriteString(w, t.value.Name); err != nil {
+		return err
+	}
+	return nil
 }
 func (t *type_[R]) Doc(stmts ...string) R {
 	t.value.Description = strings.Join(stmts, "\n")
@@ -203,6 +225,30 @@ type ObjectBuilder[R any] struct {
 	value *Object
 }
 
+func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
+	if err := b.type_.WriteType(w); err != nil {
+		return err
+	}
+	if b.type_.value.IsNewType {
+		return nil
+	}
+
+	io.WriteString(w, "{") // nolint
+	n := len(b.value.Fields) - 1
+	for i, f := range b.value.Fields {
+		v := f.fieldvalue()
+		io.WriteString(w, v.Name) // nolint
+		if !v.Required {
+			io.WriteString(w, "?") // nolint
+		}
+		if i < n {
+			io.WriteString(w, ", ") // nolint
+		}
+	}
+	io.WriteString(w, "}") // nolint
+	return nil
+}
+
 func (b *ObjectBuilder[R]) String(v bool) R {
 	b.value.Strict = v
 	return b.ret
@@ -216,7 +262,20 @@ type Object struct {
 
 type ArrayBuilder[T TypeBuilder, R any] struct {
 	*type_[R]
-	value *Array[T]
+	items T
+	value *Array
+}
+
+func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
+	if err := t.type_.WriteType(w); err != nil {
+		return err
+	}
+	io.WriteString(w, "[") // nolint
+	if err := t.items.WriteType(w); err != nil {
+		return err
+	}
+	io.WriteString(w, "]") // noint
+	return nil
 }
 
 func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
@@ -228,17 +287,28 @@ func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
 	return t.ret
 }
 
-type Array[T TypeBuilder] struct {
+type Array struct {
 	MaxItems int64
 	MinItems int64
-
-	Items T
 }
 
 // string only map
-type MapBuilder[T TypeBuilder, R any] struct {
+type MapBuilder[V TypeBuilder, R any] struct {
 	*type_[R]
-	value *Map[T]
+	items V
+	value *Map
+}
+
+func (t *MapBuilder[V, R]) WriteType(w io.Writer) error {
+	if err := t.type_.WriteType(w); err != nil {
+		return err
+	}
+	io.WriteString(w, "[") // nolint
+	if err := t.items.WriteType(w); err != nil {
+		return err
+	}
+	io.WriteString(w, "]") // noint
+	return nil
 }
 
 func (t *MapBuilder[T, R]) PatternProperties(s string) R {
@@ -246,7 +316,14 @@ func (t *MapBuilder[T, R]) PatternProperties(s string) R {
 	return t.ret
 }
 
-type Map[T TypeBuilder] struct {
+type Map struct {
 	PatternProperties string
-	Items             T
+}
+
+func ToString(typ TypeBuilder) string {
+	b := new(strings.Builder)
+	if err := typ.WriteType(b); err != nil {
+		return fmt.Sprintf("invalid type: %T", typ)
+	}
+	return b.String()
 }
