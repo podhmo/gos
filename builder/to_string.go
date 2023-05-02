@@ -27,7 +27,7 @@ func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
 	io.WriteString(w, "{") // nolint
 	n := len(b.Fields) - 1
 	for i, f := range b.Fields {
-		v := f.fieldvalue()
+		v := f.value
 		io.WriteString(w, v.Name) // nolint
 		if !v.Required {
 			io.WriteString(w, "?") // nolint

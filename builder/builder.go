@@ -15,9 +15,6 @@ type TypeBuilder interface {
 	typevalue() *Type
 	WriteType(io.Writer) error
 }
-type FieldBuilder interface {
-	fieldvalue() *Field
-}
 
 type Builder struct {
 	mu          sync.Mutex
@@ -95,7 +92,7 @@ func (t *TypeRef) WriteType(w io.Writer) error {
 	return t.getType().WriteType(w)
 }
 
-func (b *Builder) Object(fields ...FieldBuilder) *ObjectType {
+func (b *Builder) Object(fields ...*TypedField) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
 			type_:  &type_[*ObjectType]{builder: b, value: &Type{Name: "object", underlying: "object"}},
@@ -229,9 +226,6 @@ type field[R any] struct {
 	ret   R
 }
 
-func (f *field[R]) fieldvalue() *Field {
-	return f.value
-}
 func (t *field[R]) Doc(stmts ...string) R {
 	t.value.Description = strings.Join(stmts, "\n")
 	return t.ret
@@ -241,8 +235,6 @@ func (t *field[R]) Required(v bool) R {
 	t.value.Required = v
 	return t.ret
 }
-
-var _ FieldBuilder = (*field[TypeBuilder])(nil)
 
 type TypedField struct {
 	*field[*TypedField]
@@ -303,7 +295,7 @@ type Integer struct {
 type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
 	value  *Object
-	Fields []FieldBuilder
+	Fields []*TypedField
 }
 
 func (b *ObjectBuilder[R]) String(v bool) R {
