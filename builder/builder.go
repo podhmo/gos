@@ -270,3 +270,24 @@ type Array[T TypeBuilder] struct {
 
 	Items T
 }
+
+// string only map
+type MapBuilder[T TypeBuilder, R any] struct {
+	typ   *Type
+	value *Map[T]
+	ret   R
+}
+
+func (t *MapBuilder[T, R]) typevalue() *Type {
+	return t.typ
+}
+
+func (t *MapBuilder[T, R]) PatternProperties(s string) R {
+	t.value.PatternProperties = s
+	return t.ret
+}
+
+type Map[T TypeBuilder] struct {
+	PatternProperties string
+	Items             T
+}
