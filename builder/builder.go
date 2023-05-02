@@ -98,8 +98,9 @@ func (t *TypeRef) WriteType(w io.Writer) error {
 func (b *Builder) Object(fields ...FieldBuilder) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_: &type_[*ObjectType]{builder: b, value: &Type{Name: "object", underlying: "object"}},
-			value: &Object{Fields: fields},
+			type_:  &type_[*ObjectType]{builder: b, value: &Type{Name: "object", underlying: "object"}},
+			Fields: fields,
+			value:  &Object{},
 		},
 	}
 	t.ObjectBuilder.ret = t
@@ -301,7 +302,8 @@ type Integer struct {
 // composite type
 type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
-	value *Object
+	value  *Object
+	Fields []FieldBuilder
 }
 
 func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
@@ -313,8 +315,8 @@ func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
 	// }
 
 	io.WriteString(w, "{") // nolint
-	n := len(b.value.Fields) - 1
-	for i, f := range b.value.Fields {
+	n := len(b.Fields) - 1
+	for i, f := range b.Fields {
 		v := f.fieldvalue()
 		io.WriteString(w, v.Name) // nolint
 		if !v.Required {
@@ -335,8 +337,6 @@ func (b *ObjectBuilder[R]) String(v bool) R {
 
 type Object struct {
 	Strict bool
-
-	Fields []FieldBuilder
 }
 
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
