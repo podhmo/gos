@@ -17,7 +17,7 @@ type ObjectType struct {
 func (b *Builder) Object(name string, fields ...FieldBuilder) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_: &type_{value: &Type{}},
+			type_: &type_[*ObjectType]{value: &Type{Name: "object"}},
 			value: &Object{Fields: fields},
 		},
 	}
@@ -40,7 +40,7 @@ func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
-		type_: &type_{value: &Type{}},
+		type_: &type_[*ArrayType[TypeBuilder]]{value: &Type{Name: "array"}},
 		value: &Array[TypeBuilder]{
 			Items: typ,
 		},
@@ -55,7 +55,7 @@ type ArrayType[T TypeBuilder] struct {
 
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
-		type_: &type_{value: &Type{}},
+		type_: &type_[*StringType]{value: &Type{Name: "string"}},
 		value: &String{},
 	}}
 	t.StringBuilder.ret = t
@@ -68,7 +68,7 @@ type StringType struct {
 
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
-		type_: &type_{value: &Type{}},
+		type_: &type_[*IntegerType]{value: &Type{Name: "integer"}},
 		value: &Integer{},
 	}}
 	t.IntegerBuilder.ret = t
@@ -83,25 +83,34 @@ type TypeBuilder interface {
 	typevalue() *Type
 }
 
-type type_ struct {
+type type_[R any] struct {
 	value *Type
+	ret   R
 }
 
-func (t *type_) typevalue() *Type {
+func (t *type_[R]) typevalue() *Type {
 	return t.value
 }
-func (t *type_) Doc(stmts ...string) *type_ {
+func (t *type_[R]) Doc(stmts ...string) R {
 	t.value.Description = strings.Join(stmts, "\n")
-	return t
+	return t.ret
 }
-func (t *type_) As(name string) *type_ {
+func (t *type_[R]) Format(v string) R {
+	t.value.Format = v
+	return t.ret
+}
+func (t *type_[R]) As(name string) R {
 	t.value.Name = name
-	return t
+	t.value.IsNewType = true
+	return t.ret
 }
 
 type Type struct {
 	Name        string
 	Description string
+	Format      string
+
+	IsNewType bool
 }
 
 type Field struct {
@@ -141,9 +150,8 @@ type TypedField struct {
 // https://swagger.io/docs/specification/data-models/data-types/
 
 type StringBuilder[R any] struct {
-	*type_
+	*type_[R]
 	value *String
-	ret   R
 }
 
 var _ TypeBuilder = (*StringBuilder[any])(nil)
@@ -168,9 +176,8 @@ type String struct {
 }
 
 type IntegerBuilder[R any] struct {
-	*type_
+	*type_[R]
 	value *Integer
-	ret   R
 }
 
 var _ TypeBuilder = (*IntegerBuilder[any])(nil)
@@ -192,9 +199,8 @@ type Integer struct {
 
 // composite type
 type ObjectBuilder[R any] struct {
-	*type_
+	*type_[R]
 	value *Object
-	ret   R
 }
 
 func (b *ObjectBuilder[R]) String(v bool) R {
@@ -209,9 +215,8 @@ type Object struct {
 }
 
 type ArrayBuilder[T TypeBuilder, R any] struct {
-	*type_
+	*type_[R]
 	value *Array[T]
-	ret   R
 }
 
 func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
@@ -232,9 +237,8 @@ type Array[T TypeBuilder] struct {
 
 // string only map
 type MapBuilder[T TypeBuilder, R any] struct {
-	*type_
+	*type_[R]
 	value *Map[T]
-	ret   R
 }
 
 func (t *MapBuilder[T, R]) PatternProperties(s string) R {

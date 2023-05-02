@@ -13,7 +13,7 @@ func TestIt(*testing.T) {
 	Person := b.Object("Person",
 		b.Field("name", b.String().MinLength(1).MaxLength(255)),
 		b.Field("age", b.Integer().Minimum(0).Doc("hoho")).Required(true).Doc("haha"),
-		b.Field("skills", b.Array(b.String().MinLength(1)).MinItems(1)).Required(false),
+		b.Field("skills", b.Array(b.String().Doc("yaya").MinLength(1)).MinItems(1)).Required(false),
 	).Doc(
 		"this is summary",
 		"",
