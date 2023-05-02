@@ -8,7 +8,7 @@ import (
 )
 
 func New() *Builder {
-	return &Builder{}
+	return &Builder{nameToIDMap: map[string][]int{}}
 }
 
 type TypeBuilder interface {
@@ -20,8 +20,9 @@ type FieldBuilder interface {
 }
 
 type Builder struct {
-	mu         sync.Mutex
-	namedTypes []TypeBuilder
+	mu          sync.Mutex
+	namedTypes  []TypeBuilder
+	nameToIDMap map[string][]int
 }
 
 func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
@@ -35,16 +36,63 @@ func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
 
 func (b *Builder) storeType(typ TypeBuilder) {
 	val := typ.typevalue()
+	val.id = -1
 	if !val.IsNewType {
 		return
 	}
 
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	id := len(b.namedTypes) + 1
+	id := len(b.namedTypes)
 	val.id = id
 	b.namedTypes = append(b.namedTypes, typ)
+	b.nameToIDMap[val.Name] = append(b.nameToIDMap[val.Name], id)
 	// TODO: name conflict check
+}
+
+func (b *Builder) lookupType(name string) TypeBuilder {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	ids, ok := b.nameToIDMap[name]
+	if !ok {
+		b.nameToIDMap[name] = nil
+		return nil
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+
+	// TODO: name conflict check
+	return b.namedTypes[ids[0]]
+}
+
+func (b *Builder) ReferenceByName(name string) *TypeRef {
+	return &TypeRef{Name: name, builder: b}
+}
+func (b *Builder) Reference(typ TypeBuilder) *TypeRef {
+	name := typ.typevalue().Name
+	return &TypeRef{Name: name, builder: b, _typ: typ}
+}
+
+type TypeRef struct {
+	Name string
+	_typ TypeBuilder
+
+	builder *Builder `json:"-"`
+}
+
+func (t *TypeRef) getType() TypeBuilder {
+	if t._typ != nil {
+		return t._typ
+	}
+	t._typ = t.builder.lookupType(t.Name)
+	return t._typ
+}
+func (t *TypeRef) typevalue() *Type {
+	return t.getType().typevalue()
+}
+func (t *TypeRef) WriteType(w io.Writer) error {
+	return t.getType().WriteType(w)
 }
 
 func (b *Builder) Object(fields ...FieldBuilder) *ObjectType {
@@ -131,7 +179,7 @@ type type_[R TypeBuilder] struct {
 	value *Type
 	ret   R
 
-	builder *Builder
+	builder *Builder `json:"-"`
 }
 
 func (t *type_[R]) typevalue() *Type {
@@ -260,9 +308,9 @@ func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
 	if err := b.type_.WriteType(w); err != nil {
 		return err
 	}
-	if b.type_.value.IsNewType {
-		return nil
-	}
+	// if b.type_.value.IsNewType {
+	// 	return nil
+	// }
 
 	io.WriteString(w, "{") // nolint
 	n := len(b.value.Fields) - 1
@@ -301,9 +349,9 @@ func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
-	if t.type_.value.IsNewType {
-		return nil
-	}
+	// if t.type_.value.IsNewType {
+	// 	return nil
+	// }
 
 	io.WriteString(w, "[") // nolint
 	if err := t.items.WriteType(w); err != nil {
@@ -338,9 +386,9 @@ func (t *MapBuilder[V, R]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
-	if t.type_.value.IsNewType {
-		return nil
-	}
+	// if t.type_.value.IsNewType {
+	// 	return nil
+	// }
 
 	io.WriteString(w, "[") // nolint
 	if err := t.items.WriteType(w); err != nil {
