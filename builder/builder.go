@@ -278,7 +278,7 @@ func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
 	if err := t.items.WriteType(w); err != nil {
 		return err
 	}
-	io.WriteString(w, "]") // noint
+	io.WriteString(w, "]") // nolint
 	return nil
 }
 
@@ -315,7 +315,7 @@ func (t *MapBuilder[V, R]) WriteType(w io.Writer) error {
 	if err := t.items.WriteType(w); err != nil {
 		return err
 	}
-	io.WriteString(w, "]") // noint
+	io.WriteString(w, "]") // nolint
 	return nil
 }
 

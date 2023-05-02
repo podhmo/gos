@@ -36,11 +36,11 @@ func TestToString(t *testing.T) {
 		{"array-string", b.Array(b.String()), "array[string]"},
 		{"array-array-string", b.Array(b.Array(b.String())), "array[array[string]]"},
 		{"object", b.Object(
-			b.Field("name", b.String()).Required(true),
+			b.Field("name", b.String()),
 			b.Field("age", b.String()).Required(false),
 		), "object{name, age?}"},
 		{"new-type-object", b.Object(
-			b.Field("name", b.String()).Required(true),
+			b.Field("name", b.String()),
 			b.Field("age", b.String()).Required(false),
 		).As("Person"), "Person"},
 	}
