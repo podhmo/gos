@@ -25,7 +25,7 @@ type Builder struct {
 func (b *Builder) Object(fields ...FieldBuilder) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_: &type_[*ObjectType]{value: &Type{Name: "object"}},
+			type_: &type_[*ObjectType]{value: &Type{Name: "object", underlying: "object"}},
 			value: &Object{Fields: fields},
 		},
 	}
@@ -50,7 +50,7 @@ func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
-		type_: &type_[*ArrayType[TypeBuilder]]{value: &Type{Name: "array"}},
+		type_: &type_[*ArrayType[TypeBuilder]]{value: &Type{Name: "array", underlying: "array"}},
 		items: typ,
 		value: &Array{},
 	}}
@@ -64,7 +64,7 @@ type ArrayType[T TypeBuilder] struct {
 
 func (b *Builder) Map(valtyp TypeBuilder) *MapType[TypeBuilder] { // TODO: specialized
 	t := &MapType[TypeBuilder]{MapBuilder: &MapBuilder[TypeBuilder, *MapType[TypeBuilder]]{
-		type_: &type_[*MapType[TypeBuilder]]{value: &Type{Name: "map[string]"}},
+		type_: &type_[*MapType[TypeBuilder]]{value: &Type{Name: "map[string]", underlying: "map[string]"}},
 		items: valtyp,
 		value: &Map{},
 	}}
@@ -78,7 +78,7 @@ type MapType[T TypeBuilder] struct {
 
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
-		type_: &type_[*StringType]{value: &Type{Name: "string"}},
+		type_: &type_[*StringType]{value: &Type{Name: "string", underlying: "string"}},
 		value: &String{},
 	}}
 	t.StringBuilder.ret = t
@@ -91,7 +91,7 @@ type StringType struct {
 
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
-		type_: &type_[*IntegerType]{value: &Type{Name: "integer"}},
+		type_: &type_[*IntegerType]{value: &Type{Name: "integer", underlying: "integer"}},
 		value: &Integer{},
 	}}
 	t.IntegerBuilder.ret = t
@@ -136,6 +136,8 @@ type Type struct {
 	Format      string
 
 	IsNewType bool
+
+	underlying string
 }
 
 type Field struct {
