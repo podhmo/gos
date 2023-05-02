@@ -270,6 +270,10 @@ func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
+	if t.type_.value.IsNewType {
+		return nil
+	}
+
 	io.WriteString(w, "[") // nolint
 	if err := t.items.WriteType(w); err != nil {
 		return err
@@ -303,6 +307,10 @@ func (t *MapBuilder[V, R]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
+	if t.type_.value.IsNewType {
+		return nil
+	}
+
 	io.WriteString(w, "[") // nolint
 	if err := t.items.WriteType(w); err != nil {
 		return err
