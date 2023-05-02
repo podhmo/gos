@@ -10,16 +10,22 @@ import (
 func TestIt(*testing.T) {
 	b := builder.New()
 
-	Person := b.Object(
+	typeName := "Person"
+	b.Object(
 		b.Field("name", b.String().MinLength(1).MaxLength(255)),
 		b.Field("age", b.Integer().Minimum(0).Doc("hoho")).Required(true).Doc("haha"),
-		b.Field("skills", b.Array(b.String().Doc("yaya").MinLength(1)).MinItems(1)).Required(false),
-	).As("Person").Doc(
+		b.Field("skills", b.Array(b.String().Doc("yaya").MinLength(1)).MinItems(1)).Required(false), // composite
+		b.Field("father", b.ReferenceByName(typeName)),                                              // recursive
+	).As(typeName).Doc(
 		"this is summary",
 		"",
 		"this is long description\nhehehhe",
 	)
-	fmt.Println(Person)
+
+	b.EachTypes(func(t builder.TypeBuilder) error {
+		fmt.Println(builder.ToString(t))
+		return nil
+	})
 }
 
 func TestToString(t *testing.T) {
@@ -42,7 +48,7 @@ func TestToString(t *testing.T) {
 		{"new-type-object", b.Object(
 			b.Field("name", b.String()),
 			b.Field("age", b.String()).Required(false),
-		).As("Person"), "Person"},
+		).As("Person"), "Person{name, age?}"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
