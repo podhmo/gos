@@ -264,9 +264,9 @@ func (t *StringBuilder[R]) Pattern(s string) R {
 }
 
 type String struct {
-	MinLength int64
-	MaxLength int64
-	Pattern   string
+	MinLength int64  `json:"minlength,omitempty"`
+	MaxLength int64  `json:"maxlength,omitempty"`
+	Pattern   string `json:"pattern,omitempty"`
 }
 
 type IntegerBuilder[R TypeBuilder] struct {
@@ -287,8 +287,8 @@ func (t *IntegerBuilder[R]) Maximum(n int64) R {
 
 type Integer struct {
 	// minimum ≤ value ≤ maximum
-	Maximum int64
-	Minimum int64
+	Maximum int64 `json:"maximum,omitempty"`
+	Minimum int64 `json:"minimum,omitempty"`
 }
 
 // composite type
@@ -323,8 +323,8 @@ func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
 }
 
 type Array struct {
-	MaxItems int64
-	MinItems int64
+	MaxItems int64 `json:"maxitems,omitempty"`
+	MinItems int64 `json:"minitems,omitempty"`
 }
 
 // string only map
@@ -340,5 +340,5 @@ func (t *MapBuilder[T, R]) PatternProperties(s string) R {
 }
 
 type Map struct {
-	PatternProperties string
+	PatternProperties string `json:"patternProperties,omitempty"`
 }

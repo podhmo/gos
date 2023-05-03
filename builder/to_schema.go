@@ -46,6 +46,39 @@ func (t *type_[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	return doc
 }
 
+func (t *StringBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+	doc := t.type_.ToSchema(b)
+	doc, err := maplib.Merge(doc, t.value)
+	if err != nil {
+		panic(err)
+	}
+	return doc
+}
+func (t *IntegerBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+	doc := t.type_.ToSchema(b)
+	doc, err := maplib.Merge(doc, t.value)
+	if err != nil {
+		panic(err)
+	}
+	return doc
+}
+func (t *ArrayBuilder[T, R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+	doc := t.type_.ToSchema(b)
+	doc, err := maplib.Merge(doc, t.value)
+	if err != nil {
+		panic(err)
+	}
+	return doc
+}
+func (t *MapBuilder[V, R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+	doc := t.type_.ToSchema(b)
+	doc, err := maplib.Merge(doc, t.value)
+	if err != nil {
+		panic(err)
+	}
+	return doc
+}
+
 func (t *ObjectBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
 	required := make([]string, 0, len(t.Fields))
