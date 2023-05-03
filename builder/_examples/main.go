@@ -14,7 +14,7 @@ func main() {
 	Name := b.String().MinLength(1).As("Name")
 
 	b.Object(
-		b.Field("name", b.String()),
+		b.Field("name", b.String()).Doc("name of person"),
 		b.Field("age", b.Integer().Format("int32")),
 		b.Field("nickname", b.Reference(Name)).Required(false),
 		b.Field("father", b.ReferenceByName("Person")).Required(false),
