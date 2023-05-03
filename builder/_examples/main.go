@@ -20,6 +20,13 @@ func main() {
 		b.Field("friends", b.Array(b.ReferenceByName("Person"))).Required(false),
 	).As("Person").Doc("person object")
 
+	b.Object(
+		b.Field("title", b.String()),
+		b.Field("tests", b.Map(b.Integer()).
+			PatternProperties(`\-score$`, b.Integer().Doc("score (0~100)")).
+			PatternProperties(`\-grade$`, b.String().Doc("grade (A,B,C,D,E,F)"))),
+	).As("TestScore")
+
 	doc, err := builder.ToSchema(b)
 	if err != nil {
 		panic(err)

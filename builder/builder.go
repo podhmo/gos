@@ -337,11 +337,14 @@ type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	value *Map
 }
 
-func (t *MapBuilder[T, R]) PatternProperties(s string) R {
-	t.value.PatternProperties = s
+func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
+	if t.value.PatternProperties == nil {
+		t.value.PatternProperties = map[string]TypeBuilder{}
+	}
+	t.value.PatternProperties[s] = typ
 	return t.ret
 }
 
 type Map struct {
-	PatternProperties string `json:"patternProperties,omitempty"`
+	PatternProperties map[string]TypeBuilder `json:"-,omitempty"`
 }

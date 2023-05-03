@@ -73,6 +73,17 @@ func (t *ArrayBuilder[T, R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 }
 func (t *MapBuilder[V, R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
+	doc.Set("type", "object")
+	if t.value.PatternProperties == nil {
+		doc.Set("additionalProperties", t.items.ToSchema(b))
+	} else {
+		props := orderedmap.New()
+		for k, typ := range t.value.PatternProperties {
+			props.Set(k, typ.ToSchema(b))
+		}
+		doc.Set("patternProperties", props)
+	}
+
 	doc, err := maplib.Merge(doc, t.value)
 	if err != nil {
 		panic(err)
