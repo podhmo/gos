@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 	"sync"
+
+	"github.com/iancoleman/orderedmap"
 )
 
 func New() *Builder {
@@ -14,6 +16,7 @@ func New() *Builder {
 type TypeBuilder interface {
 	typevalue() *Type
 	WriteType(io.Writer) error
+	ToSchema(b *Builder) *orderedmap.OrderedMap
 }
 
 type Builder struct {
@@ -206,19 +209,19 @@ func (t *type_[R]) As(name string) R {
 
 type Type struct {
 	id          int
-	Name        string
-	Description string
-	Format      string
+	Name        string `json:"-"`
+	Description string `json:"description,omitempty"`
+	Format      string `json:"format,omitempty"`
 
-	IsNewType bool
+	IsNewType bool `json:"-"`
 
-	underlying string
+	underlying string `json:"-"`
 }
 
 type Field struct {
-	Name        string
-	Description string
-	Required    bool
+	Name        string `json:"-"`
+	Description string `json:"description,omitempty"`
+	Required    bool   `json:"-"`
 }
 
 type field[R any] struct {
@@ -264,9 +267,9 @@ func (t *StringBuilder[R]) Pattern(s string) R {
 }
 
 type String struct {
-	MinLength int64
-	MaxLength int64
-	Pattern   string
+	MinLength int64  `json:"minlength,omitempty"`
+	MaxLength int64  `json:"maxlength,omitempty"`
+	Pattern   string `json:"pattern,omitempty"`
 }
 
 type IntegerBuilder[R TypeBuilder] struct {
@@ -287,8 +290,8 @@ func (t *IntegerBuilder[R]) Maximum(n int64) R {
 
 type Integer struct {
 	// minimum ≤ value ≤ maximum
-	Maximum int64
-	Minimum int64
+	Maximum int64 `json:"maximum,omitempty"`
+	Minimum int64 `json:"minimum,omitempty"`
 }
 
 // composite type
@@ -304,7 +307,7 @@ func (b *ObjectBuilder[R]) String(v bool) R {
 }
 
 type Object struct {
-	Strict bool
+	Strict bool `json:"-"`
 }
 
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
@@ -323,8 +326,8 @@ func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
 }
 
 type Array struct {
-	MaxItems int64
-	MinItems int64
+	MaxItems int64 `json:"maxitems,omitempty"`
+	MinItems int64 `json:"minitems,omitempty"`
 }
 
 // string only map
@@ -334,11 +337,14 @@ type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	value *Map
 }
 
-func (t *MapBuilder[T, R]) PatternProperties(s string) R {
-	t.value.PatternProperties = s
+func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
+	if t.value.PatternProperties == nil {
+		t.value.PatternProperties = map[string]TypeBuilder{}
+	}
+	t.value.PatternProperties[s] = typ
 	return t.ret
 }
 
 type Map struct {
-	PatternProperties string
+	PatternProperties map[string]TypeBuilder `json:"-,omitempty"`
 }
