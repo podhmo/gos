@@ -64,6 +64,7 @@ func (t *IntegerBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 }
 func (t *ArrayBuilder[T, R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
+	doc.Set("items", t.items.ToSchema(b))
 	doc, err := maplib.Merge(doc, t.value)
 	if err != nil {
 		panic(err)

@@ -17,6 +17,7 @@ func main() {
 		b.Field("age", b.Integer().Format("int32")),
 		b.Field("nickname", b.Reference(Name)).Required(false),
 		b.Field("father", b.ReferenceByName("Person")).Required(false),
+		b.Field("friends", b.Array(b.ReferenceByName("Person"))).Required(false),
 	).As("Person").Doc("person object")
 
 	doc, err := builder.ToSchema(b)

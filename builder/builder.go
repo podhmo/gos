@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 	"sync"
+
+	"github.com/iancoleman/orderedmap"
 )
 
 func New() *Builder {
@@ -14,6 +16,7 @@ func New() *Builder {
 type TypeBuilder interface {
 	typevalue() *Type
 	WriteType(io.Writer) error
+	ToSchema(b *Builder) *orderedmap.OrderedMap
 }
 
 type Builder struct {
