@@ -15,10 +15,10 @@ func main() {
 
 	b.Object(
 		b.Field("name", b.String()),
-		b.Field("age", b.Integer()),
+		b.Field("age", b.Integer().Format("int32")),
 		b.Field("nickname", b.Reference(Name)).Required(false),
 		b.Field("father", b.ReferenceByName("Person")).Required(false),
-	).As("Person")
+	).As("Person").Doc("person object")
 
 	doc, err := builder.ToSchema(b)
 	if err != nil {

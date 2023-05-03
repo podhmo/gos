@@ -304,7 +304,7 @@ func (b *ObjectBuilder[R]) String(v bool) R {
 }
 
 type Object struct {
-	Strict bool
+	Strict bool `json:"-"`
 }
 
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {

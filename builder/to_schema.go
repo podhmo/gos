@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/iancoleman/orderedmap"
+	"github.com/podhmo/gos/builder/maplib"
 )
 
 type toSchema interface {
@@ -38,12 +39,15 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 func (t *type_[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	doc.Set("type", t.value.underlying)
+	doc, err := maplib.Merge(doc, t.value)
+	if err != nil {
+		panic(err)
+	}
 	return doc
 }
 
 func (t *ObjectBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
-	doc := orderedmap.New()
-	doc.Set("type", "object")
+	doc := t.type_.ToSchema(b)
 	required := make([]string, 0, len(t.Fields))
 	if len(t.Fields) > 0 {
 		properties := orderedmap.New()
@@ -66,6 +70,10 @@ func (t *ObjectBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 		doc.Set("required", required)
 	}
 	doc.Set("additionalProperties", false)
+	doc, err := maplib.Merge(doc, t.value)
+	if err != nil {
+		panic(err)
+	}
 	// TODO: merge object config
 	return doc
 }
