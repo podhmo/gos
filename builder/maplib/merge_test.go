@@ -48,6 +48,26 @@ func TestMerge(t *testing.T) {
 			dst: nil, src: map[string]any{"father": map[string]string{"name": "foo"}},
 			want: newMap("father", newMap("name", "foo")),
 		},
+		{msg: "nil-int-slices",
+			dst: nil, src: map[string]any{"values": []int{1, 2, 3}},
+			want: newMap("values", []int{1, 2, 3}),
+		},
+		{msg: "nil-struct-slices",
+			dst: nil, src: map[string]any{"people": []person{{Name: "foo"}, {Name: "bar"}}},
+			want: newMap("people", []*orderedmap.OrderedMap{newMap("name", "foo"), newMap("name", "bar")}),
+		},
+		{msg: "nil-interface-slices",
+			dst: nil, src: map[string]any{"people": []any{person{Name: "foo"}, &person{Name: "bar"}}},
+			want: newMap("people", []any{newMap("name", "foo"), newMap("name", "bar")}),
+		},
+		{msg: "nil-int-slices-slices",
+			dst: nil, src: map[string]any{"values-list": [][]int{{1, 2, 3}, {4, 5, 6}}},
+			want: newMap("values-list", []any{[]int{1, 2, 3}, []int{4, 5, 6}}),
+		},
+		{msg: "nil-struct-slices-slices",
+			dst: nil, src: map[string]any{"people": [][]person{{{Name: "foo"}}, {{Name: "bar"}}}},
+			want: newMap("people", []any{[]*orderedmap.OrderedMap{newMap("name", "foo")}, []*orderedmap.OrderedMap{newMap("name", "bar")}}),
+		},
 		{msg: "empty-map-map",
 			dst: newMap(), src: map[string]any{"father": map[string]string{"name": "foo"}},
 			want: newMap("father", newMap("name", "foo")),
@@ -72,6 +92,7 @@ func TestMerge(t *testing.T) {
 			if err != nil {
 				t.Errorf("unexpected error")
 			}
+			// json.NewEncoder(os.Stdout).Encode(newMap("want", c.want, "got", got))
 			if diff := cmp.Diff(c.want, got, opt); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}

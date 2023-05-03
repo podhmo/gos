@@ -129,7 +129,7 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 			return nil
 		}
 		if rv.Len() == 0 {
-			dst.Set(k, rv.Interface()) // hmm?
+			dst.Set(k, reflect.MakeSlice(rt, 0, 0).Interface()) // nil?
 		}
 
 		st := rt.Elem()
@@ -138,11 +138,29 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 		}
 
 		switch st.Kind() {
-		case reflect.Interface, reflect.Func, reflect.Chan:
-			return nil // skip interface
-		case reflect.Array, reflect.Slice:
+		case reflect.Func, reflect.Chan:
+			return nil // skip
+		case reflect.Interface:
+			isHetero := true
 			r := make([]any, rv.Len())
 			for i, n := 0, rv.Len(); i < n; i++ {
+				sv := rv.Index(i)
+				st := sv.Type()
+				if err := add(r, i, st, sv, isHetero, namer); err != nil {
+					return fmt.Errorf("[%d]%w", i, err)
+				}
+			}
+			dst.Set(k, r)
+			return nil
+		case reflect.Array, reflect.Slice:
+			isHetero := false
+			r := make([]any, rv.Len())
+			st := rt.Elem()
+			for i, n := 0, rv.Len(); i < n; i++ {
+				sv := rv.Index(i)
+				if err := add(r, i, st, sv, isHetero, namer); err != nil {
+					return fmt.Errorf("[%d]%w", i, err)
+				}
 			}
 			dst.Set(k, r)
 			return nil
@@ -218,7 +236,7 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 			}
 
 			if err := merge(m, name, f.Type, rv.Field(i), omitempty, namer); err != nil {
-				return fmt.Errorf(".%s%w", k, err)
+				return fmt.Errorf(".%s%w", name, err)
 			}
 		}
 	case reflect.Pointer:
@@ -234,6 +252,136 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 		return merge(dst, k, rv.Type(), rv, omitempty, namer)
 	default: // reflect.Invalid, reflect.UnsafePointer
 		return fmt.Errorf("invalid type: %s: %v", rt, k)
+	}
+	return nil
+}
+
+func add(dst []any, i int, rt reflect.Type, rv reflect.Value, isHetero bool, namer func(reflect.StructField) string) error {
+	switch rt.Kind() {
+	case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr, reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128, reflect.String: // primitive types
+		dst[i] = rv.Interface()
+	case reflect.Array, reflect.Slice:
+		if rv.IsNil() {
+			dst[i] = nil
+			return nil
+		}
+		if rv.Len() == 0 {
+			dst[i] = []any{} // fill nil?
+			return nil
+		}
+
+		st := rt.Elem()
+		for st.Kind() == reflect.Pointer {
+			st = st.Elem()
+		}
+
+		switch st.Kind() {
+		case reflect.Func, reflect.Chan:
+			return nil // skip
+		case reflect.Interface:
+			isHetero := true
+			r := make([]any, rv.Len())
+			for i, n := 0, rv.Len(); i < n; i++ {
+				sv := rv.Index(i)
+				st := rv.Type()
+				if err := add(r, i, st, sv, isHetero, namer); err != nil {
+					return fmt.Errorf("[%d]%w", i, err)
+				}
+			}
+			dst[i] = r
+			return nil
+		case reflect.Array, reflect.Slice:
+			isHetero := false
+			r := make([]any, rv.Len())
+			st := rt.Elem()
+			for i, n := 0, rv.Len(); i < n; i++ {
+				sv := rv.Index(i)
+				if err := add(r, i, st, sv, isHetero, namer); err != nil {
+					return fmt.Errorf("[%d]%w", i, err)
+				}
+			}
+			dst[i] = r
+			return nil
+		case reflect.Map, reflect.Struct:
+			r := make([]*orderedmap.OrderedMap, rv.Len())
+			st := rt.Elem()
+			for i, n := 0, rv.Len(); i < n; i++ {
+				m := orderedmap.New()
+				r[i] = m
+				if err := merge(m, "", st, rv.Index(i), false, namer); err != nil {
+					return fmt.Errorf("[%d]%w", i, err)
+				}
+			}
+			dst[i] = r
+			return nil
+		default: // primitive types
+			dst[i] = rv.Interface()
+		}
+	case reflect.Map:
+		m := orderedmap.New()
+		dst[i] = m
+		iter := rv.MapRange()
+		for iter.Next() {
+			sk := iter.Key().String() // map[string] only?
+			sv := iter.Value()
+			if err := merge(m, sk, sv.Type(), sv, false, namer); err != nil {
+				return fmt.Errorf("[%s]%w", sk, err)
+			}
+		}
+		return nil
+	case reflect.Func, reflect.Chan:
+		return nil // skip interface
+	case reflect.Struct:
+		m := orderedmap.New()
+		dst[i] = m
+
+		if rt == rOMapType {
+			src := rv.Addr().Interface().(*orderedmap.OrderedMap)
+			for _, sk := range src.Keys() {
+				sv, ok := src.Get(sk)
+				if !ok {
+					continue
+				}
+				rsv := reflect.ValueOf(sv)
+				if err := merge(m, sk, rsv.Type(), rsv, false, namer); err != nil {
+					return fmt.Errorf("[%s]%w", sk, err)
+				}
+			}
+			return nil
+		}
+
+		for i, n := 0, rt.NumField(); i < n; i++ {
+			f := rt.Field(i)
+			if !f.IsExported() {
+				continue
+			}
+
+			// handling `json:"<name>,isHetero"`
+			name := namer(f)
+			omitempty := false
+			if v, suffix, found := strings.Cut(name, ","); found {
+				name = strings.TrimSpace(v)
+				if strings.Contains(suffix, "omitempty") {
+					omitempty = true
+				}
+			}
+			if err := merge(m, name, f.Type, rv.Field(i), omitempty, namer); err != nil {
+				return fmt.Errorf(".%s%w", name, err)
+			}
+		}
+	case reflect.Pointer:
+		if rv.IsNil() {
+			return nil
+		}
+		return add(dst, i, rt.Elem(), rv.Elem(), isHetero, namer)
+	case reflect.Interface:
+		if rv.IsNil() {
+			return nil
+		}
+		rv = rv.Elem()
+		return add(dst, i, rv.Type(), rv, isHetero, namer)
+	default: // reflect.Invalid, reflect.UnsafePointer
+		return fmt.Errorf("invalid type: %s: %d", rt, i)
 	}
 	return nil
 }
