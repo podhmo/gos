@@ -10,7 +10,6 @@ import (
 func main() {
 	b := builder.New()
 
-	// TODO: minlength
 	Name := b.String().MinLength(1).As("Name")
 
 	b.Object(
