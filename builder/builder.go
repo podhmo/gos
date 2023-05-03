@@ -216,9 +216,9 @@ type Type struct {
 }
 
 type Field struct {
-	Name        string
-	Description string
-	Required    bool
+	Name        string `json:"-"`
+	Description string `json:"description,omitempty"`
+	Required    bool   `json:"-"`
 }
 
 type field[R any] struct {

@@ -90,11 +90,18 @@ func (t *ObjectBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 			if v.Required {
 				required = append(required, name)
 			}
+
+			var def *orderedmap.OrderedMap
 			if t, ok := f.typ.(toSchema); ok {
-				properties.Set(name, t.ToSchema(b))
+				def = t.ToSchema(b)
 			} else {
-				properties.Set(name, orderedmap.New())
+				def = orderedmap.New()
 			}
+			def, err := maplib.Merge(def, f.value)
+			if err != nil {
+				panic(err)
+			}
+			properties.Set(name, def)
 		}
 		doc.Set("properties", properties)
 	}
