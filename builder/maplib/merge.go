@@ -183,8 +183,20 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 	case reflect.Map:
 		m := dst
 		if k != "" {
-			m = orderedmap.New()
-			dst.Set(k, m)
+			if v, ok := m.Get(k); ok {
+				if omap, ok := v.(*orderedmap.OrderedMap); ok {
+					m = omap
+				} else {
+					m = orderedmap.New()
+					if err := merge(m, "", reflect.TypeOf(v), reflect.ValueOf(v), false, namer); err != nil {
+						return fmt.Errorf(".%s%w", k, err)
+					}
+					dst.Set(k, m)
+				}
+			} else {
+				m = orderedmap.New()
+				dst.Set(k, m)
+			}
 		}
 		iter := rv.MapRange()
 		for iter.Next() {
@@ -200,8 +212,20 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 	case reflect.Struct:
 		m := dst
 		if k != "" {
-			m = orderedmap.New()
-			dst.Set(k, m)
+			if v, ok := m.Get(k); ok {
+				if omap, ok := v.(*orderedmap.OrderedMap); ok {
+					m = omap
+				} else {
+					m = orderedmap.New()
+					if err := merge(m, "", reflect.TypeOf(v), reflect.ValueOf(v), false, namer); err != nil {
+						return fmt.Errorf(".%s%w", k, err)
+					}
+					dst.Set(k, m)
+				}
+			} else {
+				m = orderedmap.New()
+				dst.Set(k, m)
+			}
 		}
 
 		if rt == rOMapType {
@@ -241,6 +265,9 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 		}
 	case reflect.Pointer:
 		if rv.IsNil() {
+			if !omitempty {
+				dst.Set(k, nil)
+			}
 			return nil
 		}
 		return merge(dst, k, rt.Elem(), rv.Elem(), omitempty, namer)
