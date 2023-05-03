@@ -126,7 +126,6 @@ func (t *ObjectBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	if err != nil {
 		panic(err)
 	}
-	// TODO: merge object config
 	return doc
 }
 
