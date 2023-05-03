@@ -258,6 +258,9 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 					omitempty = true
 				}
 			}
+			if name == "-" {
+				continue
+			}
 
 			if err := merge(m, name, f.Type, rv.Field(i), omitempty, namer); err != nil {
 				return fmt.Errorf(".%s%w", name, err)
@@ -392,6 +395,10 @@ func add(dst []any, i int, rt reflect.Type, rv reflect.Value, isHetero bool, nam
 					omitempty = true
 				}
 			}
+			if name == "-" {
+				continue
+			}
+
 			if err := merge(m, name, f.Type, rv.Field(i), omitempty, namer); err != nil {
 				return fmt.Errorf(".%s%w", name, err)
 			}

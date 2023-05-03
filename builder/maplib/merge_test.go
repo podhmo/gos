@@ -17,6 +17,13 @@ func TestMerge(t *testing.T) {
 		Father   *person `json:"father,omitempty"`
 	}
 
+	type withIgnore struct {
+		Name       string `json:"name"`
+		Ignored    string `json:"-"`
+		unexported string
+		NOJSONTag  string
+	}
+
 	opt := cmp.Transformer("", func(src *orderedmap.OrderedMap) map[string]any {
 		keys := src.Keys()
 		dst := make(map[string]any, len(keys))
@@ -109,6 +116,11 @@ func TestMerge(t *testing.T) {
 		{msg: "nested-map-append-person",
 			dst: oMap("age", 20, "father", oMap("age", 40)), src: person{Name: "foo", Father: &person{Name: "boo"}},
 			want: oMap("name", "foo", "age", 20, "father", oMap("name", "boo", "age", 40)),
+		},
+		// tags
+		{msg: "arrange by tags",
+			dst: nil, src: withIgnore{},
+			want: oMap("name", "", "NOJSONTag", ""), // ignore the value of json tag is "-" or unexported field
 		},
 	}
 	for _, c := range cases {
