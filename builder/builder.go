@@ -206,13 +206,13 @@ func (t *type_[R]) As(name string) R {
 
 type Type struct {
 	id          int
-	Name        string
-	Description string
-	Format      string
+	Name        string `json:"-"`
+	Description string `json:"description,omitempty"`
+	Format      string `json:"format,omitempty"`
 
-	IsNewType bool
+	IsNewType bool `json:"-"`
 
-	underlying string
+	underlying string `json:"-"`
 }
 
 type Field struct {
