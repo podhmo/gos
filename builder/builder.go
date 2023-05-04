@@ -234,7 +234,7 @@ func (t *IntegerBuilder[R]) Maximum(n int64) R {
 	return t.ret
 }
 
-func (b *Builder) Object(fields ...*TypedField) *ObjectType {
+func (b *Builder) Object(fields ...*Field) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
 			type_:    &type_[*ObjectType]{rootbuilder: b, metadata: &TypeMetadata{Name: "object", underlying: "object"}},
@@ -257,7 +257,7 @@ func (t *ObjectType) GetMetadata() *ObjectMetadata {
 type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
 	metadata *ObjectMetadata
-	Fields   []*TypedField
+	Fields   []*Field
 }
 
 func (b *ObjectBuilder[R]) String(v bool) R {
@@ -265,9 +265,9 @@ func (b *ObjectBuilder[R]) String(v bool) R {
 	return b.ret
 }
 
-func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
-	f := &TypedField{
-		field: &field[*TypedField]{
+func (b *Builder) Field(name string, typ TypeBuilder) *Field {
+	f := &Field{
+		field: &field[*Field]{
 			metadata: &FieldMetadata{Name: name, Required: true},
 		},
 		typ: typ,
@@ -315,11 +315,11 @@ func (t *field[R]) Required(v bool) R {
 	return t.ret
 }
 
-type TypedField struct {
-	*field[*TypedField]
+type Field struct {
+	*field[*Field]
 	typ TypeBuilder
 }
 
-func (f TypedField) GetFieldMetadata() *FieldMetadata {
+func (f *Field) GetFieldMetadata() *FieldMetadata {
 	return f.metadata
 }
