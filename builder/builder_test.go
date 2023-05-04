@@ -1,13 +1,12 @@
 package builder_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/podhmo/gos/builder"
 )
 
-func TestIt(*testing.T) {
+func TestIt(t *testing.T) {
 	b := builder.New()
 
 	typeName := "Person"
@@ -15,15 +14,19 @@ func TestIt(*testing.T) {
 		b.Field("name", b.String().MinLength(1).MaxLength(255)),
 		b.Field("age", b.Integer().Minimum(0).Doc("hoho")).Required(true).Doc("haha"),
 		b.Field("skills", b.Array(b.String().Doc("yaya").MinLength(1)).MinItems(1)).Required(false), // composite
-		b.Field("father", b.ReferenceByName(typeName)),                                              // recursive
+		b.Field("father", b.ReferenceByName(typeName)).Required(false),                              // recursive
 	)).Doc(
 		"this is summary",
 		"",
 		"this is long description\nhehehhe",
 	)
 
-	b.EachTypes(func(t builder.TypeBuilder) error {
-		fmt.Println(builder.ToString(t))
+	b.EachTypes(func(typ builder.TypeBuilder) error {
+		got := builder.ToString(typ)
+		want := `Person{name, age, skills?, father?}`
+		if want != got {
+			t.Errorf("want %q, but got %q", want, got)
+		}
 		return nil
 	})
 }
