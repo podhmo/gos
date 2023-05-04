@@ -23,9 +23,13 @@ func WriteCode[T any](w io.Writer, b *Builder[T]) error {
 // customization
 
 func (t *EnumType[T]) writeCode(w io.Writer) error {
+	padding := t.rootbuilder.Config.Padding
+	comment := t.rootbuilder.Config.Comment
+
 	typename := t.type_.metadata.Name
 	underlying := t.type_.metadata.underlying
-	fmt.Fprintf(w, "// %s", typename) // nolint
+
+	fmt.Fprintf(w, "%s %s", comment, typename) // nolint
 	// TODO: description
 	fmt.Fprintln(w, "")
 	fmt.Fprintf(w, "type %s %s\n", typename, underlying) // nolint
@@ -33,20 +37,17 @@ func (t *EnumType[T]) writeCode(w io.Writer) error {
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "const (")
 
-	isString := false
-	if reflect.TypeOf(t.Values[0].metadata.Value).Kind() == reflect.String {
-		isString = true
-	}
+	isString := reflect.TypeOf(t.Values[0].metadata.Value).Kind() == reflect.String
 
 	for _, v := range t.Values {
 		if isString {
-			fmt.Fprintf(w, "\t %s%s %s = \"%v\"", typename, v.metadata.Name, typename, v.metadata.Value)
+			fmt.Fprintf(w, "%s%s%s %s = \"%v\"", padding, typename, v.metadata.Name, typename, v.metadata.Value)
 		} else {
-			fmt.Fprintf(w, "\t %s%s %s = %v", typename, v.metadata.Name, typename, v.metadata.Value)
+			fmt.Fprintf(w, "%s%s%s %s = %v", padding, typename, v.metadata.Name, typename, v.metadata.Value)
 		}
 
 		if v.metadata.Default {
-			fmt.Fprint(w, "  // default")
+			fmt.Fprintf(w, "  %s default", comment)
 		}
 		fmt.Fprintln(w, "")
 	}

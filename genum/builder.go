@@ -20,14 +20,24 @@ func Define[T interface {
 	return typ
 }
 
+type Config struct {
+	Padding string
+	Comment string
+}
+
 type Builder[T any] struct {
+	Config *Config
+
 	mu          sync.Mutex
 	namedTypes  []TypeBuilder[T]
 	nameToIDMap map[string][]int
 }
 
 func NewBuilder[T any]() *Builder[T] {
-	return &Builder[T]{nameToIDMap: map[string][]int{}}
+	return &Builder[T]{
+		Config:      &Config{Padding: "\t"},
+		nameToIDMap: map[string][]int{},
+	}
 }
 
 func (b *Builder[T]) EachTypes(fn func(TypeBuilder[T]) error) error {
