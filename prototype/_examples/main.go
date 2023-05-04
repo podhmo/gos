@@ -22,9 +22,7 @@ func main() {
 
 	prototype.Define("TestScore", b.Object(
 		b.Field("title", b.String()),
-		b.Field("tests", b.Map(b.Integer()).
-			PatternProperties(`\-score$`, b.Integer().Doc("score (0~100)")).
-			PatternProperties(`\-grade$`, b.String().Doc("grade (A,B,C,D,E,F)"))),
+		b.Field("tests", b.Map(b.Integer()).Pattern(`\-score$`).Doc("score (0~100)")),
 	))
 
 	doc, err := prototype.ToSchema(b)

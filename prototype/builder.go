@@ -156,11 +156,8 @@ type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	metadata *MapMetadata
 }
 
-func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
-	if t.metadata.PatternProperties == nil {
-		t.metadata.PatternProperties = map[string]TypeBuilder{}
-	}
-	t.metadata.PatternProperties[s] = typ
+func (t *MapBuilder[T, R]) Pattern(s string) R {
+	t.metadata.Pattern = s
 	return t.ret
 }
 

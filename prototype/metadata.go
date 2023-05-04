@@ -56,5 +56,5 @@ type ArrayMetadata struct {
 }
 
 type MapMetadata struct {
-	PatternProperties map[string]TypeBuilder `json:"-,omitempty"`
+	Pattern string `json:"-,omitempty"`
 }
