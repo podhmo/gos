@@ -79,6 +79,7 @@ func (b *Builder[T]) Enum(values ...*ValueType[T]) *EnumType[T] {
 		EnumBuilder: &EnumBuilder[T, *EnumType[T]]{
 			type_:    &type_[T, *EnumType[T]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: fmt.Sprintf("%T", z)}}, // TODO: underlying
 			metadata: &EnumMetadata[T]{},
+			Values:   values,
 		},
 	}
 	t.EnumBuilder.ret = t
@@ -96,18 +97,14 @@ func (t *EnumType[T]) GetMetadata() *EnumMetadata[T] {
 type EnumBuilder[T any, R TypeBuilder[T]] struct {
 	*type_[T, R]
 	metadata *EnumMetadata[T]
-}
-
-func (b *EnumBuilder[T, R]) Default(v T) R {
-	b.metadata.Default = v
-	return b.ret
+	Values   []*ValueType[T]
 }
 
 func (b *Builder[T]) Value(v T) *ValueType[T] {
 	t := &ValueType[T]{
 		ValueBuilder: &ValueBuilder[T, *ValueType[T]]{
 			type_:    &type_[T, *ValueType[T]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}}, // TODO: remove
-			metadata: &ValueMetadata[T]{},
+			metadata: &ValueMetadata[T]{Value: v},
 		},
 	}
 	t.ValueBuilder.ret = t
@@ -133,6 +130,11 @@ func (b *ValueBuilder[T, R]) Name(name string) R {
 }
 func (b *ValueBuilder[T, R]) Doc(stmts ...string) R {
 	b.metadata.Doc = strings.Join(stmts, "\n")
+	return b.ret
+}
+
+func (b *ValueBuilder[T, R]) Default(v bool) R {
+	b.metadata.Default = v
 	return b.ret
 }
 

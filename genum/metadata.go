@@ -12,11 +12,11 @@ type TypeMetadata struct {
 
 // customization
 type EnumMetadata[T any] struct {
-	Default T
 }
 
 type ValueMetadata[T any] struct {
-	Name  string `json:"name"`
-	Value T      `json:"value"`
-	Doc   string `json:"doc,omitempty"`
+	Name    string `json:"name"`
+	Value   T      `json:"value"`
+	Doc     string `json:"doc,omitempty"`
+	Default bool   `json:"-"`
 }
