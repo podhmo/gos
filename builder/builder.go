@@ -305,10 +305,6 @@ type field[R any] struct {
 	ret      R
 }
 
-func (f *field[R]) GetFieldMetadata() *FieldMetadata {
-	return f.metadata
-}
-
 func (t *field[R]) Doc(stmts ...string) R {
 	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
@@ -322,4 +318,8 @@ func (t *field[R]) Required(v bool) R {
 type TypedField struct {
 	*field[*TypedField]
 	typ TypeBuilder
+}
+
+func (f TypedField) GetFieldMetadata() *FieldMetadata {
+	return f.metadata
 }
