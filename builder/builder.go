@@ -112,6 +112,10 @@ type ArrayType[T TypeBuilder] struct {
 	*ArrayBuilder[T, *ArrayType[T]]
 }
 
+func (t *ArrayType[T]) GetMetadata() *ArrayMetadata {
+	return t.metadata
+}
+
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
 	items    T
@@ -141,6 +145,10 @@ type MapType[T TypeBuilder] struct {
 	*MapBuilder[T, *MapType[T]]
 }
 
+func (t *MapType[T]) GetMetadata() *MapMetadata {
+	return t.metadata
+}
+
 // string only map
 type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
@@ -167,6 +175,10 @@ func (b *Builder) String() *StringType {
 
 type StringType struct {
 	*StringBuilder[*StringType]
+}
+
+func (t *StringType) GetMetadata() *StringMetadata {
+	return t.metadata
 }
 
 type StringBuilder[R TypeBuilder] struct {
@@ -202,6 +214,10 @@ type IntegerType struct {
 	*IntegerBuilder[*IntegerType]
 }
 
+func (t *IntegerType) GetMetadata() *IntegerMetadata {
+	return t.metadata
+}
+
 type IntegerBuilder[R TypeBuilder] struct {
 	*type_[R]
 	metadata *IntegerMetadata
@@ -232,6 +248,10 @@ func (b *Builder) Object(fields ...*TypedField) *ObjectType {
 
 type ObjectType struct {
 	*ObjectBuilder[*ObjectType]
+}
+
+func (t *ObjectType) GetMetadata() *ObjectMetadata {
+	return t.metadata
 }
 
 type ObjectBuilder[R TypeBuilder] struct {
