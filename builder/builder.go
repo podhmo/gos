@@ -2,11 +2,8 @@ package builder
 
 import (
 	"fmt"
-	"io"
 	"strings"
 	"sync"
-
-	"github.com/iancoleman/orderedmap"
 )
 
 func New() *Builder {
@@ -14,9 +11,10 @@ func New() *Builder {
 }
 
 type TypeBuilder interface {
-	typevalue() *Type
-	WriteType(io.Writer) error                  // to string
-	ToSchema(b *Builder) *orderedmap.OrderedMap // to schema
+	typemetadata() *TypeMetadata
+
+	toSchemer  // to schema
+	writeTyper // to string
 }
 
 type Builder struct {
@@ -35,7 +33,7 @@ func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
 }
 
 func (b *Builder) storeType(typ TypeBuilder) {
-	val := typ.typevalue()
+	val := typ.typemetadata()
 	val.id = -1
 	if !val.IsNewType {
 		return
@@ -67,36 +65,36 @@ func (b *Builder) lookupType(name string) TypeBuilder {
 }
 
 func (b *Builder) ReferenceByName(name string) *TypeRef {
-	return &TypeRef{Name: name, builder: b}
+	return &TypeRef{Name: name, rootbuilder: b}
 }
 func (b *Builder) Reference(typ TypeBuilder) *TypeRef {
-	name := typ.typevalue().Name
-	return &TypeRef{Name: name, builder: b, _typ: typ}
+	name := typ.typemetadata().Name
+	return &TypeRef{Name: name, rootbuilder: b, _typ: typ}
 }
 
 type TypeRef struct {
 	Name string
 	_typ TypeBuilder
 
-	builder *Builder
+	rootbuilder *Builder
 }
 
 func (t *TypeRef) getType() TypeBuilder {
 	if t._typ != nil {
 		return t._typ
 	}
-	t._typ = t.builder.lookupType(t.Name)
+	t._typ = t.rootbuilder.lookupType(t.Name)
 	return t._typ
 }
-func (t *TypeRef) typevalue() *Type {
-	return t.getType().typevalue()
+func (t *TypeRef) typemetadata() *TypeMetadata {
+	return t.getType().typemetadata()
 }
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
-		type_: &type_[*ArrayType[TypeBuilder]]{builder: b, value: &Type{Name: "array", underlying: "array"}},
-		items: typ,
-		value: &Array{},
+		type_:    &type_[*ArrayType[TypeBuilder]]{rootbuilder: b, metadata: &TypeMetadata{Name: "array", underlying: "array"}},
+		items:    typ,
+		metadata: &ArrayMetadata{},
 	}}
 	t.ArrayBuilder.ret = t
 	return t
@@ -108,24 +106,24 @@ type ArrayType[T TypeBuilder] struct {
 
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
-	items T
-	value *Array
+	items    T
+	metadata *ArrayMetadata
 }
 
 func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
-	t.value.MinItems = n
+	t.metadata.MinItems = n
 	return t.ret
 }
 func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
-	t.value.MaxItems = n
+	t.metadata.MaxItems = n
 	return t.ret
 }
 
 func (b *Builder) Map(valtyp TypeBuilder) *MapType[TypeBuilder] { // TODO: specialized
 	t := &MapType[TypeBuilder]{MapBuilder: &MapBuilder[TypeBuilder, *MapType[TypeBuilder]]{
-		type_: &type_[*MapType[TypeBuilder]]{builder: b, value: &Type{Name: "map[string]", underlying: "map[string]"}},
-		items: valtyp,
-		value: &Map{},
+		type_:    &type_[*MapType[TypeBuilder]]{rootbuilder: b, metadata: &TypeMetadata{Name: "map[string]", underlying: "map[string]"}},
+		items:    valtyp,
+		metadata: &MapMetadata{},
 	}}
 	t.MapBuilder.ret = t
 	return t
@@ -138,22 +136,22 @@ type MapType[T TypeBuilder] struct {
 // string only map
 type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
-	items V
-	value *Map
+	items    V
+	metadata *MapMetadata
 }
 
 func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
-	if t.value.PatternProperties == nil {
-		t.value.PatternProperties = map[string]TypeBuilder{}
+	if t.metadata.PatternProperties == nil {
+		t.metadata.PatternProperties = map[string]TypeBuilder{}
 	}
-	t.value.PatternProperties[s] = typ
+	t.metadata.PatternProperties[s] = typ
 	return t.ret
 }
 
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
-		type_: &type_[*StringType]{builder: b, value: &Type{Name: "string", underlying: "string"}},
-		value: &String{},
+		type_:    &type_[*StringType]{rootbuilder: b, metadata: &TypeMetadata{Name: "string", underlying: "string"}},
+		metadata: &StringMetadata{},
 	}}
 	t.StringBuilder.ret = t
 	return t
@@ -165,28 +163,28 @@ type StringType struct {
 
 type StringBuilder[R TypeBuilder] struct {
 	*type_[R]
-	value *String
+	metadata *StringMetadata
 }
 
 var _ TypeBuilder = (*StringBuilder[TypeBuilder])(nil)
 
 func (t *StringBuilder[R]) MinLength(n int64) R {
-	t.value.MinLength = n
+	t.metadata.MinLength = n
 	return t.ret
 }
 func (t *StringBuilder[R]) MaxLength(n int64) R {
-	t.value.MaxLength = n
+	t.metadata.MaxLength = n
 	return t.ret
 }
 func (t *StringBuilder[R]) Pattern(s string) R {
-	t.value.Pattern = s
+	t.metadata.Pattern = s
 	return t.ret
 }
 
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
-		type_: &type_[*IntegerType]{builder: b, value: &Type{Name: "integer", underlying: "integer"}},
-		value: &Integer{},
+		type_:    &type_[*IntegerType]{rootbuilder: b, metadata: &TypeMetadata{Name: "integer", underlying: "integer"}},
+		metadata: &IntegerMetadata{},
 	}}
 	t.IntegerBuilder.ret = t
 	return t
@@ -198,26 +196,26 @@ type IntegerType struct {
 
 type IntegerBuilder[R TypeBuilder] struct {
 	*type_[R]
-	value *Integer
+	metadata *IntegerMetadata
 }
 
 var _ TypeBuilder = (*IntegerBuilder[TypeBuilder])(nil)
 
 func (t *IntegerBuilder[R]) Minimum(n int64) R {
-	t.value.Minimum = n
+	t.metadata.Minimum = n
 	return t.ret
 }
 func (t *IntegerBuilder[R]) Maximum(n int64) R {
-	t.value.Maximum = n
+	t.metadata.Maximum = n
 	return t.ret
 }
 
 func (b *Builder) Object(fields ...*TypedField) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_:  &type_[*ObjectType]{builder: b, value: &Type{Name: "object", underlying: "object"}},
-			Fields: fields,
-			value:  &Object{},
+			type_:    &type_[*ObjectType]{rootbuilder: b, metadata: &TypeMetadata{Name: "object", underlying: "object"}},
+			Fields:   fields,
+			metadata: &ObjectMetadata{},
 		},
 	}
 	t.ObjectBuilder.ret = t
@@ -230,19 +228,19 @@ type ObjectType struct {
 
 type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
-	value  *Object
-	Fields []*TypedField
+	metadata *ObjectMetadata
+	Fields   []*TypedField
 }
 
 func (b *ObjectBuilder[R]) String(v bool) R {
-	b.value.Strict = v
+	b.metadata.Strict = v
 	return b.ret
 }
 
 func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 	f := &TypedField{
 		field: &field[*TypedField]{
-			value: &Field{Name: name, Required: true},
+			metadata: &FieldMetadata{Name: name, Required: true},
 		},
 		typ: typ,
 	}
@@ -251,42 +249,42 @@ func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 }
 
 type type_[R TypeBuilder] struct {
-	value *Type
-	ret   R
+	metadata *TypeMetadata
+	ret      R
 
-	builder *Builder
+	rootbuilder *Builder
 }
 
-func (t *type_[R]) typevalue() *Type {
-	return t.value
+func (t *type_[R]) typemetadata() *TypeMetadata {
+	return t.metadata
 }
 func (t *type_[R]) Doc(stmts ...string) R {
-	t.value.Description = strings.Join(stmts, "\n")
+	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
 }
 func (t *type_[R]) Format(v string) R {
-	t.value.Format = v
+	t.metadata.Format = v
 	return t.ret
 }
 func (t *type_[R]) As(name string) R {
-	t.value.Name = name
-	t.value.IsNewType = true
-	t.builder.storeType(t.ret)
+	t.metadata.Name = name
+	t.metadata.IsNewType = true
+	t.rootbuilder.storeType(t.ret)
 	return t.ret
 }
 
 type field[R any] struct {
-	value *Field
-	ret   R
+	metadata *FieldMetadata
+	ret      R
 }
 
 func (t *field[R]) Doc(stmts ...string) R {
-	t.value.Description = strings.Join(stmts, "\n")
+	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
 }
 
 func (t *field[R]) Required(v bool) R {
-	t.value.Required = v
+	t.metadata.Required = v
 	return t.ret
 }
 

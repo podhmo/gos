@@ -8,7 +8,7 @@ import (
 	"github.com/podhmo/gos/builder/maplib"
 )
 
-type toSchema interface {
+type toSchemer interface {
 	ToSchema(*Builder) *orderedmap.OrderedMap
 }
 
@@ -22,8 +22,8 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 	components.Set("schemas", schemas)
 
 	if err := b.EachTypes(func(t TypeBuilder) error {
-		name := t.typevalue().Name
-		if t, ok := t.(toSchema); ok {
+		name := t.typemetadata().Name
+		if t, ok := t.(toSchemer); ok {
 			schemas.Set(name, t.ToSchema(b))
 		} else {
 			schemas.Set(name, orderedmap.New())
@@ -38,78 +38,78 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 // customization
 func (t *type_[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
-	doc.Set("type", t.value.underlying)
-	doc, err := maplib.Merge(doc, t.value)
+	doc.Set("type", t.metadata.underlying)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
 
-func (t *StringBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+func (t *StringType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
-func (t *IntegerBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+func (t *IntegerType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
-func (t *ArrayBuilder[T, R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+func (t *ArrayType[T]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
 	doc.Set("items", t.items.ToSchema(b))
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
-func (t *MapBuilder[V, R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+func (t *MapType[T]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
 	doc.Set("type", "object")
-	if t.value.PatternProperties == nil {
+	if t.metadata.PatternProperties == nil {
 		doc.Set("additionalProperties", t.items.ToSchema(b))
 	} else {
 		props := orderedmap.New()
-		for k, typ := range t.value.PatternProperties {
+		for k, typ := range t.metadata.PatternProperties {
 			props.Set(k, typ.ToSchema(b))
 		}
 		doc.Set("patternProperties", props)
 	}
 
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
 
-func (t *ObjectBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
+func (t *ObjectType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
 	required := make([]string, 0, len(t.Fields))
 	if len(t.Fields) > 0 {
 		properties := orderedmap.New()
 		for _, f := range t.Fields {
-			v := f.value
+			v := f.metadata
 			name := v.Name
 			if v.Required {
 				required = append(required, name)
 			}
 
 			var def *orderedmap.OrderedMap
-			if t, ok := f.typ.(toSchema); ok {
+			if t, ok := f.typ.(toSchemer); ok {
 				def = t.ToSchema(b)
 			} else {
 				def = orderedmap.New()
 			}
-			def, err := maplib.Merge(def, f.value)
+			def, err := maplib.Merge(def, f.metadata)
 			if err != nil {
 				panic(err)
 			}
@@ -122,7 +122,7 @@ func (t *ObjectBuilder[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 		doc.Set("required", required)
 	}
 	doc.Set("additionalProperties", false)
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
@@ -136,7 +136,7 @@ func (t TypeRef) ToSchema(b *Builder) *orderedmap.OrderedMap {
 		log.Printf("#/components/schemas/%s is not found", t.Name)
 		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", t.Name))
 	} else {
-		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", typ.typevalue().Name))
+		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", typ.typemetadata().Name))
 	}
 
 	return doc

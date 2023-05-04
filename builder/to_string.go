@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+type writeTyper interface {
+	WriteType(io.Writer) error
+}
+
 func ToString(typ TypeBuilder) string {
 	b := new(strings.Builder)
 	if err := typ.WriteType(b); err != nil {
@@ -19,25 +23,25 @@ func (t *TypeRef) WriteType(w io.Writer) error {
 }
 
 func (t *type_[R]) WriteType(w io.Writer) error {
-	if _, err := io.WriteString(w, t.value.Name); err != nil {
+	if _, err := io.WriteString(w, t.metadata.Name); err != nil {
 		return err
 	}
 	return nil
 }
 
 // customization
-func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
+func (b *ObjectType) WriteType(w io.Writer) error {
 	if err := b.type_.WriteType(w); err != nil {
 		return err
 	}
-	// if b.type_.value.IsNewType {
+	// if b.type_.metadata.IsNewType {
 	// 	return nil
 	// }
 
 	io.WriteString(w, "{") // nolint
 	n := len(b.Fields) - 1
 	for i, f := range b.Fields {
-		v := f.value
+		v := f.metadata
 		io.WriteString(w, v.Name) // nolint
 		if !v.Required {
 			io.WriteString(w, "?") // nolint
@@ -50,11 +54,11 @@ func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
 	return nil
 }
 
-func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
+func (t *ArrayType[T]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
-	// if t.type_.value.IsNewType {
+	// if t.type_.metadata.IsNewType {
 	// 	return nil
 	// }
 
@@ -66,11 +70,11 @@ func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
 	return nil
 }
 
-func (t *MapBuilder[V, R]) WriteType(w io.Writer) error {
+func (t *MapType[T]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
-	// if t.type_.value.IsNewType {
+	// if t.type_.metadata.IsNewType {
 	// 	return nil
 	// }
 
