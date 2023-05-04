@@ -7,7 +7,7 @@ import (
 )
 
 type TypeBuilder interface {
-	typemetadata() *TypeMetadata
+	GetTypeMetadata() *TypeMetadata
 
 	toSchemer  // to schema
 	writeTyper // to string
@@ -41,7 +41,7 @@ func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
 }
 
 func (b *Builder) storeType(typ TypeBuilder) {
-	val := typ.typemetadata()
+	val := typ.GetTypeMetadata()
 	val.id = -1
 	if !val.IsNewType {
 		return
@@ -76,7 +76,7 @@ func (b *Builder) ReferenceByName(name string) *TypeRef {
 	return &TypeRef{Name: name, rootbuilder: b}
 }
 func (b *Builder) Reference(typ TypeBuilder) *TypeRef {
-	name := typ.typemetadata().Name
+	name := typ.GetTypeMetadata().Name
 	return &TypeRef{Name: name, rootbuilder: b, _typ: typ}
 }
 
@@ -94,8 +94,8 @@ func (t *TypeRef) getType() TypeBuilder {
 	t._typ = t.rootbuilder.lookupType(t.Name)
 	return t._typ
 }
-func (t *TypeRef) typemetadata() *TypeMetadata {
-	return t.getType().typemetadata()
+func (t *TypeRef) GetTypeMetadata() *TypeMetadata {
+	return t.getType().GetTypeMetadata()
 }
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
@@ -110,6 +110,10 @@ func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: spec
 
 type ArrayType[T TypeBuilder] struct {
 	*ArrayBuilder[T, *ArrayType[T]]
+}
+
+func (t *ArrayType[T]) GetMetadata() *ArrayMetadata {
+	return t.metadata
 }
 
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
@@ -141,6 +145,10 @@ type MapType[T TypeBuilder] struct {
 	*MapBuilder[T, *MapType[T]]
 }
 
+func (t *MapType[T]) GetMetadata() *MapMetadata {
+	return t.metadata
+}
+
 // string only map
 type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
@@ -167,6 +175,10 @@ func (b *Builder) String() *StringType {
 
 type StringType struct {
 	*StringBuilder[*StringType]
+}
+
+func (t *StringType) GetMetadata() *StringMetadata {
+	return t.metadata
 }
 
 type StringBuilder[R TypeBuilder] struct {
@@ -202,6 +214,10 @@ type IntegerType struct {
 	*IntegerBuilder[*IntegerType]
 }
 
+func (t *IntegerType) GetMetadata() *IntegerMetadata {
+	return t.metadata
+}
+
 type IntegerBuilder[R TypeBuilder] struct {
 	*type_[R]
 	metadata *IntegerMetadata
@@ -234,6 +250,10 @@ type ObjectType struct {
 	*ObjectBuilder[*ObjectType]
 }
 
+func (t *ObjectType) GetMetadata() *ObjectMetadata {
+	return t.metadata
+}
+
 type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
 	metadata *ObjectMetadata
@@ -263,7 +283,7 @@ type type_[R TypeBuilder] struct {
 	rootbuilder *Builder
 }
 
-func (t *type_[R]) typemetadata() *TypeMetadata {
+func (t *type_[R]) GetTypeMetadata() *TypeMetadata {
 	return t.metadata
 }
 func (t *type_[R]) Doc(stmts ...string) R {
@@ -283,6 +303,10 @@ func (t *type_[R]) storeType(name string) {
 type field[R any] struct {
 	metadata *FieldMetadata
 	ret      R
+}
+
+func (f *field[R]) GetFieldMetadata() *FieldMetadata {
+	return f.metadata
 }
 
 func (t *field[R]) Doc(stmts ...string) R {
