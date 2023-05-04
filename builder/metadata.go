@@ -9,7 +9,7 @@ package builder
 // subset of OAS component schemas definition (not strict)
 // https://swagger.io/docs/specification/data-models/data-types/
 
-type Type struct {
+type TypeMetadata struct {
 	id          int
 	Name        string `json:"-"`
 	Description string `json:"description,omitempty"`
@@ -20,11 +20,11 @@ type Type struct {
 	underlying string `json:"-"`
 }
 
-type Object struct {
+type ObjectMetadata struct {
 	Strict bool `json:"-"`
 }
 
-type Field struct {
+type FieldMetadata struct {
 	Name        string `json:"-"`
 	Description string `json:"description,omitempty"`
 	Required    bool   `json:"-"`
@@ -34,13 +34,13 @@ type Field struct {
 // primitive types
 // ----------------------------------------
 
-type String struct {
+type StringMetadata struct {
 	MinLength int64  `json:"minlength,omitempty"`
 	MaxLength int64  `json:"maxlength,omitempty"`
 	Pattern   string `json:"pattern,omitempty"`
 }
 
-type Integer struct {
+type IntegerMetadata struct {
 	// minimum ≤ value ≤ maximum
 	Maximum int64 `json:"maximum,omitempty"`
 	Minimum int64 `json:"minimum,omitempty"`
@@ -50,11 +50,11 @@ type Integer struct {
 // composite types
 // ----------------------------------------
 
-type Array struct {
+type ArrayMetadata struct {
 	MaxItems int64 `json:"maxitems,omitempty"`
 	MinItems int64 `json:"minitems,omitempty"`
 }
 
-type Map struct {
+type MapMetadata struct {
 	PatternProperties map[string]TypeBuilder `json:"-,omitempty"`
 }
