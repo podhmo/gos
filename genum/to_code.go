@@ -3,6 +3,7 @@ package genum
 import (
 	"fmt"
 	"io"
+	"reflect"
 )
 
 type writeCoder interface {
@@ -31,8 +32,19 @@ func (t *EnumType[T]) writeCode(w io.Writer) error {
 
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "const (")
+
+	isString := false
+	if reflect.TypeOf(t.Values[0].metadata.Value).Kind() == reflect.String {
+		isString = true
+	}
+
 	for _, v := range t.Values {
-		fmt.Fprintf(w, "\t %s%s %s = %+v", typename, v.metadata.Name, typename, v.metadata.Value)
+		if isString {
+			fmt.Fprintf(w, "\t %s%s %s = \"%v\"", typename, v.metadata.Name, typename, v.metadata.Value)
+		} else {
+			fmt.Fprintf(w, "\t %s%s %s = %v", typename, v.metadata.Name, typename, v.metadata.Value)
+		}
+
 		if v.metadata.Default {
 			fmt.Fprint(w, "  // default")
 		}
