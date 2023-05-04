@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/iancoleman/orderedmap"
-	"github.com/podhmo/gos/builder/maplib"
+	"github.com/podhmo/gos/pkg/maplib"
 )
 
 func TestMerge(t *testing.T) {

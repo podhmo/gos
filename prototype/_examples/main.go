@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/podhmo/gos/builder"
+	"github.com/podhmo/gos/prototype"
 )
 
 func main() {
-	b := builder.New()
+	b := prototype.NewBuilder()
 
-	Name := builder.Define("Name", b.String().MinLength(1))
+	Name := prototype.Define("Name", b.String().MinLength(1))
 
-	builder.Define("Person", b.Object(
+	prototype.Define("Person", b.Object(
 		b.Field("name", b.String()).Doc("name of person"),
 		b.Field("age", b.Integer().Format("int32")),
 		b.Field("nickname", b.Reference(Name)).Required(false),
@@ -20,14 +20,14 @@ func main() {
 		b.Field("friends", b.Array(b.ReferenceByName("Person"))).Required(false),
 	)).Doc("person object")
 
-	builder.Define("TestScore", b.Object(
+	prototype.Define("TestScore", b.Object(
 		b.Field("title", b.String()),
 		b.Field("tests", b.Map(b.Integer()).
 			PatternProperties(`\-score$`, b.Integer().Doc("score (0~100)")).
 			PatternProperties(`\-grade$`, b.String().Doc("grade (A,B,C,D,E,F)"))),
 	))
 
-	doc, err := builder.ToSchema(b)
+	doc, err := prototype.ToSchema(b)
 	if err != nil {
 		panic(err)
 	}

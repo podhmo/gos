@@ -1,4 +1,4 @@
-module github.com/podhmo/gos/builder
+module github.com/podhmo/gos
 
 go 1.19
 

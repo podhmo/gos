@@ -1,4 +1,4 @@
-package builder
+package prototype
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ type Builder struct {
 	nameToIDMap map[string][]int
 }
 
-func New() *Builder {
+func NewBuilder() *Builder {
 	return &Builder{nameToIDMap: map[string][]int{}}
 }
 
