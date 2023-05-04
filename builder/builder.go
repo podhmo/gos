@@ -6,10 +6,6 @@ import (
 	"sync"
 )
 
-func New() *Builder {
-	return &Builder{nameToIDMap: map[string][]int{}}
-}
-
 type TypeBuilder interface {
 	typemetadata() *TypeMetadata
 
@@ -17,10 +13,22 @@ type TypeBuilder interface {
 	writeTyper // to string
 }
 
+func Define[T interface {
+	TypeBuilder
+	storeType(name string)
+}](name string, typ T) T {
+	typ.storeType(name)
+	return typ
+}
+
 type Builder struct {
 	mu          sync.Mutex
 	namedTypes  []TypeBuilder
 	nameToIDMap map[string][]int
+}
+
+func New() *Builder {
+	return &Builder{nameToIDMap: map[string][]int{}}
 }
 
 func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
@@ -266,11 +274,10 @@ func (t *type_[R]) Format(v string) R {
 	t.metadata.Format = v
 	return t.ret
 }
-func (t *type_[R]) As(name string) R {
+func (t *type_[R]) storeType(name string) {
 	t.metadata.Name = name
 	t.metadata.IsNewType = true
 	t.rootbuilder.storeType(t.ret)
-	return t.ret
 }
 
 type field[R any] struct {
