@@ -65,25 +65,25 @@ func (b *Builder) lookupType(name string) TypeBuilder {
 }
 
 func (b *Builder) ReferenceByName(name string) *TypeRef {
-	return &TypeRef{Name: name, builder: b}
+	return &TypeRef{Name: name, rootbuilder: b}
 }
 func (b *Builder) Reference(typ TypeBuilder) *TypeRef {
 	name := typ.typemetadata().Name
-	return &TypeRef{Name: name, builder: b, _typ: typ}
+	return &TypeRef{Name: name, rootbuilder: b, _typ: typ}
 }
 
 type TypeRef struct {
 	Name string
 	_typ TypeBuilder
 
-	builder *Builder
+	rootbuilder *Builder
 }
 
 func (t *TypeRef) getType() TypeBuilder {
 	if t._typ != nil {
 		return t._typ
 	}
-	t._typ = t.builder.lookupType(t.Name)
+	t._typ = t.rootbuilder.lookupType(t.Name)
 	return t._typ
 }
 func (t *TypeRef) typemetadata() *TypeMetadata {
@@ -92,7 +92,7 @@ func (t *TypeRef) typemetadata() *TypeMetadata {
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
-		type_:    &type_[*ArrayType[TypeBuilder]]{builder: b, metadata: &TypeMetadata{Name: "array", underlying: "array"}},
+		type_:    &type_[*ArrayType[TypeBuilder]]{rootbuilder: b, metadata: &TypeMetadata{Name: "array", underlying: "array"}},
 		items:    typ,
 		metadata: &ArrayMetadata{},
 	}}
@@ -121,7 +121,7 @@ func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
 
 func (b *Builder) Map(valtyp TypeBuilder) *MapType[TypeBuilder] { // TODO: specialized
 	t := &MapType[TypeBuilder]{MapBuilder: &MapBuilder[TypeBuilder, *MapType[TypeBuilder]]{
-		type_:    &type_[*MapType[TypeBuilder]]{builder: b, metadata: &TypeMetadata{Name: "map[string]", underlying: "map[string]"}},
+		type_:    &type_[*MapType[TypeBuilder]]{rootbuilder: b, metadata: &TypeMetadata{Name: "map[string]", underlying: "map[string]"}},
 		items:    valtyp,
 		metadata: &MapMetadata{},
 	}}
@@ -150,7 +150,7 @@ func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
 
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
-		type_:    &type_[*StringType]{builder: b, metadata: &TypeMetadata{Name: "string", underlying: "string"}},
+		type_:    &type_[*StringType]{rootbuilder: b, metadata: &TypeMetadata{Name: "string", underlying: "string"}},
 		metadata: &StringMetadata{},
 	}}
 	t.StringBuilder.ret = t
@@ -183,7 +183,7 @@ func (t *StringBuilder[R]) Pattern(s string) R {
 
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
-		type_:    &type_[*IntegerType]{builder: b, metadata: &TypeMetadata{Name: "integer", underlying: "integer"}},
+		type_:    &type_[*IntegerType]{rootbuilder: b, metadata: &TypeMetadata{Name: "integer", underlying: "integer"}},
 		metadata: &IntegerMetadata{},
 	}}
 	t.IntegerBuilder.ret = t
@@ -213,7 +213,7 @@ func (t *IntegerBuilder[R]) Maximum(n int64) R {
 func (b *Builder) Object(fields ...*TypedField) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_:    &type_[*ObjectType]{builder: b, metadata: &TypeMetadata{Name: "object", underlying: "object"}},
+			type_:    &type_[*ObjectType]{rootbuilder: b, metadata: &TypeMetadata{Name: "object", underlying: "object"}},
 			Fields:   fields,
 			metadata: &ObjectMetadata{},
 		},
@@ -252,7 +252,7 @@ type type_[R TypeBuilder] struct {
 	metadata *TypeMetadata
 	ret      R
 
-	builder *Builder
+	rootbuilder *Builder
 }
 
 func (t *type_[R]) typemetadata() *TypeMetadata {
@@ -269,7 +269,7 @@ func (t *type_[R]) Format(v string) R {
 func (t *type_[R]) As(name string) R {
 	t.metadata.Name = name
 	t.metadata.IsNewType = true
-	t.builder.storeType(t.ret)
+	t.rootbuilder.storeType(t.ret)
 	return t.ret
 }
 
