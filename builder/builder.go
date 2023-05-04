@@ -95,33 +95,6 @@ func (t *TypeRef) WriteType(w io.Writer) error {
 	return t.getType().WriteType(w)
 }
 
-func (b *Builder) Object(fields ...*TypedField) *ObjectType {
-	t := &ObjectType{
-		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_:  &type_[*ObjectType]{builder: b, value: &Type{Name: "object", underlying: "object"}},
-			Fields: fields,
-			value:  &Object{},
-		},
-	}
-	t.ObjectBuilder.ret = t
-	return t
-}
-
-type ObjectType struct {
-	*ObjectBuilder[*ObjectType]
-}
-
-func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
-	f := &TypedField{
-		field: &field[*TypedField]{
-			value: &Field{Name: name, Required: true},
-		},
-		typ: typ,
-	}
-	f.field.ret = f
-	return f
-}
-
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
 		type_: &type_[*ArrayType[TypeBuilder]]{builder: b, value: &Type{Name: "array", underlying: "array"}},
@@ -134,6 +107,21 @@ func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: spec
 
 type ArrayType[T TypeBuilder] struct {
 	*ArrayBuilder[T, *ArrayType[T]]
+}
+
+type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
+	*type_[R]
+	items T
+	value *Array
+}
+
+func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
+	t.value.MinItems = n
+	return t.ret
+}
+func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
+	t.value.MaxItems = n
+	return t.ret
 }
 
 func (b *Builder) Map(valtyp TypeBuilder) *MapType[TypeBuilder] { // TODO: specialized
@@ -150,6 +138,21 @@ type MapType[T TypeBuilder] struct {
 	*MapBuilder[T, *MapType[T]]
 }
 
+// string only map
+type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
+	*type_[R]
+	items V
+	value *Map
+}
+
+func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
+	if t.value.PatternProperties == nil {
+		t.value.PatternProperties = map[string]TypeBuilder{}
+	}
+	t.value.PatternProperties[s] = typ
+	return t.ret
+}
+
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
 		type_: &type_[*StringType]{builder: b, value: &Type{Name: "string", underlying: "string"}},
@@ -163,6 +166,26 @@ type StringType struct {
 	*StringBuilder[*StringType]
 }
 
+type StringBuilder[R TypeBuilder] struct {
+	*type_[R]
+	value *String
+}
+
+var _ TypeBuilder = (*StringBuilder[TypeBuilder])(nil)
+
+func (t *StringBuilder[R]) MinLength(n int64) R {
+	t.value.MinLength = n
+	return t.ret
+}
+func (t *StringBuilder[R]) MaxLength(n int64) R {
+	t.value.MaxLength = n
+	return t.ret
+}
+func (t *StringBuilder[R]) Pattern(s string) R {
+	t.value.Pattern = s
+	return t.ret
+}
+
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
 		type_: &type_[*IntegerType]{builder: b, value: &Type{Name: "integer", underlying: "integer"}},
@@ -174,6 +197,60 @@ func (b *Builder) Integer() *IntegerType {
 
 type IntegerType struct {
 	*IntegerBuilder[*IntegerType]
+}
+
+type IntegerBuilder[R TypeBuilder] struct {
+	*type_[R]
+	value *Integer
+}
+
+var _ TypeBuilder = (*IntegerBuilder[TypeBuilder])(nil)
+
+func (t *IntegerBuilder[R]) Minimum(n int64) R {
+	t.value.Minimum = n
+	return t.ret
+}
+func (t *IntegerBuilder[R]) Maximum(n int64) R {
+	t.value.Maximum = n
+	return t.ret
+}
+
+func (b *Builder) Object(fields ...*TypedField) *ObjectType {
+	t := &ObjectType{
+		ObjectBuilder: &ObjectBuilder[*ObjectType]{
+			type_:  &type_[*ObjectType]{builder: b, value: &Type{Name: "object", underlying: "object"}},
+			Fields: fields,
+			value:  &Object{},
+		},
+	}
+	t.ObjectBuilder.ret = t
+	return t
+}
+
+type ObjectType struct {
+	*ObjectBuilder[*ObjectType]
+}
+
+type ObjectBuilder[R TypeBuilder] struct {
+	*type_[R]
+	value  *Object
+	Fields []*TypedField
+}
+
+func (b *ObjectBuilder[R]) String(v bool) R {
+	b.value.Strict = v
+	return b.ret
+}
+
+func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
+	f := &TypedField{
+		field: &field[*TypedField]{
+			value: &Field{Name: name, Required: true},
+		},
+		typ: typ,
+	}
+	f.field.ret = f
+	return f
 }
 
 type type_[R TypeBuilder] struct {
@@ -225,84 +302,4 @@ func (t *field[R]) Required(v bool) R {
 type TypedField struct {
 	*field[*TypedField]
 	typ TypeBuilder
-}
-
-// https://swagger.io/docs/specification/data-models/data-types/
-
-type StringBuilder[R TypeBuilder] struct {
-	*type_[R]
-	value *String
-}
-
-var _ TypeBuilder = (*StringBuilder[TypeBuilder])(nil)
-
-func (t *StringBuilder[R]) MinLength(n int64) R {
-	t.value.MinLength = n
-	return t.ret
-}
-func (t *StringBuilder[R]) MaxLength(n int64) R {
-	t.value.MaxLength = n
-	return t.ret
-}
-func (t *StringBuilder[R]) Pattern(s string) R {
-	t.value.Pattern = s
-	return t.ret
-}
-
-type IntegerBuilder[R TypeBuilder] struct {
-	*type_[R]
-	value *Integer
-}
-
-var _ TypeBuilder = (*IntegerBuilder[TypeBuilder])(nil)
-
-func (t *IntegerBuilder[R]) Minimum(n int64) R {
-	t.value.Minimum = n
-	return t.ret
-}
-func (t *IntegerBuilder[R]) Maximum(n int64) R {
-	t.value.Maximum = n
-	return t.ret
-}
-
-// composite type
-type ObjectBuilder[R TypeBuilder] struct {
-	*type_[R]
-	value  *Object
-	Fields []*TypedField
-}
-
-func (b *ObjectBuilder[R]) String(v bool) R {
-	b.value.Strict = v
-	return b.ret
-}
-
-type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
-	*type_[R]
-	items T
-	value *Array
-}
-
-func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
-	t.value.MinItems = n
-	return t.ret
-}
-func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
-	t.value.MaxItems = n
-	return t.ret
-}
-
-// string only map
-type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
-	*type_[R]
-	items V
-	value *Map
-}
-
-func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
-	if t.value.PatternProperties == nil {
-		t.value.PatternProperties = map[string]TypeBuilder{}
-	}
-	t.value.PatternProperties[s] = typ
-	return t.ret
 }
