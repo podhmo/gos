@@ -6,6 +6,9 @@ package builder
 // - composite types
 // - object with fields (product type)
 
+// subset of OAS component schemas definition (not strict)
+// https://swagger.io/docs/specification/data-models/data-types/
+
 type Type struct {
 	id          int
 	Name        string `json:"-"`
