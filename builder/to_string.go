@@ -14,8 +14,18 @@ func ToString(typ TypeBuilder) string {
 	return b.String()
 }
 
-// customization
+func (t *TypeRef) WriteType(w io.Writer) error {
+	return t.getType().WriteType(w)
+}
 
+func (t *type_[R]) WriteType(w io.Writer) error {
+	if _, err := io.WriteString(w, t.value.Name); err != nil {
+		return err
+	}
+	return nil
+}
+
+// customization
 func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
 	if err := b.type_.WriteType(w); err != nil {
 		return err

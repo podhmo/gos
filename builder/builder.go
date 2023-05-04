@@ -15,8 +15,8 @@ func New() *Builder {
 
 type TypeBuilder interface {
 	typevalue() *Type
-	WriteType(io.Writer) error
-	ToSchema(b *Builder) *orderedmap.OrderedMap
+	WriteType(io.Writer) error                  // to string
+	ToSchema(b *Builder) *orderedmap.OrderedMap // to schema
 }
 
 type Builder struct {
@@ -90,9 +90,6 @@ func (t *TypeRef) getType() TypeBuilder {
 }
 func (t *TypeRef) typevalue() *Type {
 	return t.getType().typevalue()
-}
-func (t *TypeRef) WriteType(w io.Writer) error {
-	return t.getType().WriteType(w)
 }
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
@@ -262,12 +259,6 @@ type type_[R TypeBuilder] struct {
 
 func (t *type_[R]) typevalue() *Type {
 	return t.value
-}
-func (t *type_[R]) WriteType(w io.Writer) error {
-	if _, err := io.WriteString(w, t.value.Name); err != nil {
-		return err
-	}
-	return nil
 }
 func (t *type_[R]) Doc(stmts ...string) R {
 	t.value.Description = strings.Join(stmts, "\n")
