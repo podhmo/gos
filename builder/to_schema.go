@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/iancoleman/orderedmap"
-	"github.com/podhmo/gos/builder/maplib"
+	"github.com/podhmo/gos/pkg/maplib"
 )
 
 type toSchemer interface {
