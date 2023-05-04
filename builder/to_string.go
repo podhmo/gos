@@ -23,7 +23,7 @@ func (t *TypeRef) WriteType(w io.Writer) error {
 }
 
 func (t *type_[R]) WriteType(w io.Writer) error {
-	if _, err := io.WriteString(w, t.value.Name); err != nil {
+	if _, err := io.WriteString(w, t.metadata.Name); err != nil {
 		return err
 	}
 	return nil
@@ -34,14 +34,14 @@ func (b *ObjectType) WriteType(w io.Writer) error {
 	if err := b.type_.WriteType(w); err != nil {
 		return err
 	}
-	// if b.type_.value.IsNewType {
+	// if b.type_.metadata.IsNewType {
 	// 	return nil
 	// }
 
 	io.WriteString(w, "{") // nolint
 	n := len(b.Fields) - 1
 	for i, f := range b.Fields {
-		v := f.value
+		v := f.metadata
 		io.WriteString(w, v.Name) // nolint
 		if !v.Required {
 			io.WriteString(w, "?") // nolint
@@ -58,7 +58,7 @@ func (t *ArrayType[T]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
-	// if t.type_.value.IsNewType {
+	// if t.type_.metadata.IsNewType {
 	// 	return nil
 	// }
 
@@ -74,7 +74,7 @@ func (t *MapType[T]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
-	// if t.type_.value.IsNewType {
+	// if t.type_.metadata.IsNewType {
 	// 	return nil
 	// }
 

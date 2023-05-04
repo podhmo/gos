@@ -38,8 +38,8 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 // customization
 func (t *type_[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
-	doc.Set("type", t.value.underlying)
-	doc, err := maplib.Merge(doc, t.value)
+	doc.Set("type", t.metadata.underlying)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ func (t *type_[R]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 
 func (t *StringType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ func (t *StringType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 }
 func (t *IntegerType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ func (t *IntegerType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 func (t *ArrayType[T]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
 	doc.Set("items", t.items.ToSchema(b))
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
@@ -74,17 +74,17 @@ func (t *ArrayType[T]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 func (t *MapType[T]) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := t.type_.ToSchema(b)
 	doc.Set("type", "object")
-	if t.value.PatternProperties == nil {
+	if t.metadata.PatternProperties == nil {
 		doc.Set("additionalProperties", t.items.ToSchema(b))
 	} else {
 		props := orderedmap.New()
-		for k, typ := range t.value.PatternProperties {
+		for k, typ := range t.metadata.PatternProperties {
 			props.Set(k, typ.ToSchema(b))
 		}
 		doc.Set("patternProperties", props)
 	}
 
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +97,7 @@ func (t *ObjectType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 	if len(t.Fields) > 0 {
 		properties := orderedmap.New()
 		for _, f := range t.Fields {
-			v := f.value
+			v := f.metadata
 			name := v.Name
 			if v.Required {
 				required = append(required, name)
@@ -109,7 +109,7 @@ func (t *ObjectType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 			} else {
 				def = orderedmap.New()
 			}
-			def, err := maplib.Merge(def, f.value)
+			def, err := maplib.Merge(def, f.metadata)
 			if err != nil {
 				panic(err)
 			}
@@ -122,7 +122,7 @@ func (t *ObjectType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 		doc.Set("required", required)
 	}
 	doc.Set("additionalProperties", false)
-	doc, err := maplib.Merge(doc, t.value)
+	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}

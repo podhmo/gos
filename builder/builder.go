@@ -92,9 +92,9 @@ func (t *TypeRef) typevalue() *TypeMetadata {
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
 	t := &ArrayType[TypeBuilder]{ArrayBuilder: &ArrayBuilder[TypeBuilder, *ArrayType[TypeBuilder]]{
-		type_: &type_[*ArrayType[TypeBuilder]]{builder: b, value: &TypeMetadata{Name: "array", underlying: "array"}},
-		items: typ,
-		value: &ArrayMetadata{},
+		type_:    &type_[*ArrayType[TypeBuilder]]{builder: b, metadata: &TypeMetadata{Name: "array", underlying: "array"}},
+		items:    typ,
+		metadata: &ArrayMetadata{},
 	}}
 	t.ArrayBuilder.ret = t
 	return t
@@ -106,24 +106,24 @@ type ArrayType[T TypeBuilder] struct {
 
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
-	items T
-	value *ArrayMetadata
+	items    T
+	metadata *ArrayMetadata
 }
 
 func (t *ArrayBuilder[T, R]) MinItems(n int64) R {
-	t.value.MinItems = n
+	t.metadata.MinItems = n
 	return t.ret
 }
 func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
-	t.value.MaxItems = n
+	t.metadata.MaxItems = n
 	return t.ret
 }
 
 func (b *Builder) Map(valtyp TypeBuilder) *MapType[TypeBuilder] { // TODO: specialized
 	t := &MapType[TypeBuilder]{MapBuilder: &MapBuilder[TypeBuilder, *MapType[TypeBuilder]]{
-		type_: &type_[*MapType[TypeBuilder]]{builder: b, value: &TypeMetadata{Name: "map[string]", underlying: "map[string]"}},
-		items: valtyp,
-		value: &MapMetadata{},
+		type_:    &type_[*MapType[TypeBuilder]]{builder: b, metadata: &TypeMetadata{Name: "map[string]", underlying: "map[string]"}},
+		items:    valtyp,
+		metadata: &MapMetadata{},
 	}}
 	t.MapBuilder.ret = t
 	return t
@@ -136,22 +136,22 @@ type MapType[T TypeBuilder] struct {
 // string only map
 type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
-	items V
-	value *MapMetadata
+	items    V
+	metadata *MapMetadata
 }
 
 func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
-	if t.value.PatternProperties == nil {
-		t.value.PatternProperties = map[string]TypeBuilder{}
+	if t.metadata.PatternProperties == nil {
+		t.metadata.PatternProperties = map[string]TypeBuilder{}
 	}
-	t.value.PatternProperties[s] = typ
+	t.metadata.PatternProperties[s] = typ
 	return t.ret
 }
 
 func (b *Builder) String() *StringType {
 	t := &StringType{StringBuilder: &StringBuilder[*StringType]{
-		type_: &type_[*StringType]{builder: b, value: &TypeMetadata{Name: "string", underlying: "string"}},
-		value: &StringMetadata{},
+		type_:    &type_[*StringType]{builder: b, metadata: &TypeMetadata{Name: "string", underlying: "string"}},
+		metadata: &StringMetadata{},
 	}}
 	t.StringBuilder.ret = t
 	return t
@@ -163,28 +163,28 @@ type StringType struct {
 
 type StringBuilder[R TypeBuilder] struct {
 	*type_[R]
-	value *StringMetadata
+	metadata *StringMetadata
 }
 
 var _ TypeBuilder = (*StringBuilder[TypeBuilder])(nil)
 
 func (t *StringBuilder[R]) MinLength(n int64) R {
-	t.value.MinLength = n
+	t.metadata.MinLength = n
 	return t.ret
 }
 func (t *StringBuilder[R]) MaxLength(n int64) R {
-	t.value.MaxLength = n
+	t.metadata.MaxLength = n
 	return t.ret
 }
 func (t *StringBuilder[R]) Pattern(s string) R {
-	t.value.Pattern = s
+	t.metadata.Pattern = s
 	return t.ret
 }
 
 func (b *Builder) Integer() *IntegerType {
 	t := &IntegerType{IntegerBuilder: &IntegerBuilder[*IntegerType]{
-		type_: &type_[*IntegerType]{builder: b, value: &TypeMetadata{Name: "integer", underlying: "integer"}},
-		value: &IntegerMetadata{},
+		type_:    &type_[*IntegerType]{builder: b, metadata: &TypeMetadata{Name: "integer", underlying: "integer"}},
+		metadata: &IntegerMetadata{},
 	}}
 	t.IntegerBuilder.ret = t
 	return t
@@ -196,26 +196,26 @@ type IntegerType struct {
 
 type IntegerBuilder[R TypeBuilder] struct {
 	*type_[R]
-	value *IntegerMetadata
+	metadata *IntegerMetadata
 }
 
 var _ TypeBuilder = (*IntegerBuilder[TypeBuilder])(nil)
 
 func (t *IntegerBuilder[R]) Minimum(n int64) R {
-	t.value.Minimum = n
+	t.metadata.Minimum = n
 	return t.ret
 }
 func (t *IntegerBuilder[R]) Maximum(n int64) R {
-	t.value.Maximum = n
+	t.metadata.Maximum = n
 	return t.ret
 }
 
 func (b *Builder) Object(fields ...*TypedField) *ObjectType {
 	t := &ObjectType{
 		ObjectBuilder: &ObjectBuilder[*ObjectType]{
-			type_:  &type_[*ObjectType]{builder: b, value: &TypeMetadata{Name: "object", underlying: "object"}},
-			Fields: fields,
-			value:  &ObjectMetadata{},
+			type_:    &type_[*ObjectType]{builder: b, metadata: &TypeMetadata{Name: "object", underlying: "object"}},
+			Fields:   fields,
+			metadata: &ObjectMetadata{},
 		},
 	}
 	t.ObjectBuilder.ret = t
@@ -228,19 +228,19 @@ type ObjectType struct {
 
 type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
-	value  *ObjectMetadata
-	Fields []*TypedField
+	metadata *ObjectMetadata
+	Fields   []*TypedField
 }
 
 func (b *ObjectBuilder[R]) String(v bool) R {
-	b.value.Strict = v
+	b.metadata.Strict = v
 	return b.ret
 }
 
 func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 	f := &TypedField{
 		field: &field[*TypedField]{
-			value: &FieldMetadata{Name: name, Required: true},
+			metadata: &FieldMetadata{Name: name, Required: true},
 		},
 		typ: typ,
 	}
@@ -249,42 +249,42 @@ func (b *Builder) Field(name string, typ TypeBuilder) *TypedField {
 }
 
 type type_[R TypeBuilder] struct {
-	value *TypeMetadata
-	ret   R
+	metadata *TypeMetadata
+	ret      R
 
 	builder *Builder
 }
 
 func (t *type_[R]) typevalue() *TypeMetadata {
-	return t.value
+	return t.metadata
 }
 func (t *type_[R]) Doc(stmts ...string) R {
-	t.value.Description = strings.Join(stmts, "\n")
+	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
 }
 func (t *type_[R]) Format(v string) R {
-	t.value.Format = v
+	t.metadata.Format = v
 	return t.ret
 }
 func (t *type_[R]) As(name string) R {
-	t.value.Name = name
-	t.value.IsNewType = true
+	t.metadata.Name = name
+	t.metadata.IsNewType = true
 	t.builder.storeType(t.ret)
 	return t.ret
 }
 
 type field[R any] struct {
-	value *FieldMetadata
-	ret   R
+	metadata *FieldMetadata
+	ret      R
 }
 
 func (t *field[R]) Doc(stmts ...string) R {
-	t.value.Description = strings.Join(stmts, "\n")
+	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
 }
 
 func (t *field[R]) Required(v bool) R {
-	t.value.Required = v
+	t.metadata.Required = v
 	return t.ret
 }
 
