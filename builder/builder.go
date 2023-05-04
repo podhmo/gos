@@ -7,7 +7,7 @@ import (
 )
 
 type TypeBuilder interface {
-	typemetadata() *TypeMetadata
+	GetTypeMetadata() *TypeMetadata
 
 	toSchemer  // to schema
 	writeTyper // to string
@@ -41,7 +41,7 @@ func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
 }
 
 func (b *Builder) storeType(typ TypeBuilder) {
-	val := typ.typemetadata()
+	val := typ.GetTypeMetadata()
 	val.id = -1
 	if !val.IsNewType {
 		return
@@ -76,7 +76,7 @@ func (b *Builder) ReferenceByName(name string) *TypeRef {
 	return &TypeRef{Name: name, rootbuilder: b}
 }
 func (b *Builder) Reference(typ TypeBuilder) *TypeRef {
-	name := typ.typemetadata().Name
+	name := typ.GetTypeMetadata().Name
 	return &TypeRef{Name: name, rootbuilder: b, _typ: typ}
 }
 
@@ -94,8 +94,8 @@ func (t *TypeRef) getType() TypeBuilder {
 	t._typ = t.rootbuilder.lookupType(t.Name)
 	return t._typ
 }
-func (t *TypeRef) typemetadata() *TypeMetadata {
-	return t.getType().typemetadata()
+func (t *TypeRef) GetTypeMetadata() *TypeMetadata {
+	return t.getType().GetTypeMetadata()
 }
 
 func (b *Builder) Array(typ TypeBuilder) *ArrayType[TypeBuilder] { // TODO: specialized
@@ -283,7 +283,7 @@ type type_[R TypeBuilder] struct {
 	rootbuilder *Builder
 }
 
-func (t *type_[R]) typemetadata() *TypeMetadata {
+func (t *type_[R]) GetTypeMetadata() *TypeMetadata {
 	return t.metadata
 }
 func (t *type_[R]) Doc(stmts ...string) R {
