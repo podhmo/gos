@@ -207,23 +207,6 @@ func (t *type_[R]) As(name string) R {
 	return t.ret
 }
 
-type Type struct {
-	id          int
-	Name        string `json:"-"`
-	Description string `json:"description,omitempty"`
-	Format      string `json:"format,omitempty"`
-
-	IsNewType bool `json:"-"`
-
-	underlying string `json:"-"`
-}
-
-type Field struct {
-	Name        string `json:"-"`
-	Description string `json:"description,omitempty"`
-	Required    bool   `json:"-"`
-}
-
 type field[R any] struct {
 	value *Field
 	ret   R
@@ -266,12 +249,6 @@ func (t *StringBuilder[R]) Pattern(s string) R {
 	return t.ret
 }
 
-type String struct {
-	MinLength int64  `json:"minlength,omitempty"`
-	MaxLength int64  `json:"maxlength,omitempty"`
-	Pattern   string `json:"pattern,omitempty"`
-}
-
 type IntegerBuilder[R TypeBuilder] struct {
 	*type_[R]
 	value *Integer
@@ -288,12 +265,6 @@ func (t *IntegerBuilder[R]) Maximum(n int64) R {
 	return t.ret
 }
 
-type Integer struct {
-	// minimum ≤ value ≤ maximum
-	Maximum int64 `json:"maximum,omitempty"`
-	Minimum int64 `json:"minimum,omitempty"`
-}
-
 // composite type
 type ObjectBuilder[R TypeBuilder] struct {
 	*type_[R]
@@ -304,10 +275,6 @@ type ObjectBuilder[R TypeBuilder] struct {
 func (b *ObjectBuilder[R]) String(v bool) R {
 	b.value.Strict = v
 	return b.ret
-}
-
-type Object struct {
-	Strict bool `json:"-"`
 }
 
 type ArrayBuilder[T TypeBuilder, R TypeBuilder] struct {
@@ -325,11 +292,6 @@ func (t *ArrayBuilder[T, R]) MaxItems(n int64) R {
 	return t.ret
 }
 
-type Array struct {
-	MaxItems int64 `json:"maxitems,omitempty"`
-	MinItems int64 `json:"minitems,omitempty"`
-}
-
 // string only map
 type MapBuilder[V TypeBuilder, R TypeBuilder] struct {
 	*type_[R]
@@ -343,8 +305,4 @@ func (t *MapBuilder[T, R]) PatternProperties(s string, typ TypeBuilder) R {
 	}
 	t.value.PatternProperties[s] = typ
 	return t.ret
-}
-
-type Map struct {
-	PatternProperties map[string]TypeBuilder `json:"-,omitempty"`
 }
