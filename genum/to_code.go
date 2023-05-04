@@ -55,6 +55,6 @@ func (t *EnumType[T]) writeCode(w io.Writer) error {
 	return nil
 }
 
-func (t *ValueType[T]) writeCode(w io.Writer) error {
-	panic("hmm")
+func (t *type_[T, R]) writeCode(w io.Writer) error {
+	panic("never")
 }
