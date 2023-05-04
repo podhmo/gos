@@ -2,7 +2,6 @@ package builder
 
 import (
 	"fmt"
-	"io"
 	"strings"
 	"sync"
 )
@@ -14,8 +13,8 @@ func New() *Builder {
 type TypeBuilder interface {
 	typevalue() *Type
 
-	toSchema
-	WriteType(io.Writer) error // to string
+	toSchemer  // to schema
+	writeTyper // to string
 }
 
 type Builder struct {

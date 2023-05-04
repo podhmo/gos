@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+type writeTyper interface {
+	WriteType(io.Writer) error
+}
+
 func ToString(typ TypeBuilder) string {
 	b := new(strings.Builder)
 	if err := typ.WriteType(b); err != nil {
@@ -26,7 +30,7 @@ func (t *type_[R]) WriteType(w io.Writer) error {
 }
 
 // customization
-func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
+func (b *ObjectType) WriteType(w io.Writer) error {
 	if err := b.type_.WriteType(w); err != nil {
 		return err
 	}
@@ -50,7 +54,7 @@ func (b ObjectBuilder[R]) WriteType(w io.Writer) error {
 	return nil
 }
 
-func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
+func (t *ArrayType[T]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}
@@ -66,7 +70,7 @@ func (t *ArrayBuilder[T, R]) WriteType(w io.Writer) error {
 	return nil
 }
 
-func (t *MapBuilder[V, R]) WriteType(w io.Writer) error {
+func (t *MapType[T]) WriteType(w io.Writer) error {
 	if err := t.type_.WriteType(w); err != nil {
 		return err
 	}

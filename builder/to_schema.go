@@ -8,7 +8,7 @@ import (
 	"github.com/podhmo/gos/builder/maplib"
 )
 
-type toSchema interface {
+type toSchemer interface {
 	ToSchema(*Builder) *orderedmap.OrderedMap
 }
 
@@ -23,7 +23,7 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 
 	if err := b.EachTypes(func(t TypeBuilder) error {
 		name := t.typevalue().Name
-		if t, ok := t.(toSchema); ok {
+		if t, ok := t.(toSchemer); ok {
 			schemas.Set(name, t.ToSchema(b))
 		} else {
 			schemas.Set(name, orderedmap.New())
@@ -104,7 +104,7 @@ func (t *ObjectType) ToSchema(b *Builder) *orderedmap.OrderedMap {
 			}
 
 			var def *orderedmap.OrderedMap
-			if t, ok := f.typ.(toSchema); ok {
+			if t, ok := f.typ.(toSchemer); ok {
 				def = t.ToSchema(b)
 			} else {
 				def = orderedmap.New()
