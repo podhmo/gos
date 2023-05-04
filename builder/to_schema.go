@@ -22,7 +22,7 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 	components.Set("schemas", schemas)
 
 	if err := b.EachTypes(func(t TypeBuilder) error {
-		name := t.typevalue().Name
+		name := t.typemetadata().Name
 		if t, ok := t.(toSchemer); ok {
 			schemas.Set(name, t.ToSchema(b))
 		} else {
@@ -136,7 +136,7 @@ func (t TypeRef) ToSchema(b *Builder) *orderedmap.OrderedMap {
 		log.Printf("#/components/schemas/%s is not found", t.Name)
 		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", t.Name))
 	} else {
-		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", typ.typevalue().Name))
+		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", typ.typemetadata().Name))
 	}
 
 	return doc
