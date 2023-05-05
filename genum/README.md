@@ -1,0 +1,3 @@
+# genum
+
+define enum by builder and generate go code.
