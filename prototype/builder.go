@@ -264,12 +264,12 @@ func (b *ObjectBuilder[R]) String(v bool) R {
 
 func (b *Builder) Field(name string, typ TypeBuilder) *Field {
 	f := &Field{
-		FieldBuilder: &FieldBuilder[*Field]{
+		fieldBuilder: &fieldBuilder[*Field]{
 			metadata: &FieldMetadata{Name: name, Required: true},
 		},
 		typ: typ,
 	}
-	f.FieldBuilder.ret = f
+	f.fieldBuilder.ret = f
 	return f
 }
 
@@ -297,23 +297,23 @@ func (t *type_[R]) storeType(name string) {
 	t.rootbuilder.storeType(t.ret)
 }
 
-type FieldBuilder[R any] struct {
+type fieldBuilder[R any] struct {
 	metadata *FieldMetadata
 	ret      R
 }
 
-func (t *FieldBuilder[R]) Doc(stmts ...string) R {
+func (t *fieldBuilder[R]) Doc(stmts ...string) R {
 	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
 }
 
-func (t *FieldBuilder[R]) Required(v bool) R {
+func (t *fieldBuilder[R]) Required(v bool) R {
 	t.metadata.Required = v
 	return t.ret
 }
 
 type Field struct {
-	*FieldBuilder[*Field]
+	*fieldBuilder[*Field]
 	typ TypeBuilder
 }
 
@@ -379,7 +379,7 @@ func (t *ActionInput) sig() {}
 
 func (b *Builder) Output(typ TypeBuilder) *ActionOutput {
 	p := &Parameter{
-		ParameterBuilder: &ParameterBuilder[*Parameter]{
+		parameterBuilder: &parameterBuilder[*Parameter]{
 			metadata: &ActionParameterMetadata{Name: "", Required: true},
 		},
 		typ: typ,
@@ -407,23 +407,23 @@ type ActionOutputBuilder[R TypeBuilder] struct {
 	retval   *Parameter
 }
 
-type ParameterBuilder[R any] struct {
+type parameterBuilder[R any] struct {
 	metadata *ActionParameterMetadata
 	ret      R
 }
 
-func (t *ParameterBuilder[R]) Doc(stmts ...string) R {
+func (t *parameterBuilder[R]) Doc(stmts ...string) R {
 	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
 }
 
-func (t *ParameterBuilder[R]) Required(v bool) R {
+func (t *parameterBuilder[R]) Required(v bool) R {
 	t.metadata.Required = v
 	return t.ret
 }
 
 type Parameter struct {
-	*ParameterBuilder[*Parameter]
+	*parameterBuilder[*Parameter]
 	typ TypeBuilder
 }
 
@@ -439,11 +439,11 @@ type actionSignature interface {
 
 func (b *Builder) Parameter(name string, typ TypeBuilder) *Parameter {
 	f := &Parameter{
-		ParameterBuilder: &ParameterBuilder[*Parameter]{
+		parameterBuilder: &parameterBuilder[*Parameter]{
 			metadata: &ActionParameterMetadata{Name: name, Required: true},
 		},
 		typ: typ,
 	}
-	f.ParameterBuilder.ret = f
+	f.parameterBuilder.ret = f
 	return f
 }
