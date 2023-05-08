@@ -264,12 +264,12 @@ func (b *ObjectBuilder[R]) String(v bool) R {
 
 func (b *Builder) Field(name string, typ TypeBuilder) *Field {
 	f := &Field{
-		field: &field[*Field]{
+		FieldBuilder: &FieldBuilder[*Field]{
 			metadata: &FieldMetadata{Name: name, Required: true},
 		},
 		typ: typ,
 	}
-	f.field.ret = f
+	f.FieldBuilder.ret = f
 	return f
 }
 
@@ -297,26 +297,153 @@ func (t *type_[R]) storeType(name string) {
 	t.rootbuilder.storeType(t.ret)
 }
 
-type field[R any] struct {
+type FieldBuilder[R any] struct {
 	metadata *FieldMetadata
 	ret      R
 }
 
-func (t *field[R]) Doc(stmts ...string) R {
+func (t *FieldBuilder[R]) Doc(stmts ...string) R {
 	t.metadata.Description = strings.Join(stmts, "\n")
 	return t.ret
 }
 
-func (t *field[R]) Required(v bool) R {
+func (t *FieldBuilder[R]) Required(v bool) R {
 	t.metadata.Required = v
 	return t.ret
 }
 
 type Field struct {
-	*field[*Field]
+	*FieldBuilder[*Field]
 	typ TypeBuilder
 }
 
 func (f *Field) GetFieldMetadata() *FieldMetadata {
 	return f.metadata
+}
+
+// ----------------------------------------
+func (b *Builder) Action(inputOrOutput ...actionSignature) *ActionType {
+	t := &ActionType{
+		ActionBuilder: &ActionBuilder[*ActionType]{
+			type_:    &type_[*ActionType]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}}, // need?
+			metadata: &ActionMetadata{},
+		},
+	}
+	t.ret = t
+	for _, sig := range inputOrOutput {
+		switch sig := sig.(type) {
+		case *ActionInput:
+			t.input = sig
+		case *ActionOutput:
+			t.output = sig
+		}
+	}
+	// TODO: conflict check?
+	return t
+}
+
+type ActionType struct {
+	*ActionBuilder[*ActionType]
+}
+
+type ActionBuilder[R TypeBuilder] struct {
+	*type_[R]
+	metadata *ActionMetadata
+	input    *ActionInput
+	output   *ActionOutput
+}
+
+func (b *Builder) Input(parameters ...*Parameter) *ActionInput {
+	t := &ActionInput{
+		ActionInputBuilder: &ActionInputBuilder[*ActionInput]{
+			type_:      &type_[*ActionInput]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}}, // need?
+			metadata:   &ActionInputMetadata{},
+			Parameters: parameters,
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type ActionInput struct {
+	*ActionInputBuilder[*ActionInput]
+}
+
+type ActionInputBuilder[R TypeBuilder] struct {
+	*type_[R]
+	metadata   *ActionInputMetadata
+	Parameters []*Parameter
+}
+
+func (t *ActionInput) sig() {}
+
+func (b *Builder) Output(typ TypeBuilder) *ActionOutput {
+	p := &Parameter{
+		ParameterBuilder: &ParameterBuilder[*Parameter]{
+			metadata: &ActionParameterMetadata{Name: "", Required: true},
+		},
+		typ: typ,
+	}
+	p.ret = p
+
+	t := &ActionOutput{
+		ActionOutputBuilder: &ActionOutputBuilder[*ActionOutput]{
+			type_:    &type_[*ActionOutput]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "output"}}, // need?
+			metadata: &ActionOutputMetadata{},
+			retval:   p,
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type ActionOutput struct {
+	*ActionOutputBuilder[*ActionOutput]
+}
+
+type ActionOutputBuilder[R TypeBuilder] struct {
+	*type_[R]
+	metadata *ActionOutputMetadata
+	retval   *Parameter
+}
+
+type ParameterBuilder[R any] struct {
+	metadata *ActionParameterMetadata
+	ret      R
+}
+
+func (t *ParameterBuilder[R]) Doc(stmts ...string) R {
+	t.metadata.Description = strings.Join(stmts, "\n")
+	return t.ret
+}
+
+func (t *ParameterBuilder[R]) Required(v bool) R {
+	t.metadata.Required = v
+	return t.ret
+}
+
+type Parameter struct {
+	*ParameterBuilder[*Parameter]
+	typ TypeBuilder
+}
+
+func (f *Parameter) GetParameterMetadata() *ActionParameterMetadata {
+	return f.metadata
+}
+
+func (t *ActionOutput) sig() {}
+
+type actionSignature interface {
+	sig()
+}
+
+func (b *Builder) Parameter(name string, typ TypeBuilder) *Parameter {
+	f := &Parameter{
+		ParameterBuilder: &ParameterBuilder[*Parameter]{
+			metadata: &ActionParameterMetadata{Name: name, Required: true},
+		},
+		typ: typ,
+	}
+	f.ParameterBuilder.ret = f
+	return f
 }
