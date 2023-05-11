@@ -91,20 +91,34 @@ func (t *ActionType) writeType(w io.Writer) error {
 	if err := t.type_.writeType(w); err != nil {
 		return err
 	}
+	if err := t.input.writeType(w); err != nil {
+		return err
+	}
+	if err := t.output.writeType(w); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *ActionInput) writeType(w io.Writer) error {
 	io.WriteString(w, "(") // nolint
-	if t.input != nil {
-		for i, p := range t.input.Params {
+	if t != nil {
+		for i, p := range t.Params {
 			if err := p.typ.writeType(w); err != nil {
 				return err
 			}
-			if i < len(t.input.Params)-1 {
+			if i < len(t.Params)-1 {
 				io.WriteString(w, ", ")
 			}
 		}
 	}
 	io.WriteString(w, ")") // nolint
-	if t.output != nil {
-		if err := t.output.retval.typ.writeType(w); err != nil {
+	return nil
+}
+
+func (t *ActionOutput) writeType(w io.Writer) error {
+	if t != nil {
+		if err := t.retval.typ.writeType(w); err != nil {
 			return err
 		}
 	}
