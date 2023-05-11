@@ -12,7 +12,7 @@ func main() {
 
 	Name := prototype.Define("Name", b.String().MinLength(1))
 
-	prototype.Define("Person", b.Object(
+	Person := prototype.Define("Person", b.Object(
 		b.Field("name", b.String()).Doc("name of person"),
 		b.Field("age", b.Integer().Format("int32")),
 		b.Field("nickname", b.Reference(Name)).Required(false),
@@ -34,4 +34,10 @@ func main() {
 	if err := enc.Encode(doc); err != nil {
 		panic(err)
 	}
+
+	// TODO:
+	b.Action(
+		b.Input(b.Param("name", b.String())),
+		b.Output(Person),
+	).Doc("create person")
 }

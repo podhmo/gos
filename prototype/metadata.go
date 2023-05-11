@@ -58,3 +58,20 @@ type ArrayMetadata struct {
 type MapMetadata struct {
 	Pattern string `json:"-,omitempty"`
 }
+
+// ----------------------------------------
+// actions
+// ----------------------------------------
+
+type ActionMetadata struct {
+}
+type ActionInputMetadata struct {
+}
+type ActionOutputMetadata struct {
+}
+type ActionParamMetadata struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	Required    bool   `json:"required"`
+	In          string `json:"in"` // enum
+}
