@@ -29,15 +29,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
-	if err := enc.Encode(doc); err != nil {
-		panic(err)
-	}
+	// if err := enc.Encode(doc); err != nil {
+	// 	panic(err)
+	// }
 
 	// TODO:
-	b.Action(
+	createPerson := b.Action("createPerson",
 		b.Input(b.Param("name", b.String())),
 		b.Output(Person),
 	).Doc("create person")
+
+	r := prototype.NewRouter(b)
+	r.Group("person", func(r *prototype.Grouped) {
+		r.Method("POST", "/person", createPerson)
+	})
+
+	doc, err = r.ToSchema()
+	if err != nil {
+		panic(err)
+	}
+	if err := enc.Encode(doc); err != nil {
+		panic(err)
+	}
 }

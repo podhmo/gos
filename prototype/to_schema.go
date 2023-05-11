@@ -3,6 +3,7 @@ package prototype
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/iancoleman/orderedmap"
 	"github.com/podhmo/gos/pkg/maplib"
@@ -12,9 +13,7 @@ type toSchemer interface {
 	toSchema(*Builder) *orderedmap.OrderedMap
 }
 
-func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
-	doc := orderedmap.New()
-
+func ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) (*orderedmap.OrderedMap, error) {
 	components := orderedmap.New()
 	doc.Set("components", components)
 
@@ -33,6 +32,10 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 		return doc, fmt.Errorf("each types -- %w", err)
 	}
 	return doc, nil
+}
+func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
+	doc := orderedmap.New()
+	return ToSchemaWith(b, doc)
 }
 
 // customization
@@ -138,5 +141,23 @@ func (t TypeRef) toSchema(b *Builder) *orderedmap.OrderedMap {
 		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", typ.GetTypeMetadata().Name))
 	}
 
+	return doc
+}
+
+func (t *ActionType) toSchema(b *Builder) *orderedmap.OrderedMap {
+	doc := orderedmap.New()
+	doc.Set("operationId", t.GetTypeMetadata().Name)
+	responses := orderedmap.New()
+	responses.Set("responses", responses)
+	res := orderedmap.New()
+	doc.Set(strconv.Itoa(t.metadata.DefaultStatus), res)
+	res.Set("description", "")
+	content := orderedmap.New()
+	res.Set("content", content)
+	appjson := orderedmap.New()
+	content.Set("applicatioin/json", appjson)
+	if t.output != nil {
+		appjson.Set("schema", t.output.retval.typ.toSchema(b))
+	}
 	return doc
 }

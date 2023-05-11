@@ -325,7 +325,7 @@ func (b *Builder) Action(name string, inputOrOutput ...actionSignature) *ActionT
 	t := &ActionType{
 		ActionBuilder: &ActionBuilder[*ActionType]{
 			type_:    &type_[*ActionType]{rootbuilder: b, metadata: &TypeMetadata{Name: name, underlying: "action"}}, // need?
-			metadata: &ActionMetadata{},
+			metadata: &ActionMetadata{DefaultStatus: 200},
 		},
 	}
 	t.ret = t
@@ -390,6 +390,9 @@ func (b *Builder) Output(typ TypeBuilder) *ActionOutput {
 		typ: typ,
 	}
 	p.ret = p
+	if _, ok := typ.(*TypeRef); !ok {
+		p.typ = b.Reference(typ)
+	}
 
 	t := &ActionOutput{
 		ActionOutputBuilder: &ActionOutputBuilder[*ActionOutput]{

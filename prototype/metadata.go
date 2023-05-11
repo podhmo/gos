@@ -62,6 +62,7 @@ type MapMetadata struct {
 // ----------------------------------------
 
 type ActionMetadata struct {
+	DefaultStatus int
 }
 type ActionInputMetadata struct {
 }
