@@ -15,8 +15,6 @@ type TypeMetadata struct {
 	Description string `json:"description,omitempty"`
 	Format      string `json:"format,omitempty"`
 
-	IsNewType bool `json:"-"`
-
 	underlying string `json:"-"`
 }
 

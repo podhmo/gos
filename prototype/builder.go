@@ -43,7 +43,7 @@ func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
 func (b *Builder) storeType(typ TypeBuilder) {
 	val := typ.GetTypeMetadata()
 	val.id = -1
-	if !val.IsNewType {
+	if val.Name == "" {
 		return
 	}
 
@@ -293,7 +293,6 @@ func (t *type_[R]) Format(v string) R {
 }
 func (t *type_[R]) storeType(name string) {
 	t.metadata.Name = name
-	t.metadata.IsNewType = true
 	t.rootbuilder.storeType(t.ret)
 }
 
