@@ -28,12 +28,12 @@ func TestToString(t *testing.T) {
 			b.Field("age", b.String()).Required(false),
 		)), "Person{name, age?}"},
 		// action
-		{"func()", b.Action(), "action ()"},
-		{"func(string)int", b.Action(
+		{"func()", b.Action(""), "action ()"},
+		{"func(string)int", b.Action("",
 			b.Input(b.Param("name", b.String())),
 			b.Output(b.Integer()),
 		), "action (string)integer"},
-		{"func(strin,int)string", b.Action(
+		{"func(string,int)string", b.Action("",
 			b.Input(
 				b.Param("name", b.String()),
 				b.Param("age", b.Integer()),

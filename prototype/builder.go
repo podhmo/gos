@@ -322,10 +322,10 @@ func (f *Field) GetFieldMetadata() *FieldMetadata {
 }
 
 // ----------------------------------------
-func (b *Builder) Action(inputOrOutput ...actionSignature) *ActionType {
+func (b *Builder) Action(name string, inputOrOutput ...actionSignature) *ActionType {
 	t := &ActionType{
 		ActionBuilder: &ActionBuilder[*ActionType]{
-			type_:    &type_[*ActionType]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}}, // need?
+			type_:    &type_[*ActionType]{rootbuilder: b, metadata: &TypeMetadata{Name: name, underlying: "action"}}, // need?
 			metadata: &ActionMetadata{},
 		},
 	}

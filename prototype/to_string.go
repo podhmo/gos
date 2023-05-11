@@ -23,8 +23,14 @@ func (t *TypeRef) writeType(w io.Writer) error {
 }
 
 func (t *type_[R]) writeType(w io.Writer) error {
-	if _, err := io.WriteString(w, t.metadata.Name); err != nil {
-		return err
+	if t.metadata.Name != "" {
+		if _, err := io.WriteString(w, t.metadata.Name); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, t.metadata.underlying); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -87,10 +93,10 @@ func (t *MapType[T]) writeType(w io.Writer) error {
 }
 
 func (t *ActionType) writeType(w io.Writer) error {
-	io.WriteString(w, "action ")
 	if err := t.type_.writeType(w); err != nil {
 		return err
 	}
+	io.WriteString(w, " ")
 	if err := t.input.writeType(w); err != nil {
 		return err
 	}
