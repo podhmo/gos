@@ -85,3 +85,28 @@ func (t *MapType[T]) writeType(w io.Writer) error {
 	io.WriteString(w, "]") // nolint
 	return nil
 }
+
+func (t *ActionType) writeType(w io.Writer) error {
+	io.WriteString(w, "action ")
+	if err := t.type_.writeType(w); err != nil {
+		return err
+	}
+	io.WriteString(w, "(") // nolint
+	if t.input != nil {
+		for i, p := range t.input.Params {
+			if err := p.typ.writeType(w); err != nil {
+				return err
+			}
+			if i < len(t.input.Params)-1 {
+				io.WriteString(w, ", ")
+			}
+		}
+	}
+	io.WriteString(w, ")") // nolint
+	if t.output != nil {
+		if err := t.output.retval.typ.writeType(w); err != nil {
+			return err
+		}
+	}
+	return nil
+}
