@@ -10,12 +10,12 @@ package prototype
 // https://swagger.io/docs/specification/data-models/data-types/
 
 type TypeMetadata struct {
-	id          int
-	Name        string `json:"-"`
+	id         int    // required by reference
+	Name       string `json:"-"` // required by reference (and toString)
+	underlying string `json:"-"` // required by toString
+
 	Description string `json:"description,omitempty"`
 	Format      string `json:"format,omitempty"`
-
-	underlying string `json:"-"`
 }
 
 type ObjectMetadata struct {
