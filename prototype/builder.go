@@ -353,12 +353,12 @@ type ActionBuilder[R TypeBuilder] struct {
 	output   *ActionOutput
 }
 
-func (b *Builder) Input(parameters ...*Parameter) *ActionInput {
+func (b *Builder) Input(parameters ...*Param) *ActionInput {
 	t := &ActionInput{
 		ActionInputBuilder: &ActionInputBuilder[*ActionInput]{
-			type_:      &type_[*ActionInput]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}}, // need?
-			metadata:   &ActionInputMetadata{},
-			Parameters: parameters,
+			type_:    &type_[*ActionInput]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}}, // need?
+			metadata: &ActionInputMetadata{},
+			Params:   parameters,
 		},
 	}
 	t.ret = t
@@ -371,16 +371,16 @@ type ActionInput struct {
 
 type ActionInputBuilder[R TypeBuilder] struct {
 	*type_[R]
-	metadata   *ActionInputMetadata
-	Parameters []*Parameter
+	metadata *ActionInputMetadata
+	Params   []*Param
 }
 
 func (t *ActionInput) sig() {}
 
 func (b *Builder) Output(typ TypeBuilder) *ActionOutput {
-	p := &Parameter{
-		parameterBuilder: &parameterBuilder[*Parameter]{
-			metadata: &ActionParameterMetadata{Name: "", Required: true},
+	p := &Param{
+		parameterBuilder: &parameterBuilder[*Param]{
+			metadata: &ActionParamMetadata{Name: "", Required: true},
 		},
 		typ: typ,
 	}
@@ -404,11 +404,11 @@ type ActionOutput struct {
 type ActionOutputBuilder[R TypeBuilder] struct {
 	*type_[R]
 	metadata *ActionOutputMetadata
-	retval   *Parameter
+	retval   *Param
 }
 
 type parameterBuilder[R any] struct {
-	metadata *ActionParameterMetadata
+	metadata *ActionParamMetadata
 	ret      R
 }
 
@@ -422,12 +422,12 @@ func (t *parameterBuilder[R]) Required(v bool) R {
 	return t.ret
 }
 
-type Parameter struct {
-	*parameterBuilder[*Parameter]
+type Param struct {
+	*parameterBuilder[*Param]
 	typ TypeBuilder
 }
 
-func (f *Parameter) GetParameterMetadata() *ActionParameterMetadata {
+func (f *Param) GetParamMetadata() *ActionParamMetadata {
 	return f.metadata
 }
 
@@ -437,10 +437,10 @@ type actionSignature interface {
 	sig()
 }
 
-func (b *Builder) Parameter(name string, typ TypeBuilder) *Parameter {
-	f := &Parameter{
-		parameterBuilder: &parameterBuilder[*Parameter]{
-			metadata: &ActionParameterMetadata{Name: name, Required: true},
+func (b *Builder) Param(name string, typ TypeBuilder) *Param {
+	f := &Param{
+		parameterBuilder: &parameterBuilder[*Param]{
+			metadata: &ActionParamMetadata{Name: name, Required: true},
 		},
 		typ: typ,
 	}

@@ -69,7 +69,7 @@ type ActionInputMetadata struct {
 }
 type ActionOutputMetadata struct {
 }
-type ActionParameterMetadata struct {
+type ActionParamMetadata struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	Required    bool   `json:"required"`

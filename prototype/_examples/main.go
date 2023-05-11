@@ -37,7 +37,7 @@ func main() {
 
 	// TODO:
 	b.Action(
-		b.Input(b.Parameter("name", b.String())),
+		b.Input(b.Param("name", b.String())),
 		b.Output(Person),
 	).Doc("create person")
 }
