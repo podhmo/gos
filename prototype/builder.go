@@ -333,8 +333,14 @@ func (b *Builder) Action(inputOrOutput ...actionSignature) *ActionType {
 	for _, sig := range inputOrOutput {
 		switch sig := sig.(type) {
 		case *ActionInput:
+			if t.input != nil {
+				panic("Action(Input(...), Input(...)) is invalid")
+			}
 			t.input = sig
 		case *ActionOutput:
+			if t.output != nil {
+				panic("Action(Output(...), Output(...)) is invalid")
+			}
 			t.output = sig
 		}
 	}
