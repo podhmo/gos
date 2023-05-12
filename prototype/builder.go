@@ -43,7 +43,7 @@ func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
 func (b *Builder) storeType(typ TypeBuilder) {
 	val := typ.GetTypeMetadata()
 	val.id = -1
-	if !val.IsNewType {
+	if val.Name == "" {
 		return
 	}
 
@@ -293,7 +293,6 @@ func (t *type_[R]) Format(v string) R {
 }
 func (t *type_[R]) storeType(name string) {
 	t.metadata.Name = name
-	t.metadata.IsNewType = true
 	t.rootbuilder.storeType(t.ret)
 }
 
@@ -322,11 +321,11 @@ func (f *Field) GetFieldMetadata() *FieldMetadata {
 }
 
 // ----------------------------------------
-func (b *Builder) Action(inputOrOutput ...actionSignature) *ActionType {
+func (b *Builder) Action(name string, inputOrOutput ...actionSignature) *ActionType {
 	t := &ActionType{
 		ActionBuilder: &ActionBuilder[*ActionType]{
-			type_:    &type_[*ActionType]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}}, // need?
-			metadata: &ActionMetadata{},
+			type_:    &type_[*ActionType]{rootbuilder: b, metadata: &TypeMetadata{Name: name, underlying: "action"}}, // need?
+			metadata: &ActionMetadata{DefaultStatus: 200},
 		},
 	}
 	t.ret = t
@@ -391,6 +390,9 @@ func (b *Builder) Output(typ TypeBuilder) *ActionOutput {
 		typ: typ,
 	}
 	p.ret = p
+	if _, ok := typ.(*TypeRef); !ok {
+		p.typ = b.Reference(typ)
+	}
 
 	t := &ActionOutput{
 		ActionOutputBuilder: &ActionOutputBuilder[*ActionOutput]{

@@ -23,24 +23,30 @@ func (t *TypeRef) writeType(w io.Writer) error {
 }
 
 func (t *type_[R]) writeType(w io.Writer) error {
-	if _, err := io.WriteString(w, t.metadata.Name); err != nil {
-		return err
+	if t.metadata.Name != "" {
+		if _, err := io.WriteString(w, t.metadata.Name); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, t.metadata.underlying); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 // customization
-func (b *ObjectType) writeType(w io.Writer) error {
-	if err := b.type_.writeType(w); err != nil {
+func (t *ObjectType) writeType(w io.Writer) error {
+	if err := t.type_.writeType(w); err != nil {
 		return err
 	}
-	// if b.type_.metadata.IsNewType {
+	// if t.type_.metadata.Name != "" {
 	// 	return nil
 	// }
 
 	io.WriteString(w, "{") // nolint
-	n := len(b.Fields) - 1
-	for i, f := range b.Fields {
+	n := len(t.Fields) - 1
+	for i, f := range t.Fields {
 		v := f.metadata
 		io.WriteString(w, v.Name) // nolint
 		if !v.Required {
@@ -58,7 +64,7 @@ func (t *ArrayType[T]) writeType(w io.Writer) error {
 	if err := t.type_.writeType(w); err != nil {
 		return err
 	}
-	// if t.type_.metadata.IsNewType {
+	// if t.type_.metadata.Name == "" {
 	// 	return nil
 	// }
 
@@ -74,7 +80,7 @@ func (t *MapType[T]) writeType(w io.Writer) error {
 	if err := t.type_.writeType(w); err != nil {
 		return err
 	}
-	// if t.type_.metadata.IsNewType {
+	// if t.type_.metadata.Name == "" {
 	// 	return nil
 	// }
 
@@ -87,10 +93,10 @@ func (t *MapType[T]) writeType(w io.Writer) error {
 }
 
 func (t *ActionType) writeType(w io.Writer) error {
-	io.WriteString(w, "action ")
 	if err := t.type_.writeType(w); err != nil {
 		return err
 	}
+	io.WriteString(w, " ")
 	if err := t.input.writeType(w); err != nil {
 		return err
 	}
