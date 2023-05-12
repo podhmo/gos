@@ -1,11 +1,24 @@
 package seed
 
 type Builder struct {
+	Metadata *BuilderMetadata
+}
+
+func NewBuilder() *Builder {
+	return &Builder{Metadata: &BuilderMetadata{}}
+}
+
+type BuilderMetadata struct {
+	Target Symbol
+	Types  []*Type
+
+	// needbuilders
 }
 
 type Symbol string
 
 func (b *Builder) BuildTarget(name string) Symbol {
+	b.Metadata.Target = Symbol(name)
 	return Symbol(name)
 }
 
@@ -14,6 +27,7 @@ func (b *Builder) Type(name string) *Type {
 		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{Name: Symbol(name)}},
 	}
 	t.ret = t
+	b.Metadata.Types = append(b.Metadata.Types, t)
 	return t
 }
 
@@ -26,10 +40,6 @@ type TypeBuilder[R any] struct {
 	ret      R
 }
 
-func (b *TypeBuilder[R]) NeedBuilder() R {
-	b.Metadata.NeedBuilder = true
-	return b.ret
-}
 func (b *TypeBuilder[R]) Var(name string, typ Symbol) R {
 	b.Metadata.Vars = append(b.Metadata.Vars, Var{Name: name, Type: typ})
 	return b.ret
@@ -39,8 +49,9 @@ func (b *TypeBuilder[R]) Field(name string, typ Symbol) R {
 	return b.ret
 }
 
-func NewBuilder() *Builder {
-	return &Builder{}
+func (b *TypeBuilder[R]) NeedBuilder() R {
+	b.Metadata.NeedBuilder = true
+	return b.ret
 }
 
 // metadata
