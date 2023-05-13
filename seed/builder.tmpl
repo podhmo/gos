@@ -13,7 +13,57 @@ func Define{{$target}}[T interface {
 	return t
 }
 
-type Builder struct {}
+type Builder struct {
+	mu          sync.Mutex
+	named{{$target}}s  []{{$target}}Builder
+	nameToIDMap map[string][]int
+}
+
+func NewBuilder() *Builder {
+	return &Builder{nameToIDMap: map[string][]int{}}
+}
+
+func (b *Builder) Each{{$target}}s(fn func({{$target}}Builder) error) error {
+	for _, t := range b.named{{$target}}s {
+		if err := fn(t); err != nil {
+			return fmt.Errorf("error on %v -- %w", t, err) // TODO: use ToString()
+		}
+	}
+	return nil
+}
+
+func (b *Builder) store{{$target}}(typ {{$target}}Builder) {
+	val := typ.Get{{$target}}Metadata()
+	val.id = -1
+	if val.Name == "" {
+		return
+	}
+
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	id := len(b.named{{$target}}s)
+	val.id = id
+	b.named{{$target}}s = append(b.named{{$target}}s, typ)
+	b.nameToIDMap[val.Name] = append(b.nameToIDMap[val.Name], id)
+	// TODO: name conflict check
+}
+
+func (b *Builder) lookup{{$target}}(name string) {{$target}}Builder {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	ids, ok := b.nameToIDMap[name]
+	if !ok {
+		b.nameToIDMap[name] = nil
+		return nil
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+
+	// TODO: name conflict check
+	return b.named{{$target}}s[ids[0]]
+}
+
 
 {{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
 {{if $t.Metadata.NeedBuilder }}
@@ -44,7 +94,7 @@ type {{$name}}{{$target}} struct {
 {{define "Metadata" -}}{{with $root := .}}{{with $target := ($root.Target)}}
 package M
 
-{{range $_, $t := .Types}}{{with $name := ($t.Metadata.Name)}}
+{{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
 type {{$name}}Metadata struct {
 }
 {{end}}{{end}}
