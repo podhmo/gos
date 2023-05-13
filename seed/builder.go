@@ -56,6 +56,10 @@ func (b *Builder) Field(name string, typ Symbol, tag string) *Builder {
 	b.Metadata.Fields = append(b.Metadata.Fields, Field{Name: name, Type: typ, Tag: tag})
 	return b
 }
+func (b *Builder) TargetField(name string, typ Symbol, tag string) *Builder {
+	b.Metadata.TargetFields = append(b.Metadata.TargetFields, Field{Name: name, Type: typ, Tag: tag})
+	return b
+}
 func (b *Builder) Constructor(args ...Arg) *Builder {
 	b.Metadata.Constructor = &Constructor{Args: args}
 	return b
@@ -107,15 +111,17 @@ func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
 
 // metadata
 type BuilderMetadata struct {
-	Target Symbol
-	Types  []*Type
+	Target       Symbol
+	TargetFields []Field // fields of Metadata
+
+	Types []*Type
 
 	NeedReference bool
 
 	Imports          []Import
 	InterfaceMethods []string
 	Constructor      *Constructor
-	Fields           []Field // fields of Metadata
+	Fields           []Field // fields of builder
 
 	SysArgs     []string // runtime os.Args[1:]
 	PkgName     string   // package {{.PkgName}}}

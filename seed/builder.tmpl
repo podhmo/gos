@@ -148,6 +148,7 @@ type {{$name}}Builder[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}} {{$tv.T
 {{end}}
 }
 
+{{if (lt 0 (len $t.Metadata.Fields))}}
 // begin setter of {{$name}} --------------------
 {{range $_, $f := $t.Metadata.Fields}}{{if (not (index $t.Metadata.Used $f.Name))}}
 // {{$f.Name}} set Metadata.{{$f.Name}}
@@ -157,6 +158,7 @@ func (b *{{$name}}Builder[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}}, {{
 }
 {{end}}{{end}}
 // end setter of {{$name}} --------------------
+{{end -}}
 
 {{else}}
 {{end}}
@@ -178,6 +180,19 @@ func (t *_{{$target}}[R]) Doc(stmts ...string) R {
 	t.metadata.Doc = strings.Join(stmts, "\n")
 	return t.ret
 }
+
+{{if (lt 0 (len $root.TargetFields))}}
+// begin setter of {{$target}} --------------------
+{{range $_, $f := $root.TargetFields}}
+// {{$f.Name}} set Metadata.{{$f.Name}}
+func (t _{{$target}}[R]) {{$f.Name}}(value {{$f.Type}}) R {
+	t.metadata.{{$f.Name}} = value
+	return t.ret
+}
+{{end}}
+// end setter of {{$target}} --------------------
+{{end -}}
+
 func (t *_{{$target}}[R]) store{{$target}}(name string) {
 	t.metadata.Name = name
 	t.rootbuilder.store{{$target}}(t.ret)
@@ -196,7 +211,10 @@ type {{$target}}Metadata struct {
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
 
-	Doc string `json:"Doc"`
+	Doc string `json:"description"`
+{{- range $_, $f := $root.TargetFields}}
+	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
+{{end}}
 }
 
 {{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
@@ -204,13 +222,13 @@ type {{$target}}Metadata struct {
 type {{$name}}Metadata struct {
 {{- range $_, $f := $t.Metadata.Fields}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
-{{end -}}
+{{end}}
 }
 {{else}}
 type {{$name}} struct {
 {{- range $_, $f := $t.Metadata.Fields}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
-{{end -}}
+{{end}}
 }
 {{end}}
 {{end}}{{end}}

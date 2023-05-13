@@ -18,12 +18,14 @@ func run() error {
 	cmd := seed.NewCommand(os.Args[1:])
 	options := cmd.Config
 
+	goStringType := seed.Symbol("string") // unexported string is go-primitive
+
 	// define
 	b := seed.NewBuilder(options.PkgName)
 	b.NeedReference()
 
 	Type := b.BuildTarget("Type")
-	// goStringType := seed.Symbol("string") // unexported string is go-primitive
+	b.TargetField("Format", goStringType, `json:"format"`)
 
 	Int := b.Type("Int").
 		NeedBuilder().Underlying("intger")
