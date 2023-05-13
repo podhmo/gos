@@ -28,10 +28,14 @@ type Builder struct {
 	mu          sync.Mutex
 	namedEnums  []EnumBuilder
 	nameToIDMap map[string][]int
+	Config      *Config
 }
 
-func NewEnumBuilder() *Builder {
-	return &Builder{nameToIDMap: map[string][]int{}}
+func NewEnumBuilder(config *Config) *Builder {
+	return &Builder{
+		nameToIDMap: map[string][]int{},
+		Config:      config,
+	}
 }
 
 // EachEnum iterates named Enum.
@@ -80,7 +84,7 @@ func (b *Builder) lookupEnum(name string) EnumBuilder {
 func (b *Builder) Int(members ...IntValue) *IntEnum {
 	t := &IntEnum{
 		IntBuilder: &IntBuilder[*IntEnum]{
-			_Enum: &_Enum[*IntEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "Int"}},
+			_Enum: &_Enum[*IntEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
 			metadata: &IntMetadata{
 				Members: members,
 			},
@@ -117,7 +121,7 @@ func (b *IntBuilder[R]) Default(value int) R {
 func (b *Builder) String(members ...StringValue) *StringEnum {
 	t := &StringEnum{
 		StringBuilder: &StringBuilder[*StringEnum]{
-			_Enum: &_Enum[*StringEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "String"}},
+			_Enum: &_Enum[*StringEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
 			metadata: &StringMetadata{
 				Members: members,
 			},
