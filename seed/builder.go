@@ -267,4 +267,3 @@ type typeAttr interface {
 
 func (t *TypeVar) typeattr() {}
 func (t *Field) typeattr()   {}
-func (t *Arg) typeattr()     {}
