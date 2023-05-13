@@ -8,12 +8,12 @@ import (
 
 func main() {
 	w := os.Stdout
-	b := genum.NewEnumBuilder()
+	b := genum.NewEnumBuilder(genum.DefaultConfig())
 
 	genum.DefineEnum("Ordering", b.String(
 		genum.StringValue{Value: "desc", Doc: "降順"},
 		genum.StringValue{Value: "asc", Doc: "昇順"},
-	)).Default("desc")
+	)).Default("desc").Doc("順序")
 
 	genum.DefineEnum("Season", b.Int(
 		genum.IntValue{Name: "Spring", Value: 0},

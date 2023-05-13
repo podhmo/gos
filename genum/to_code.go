@@ -28,9 +28,17 @@ func (t *StringEnum) writeCode(w io.Writer) error {
 	typename := t._Enum.metadata.Name
 	underlying := t._Enum.metadata.underlying
 
-	fmt.Fprintf(w, "%s %s", comment, typename) // nolint
 	// TODO: description
 	fmt.Fprintln(w, "")
+	if doc := t._Enum.metadata.Doc; doc != "" {
+		for i, line := range strings.Split(doc, "\n") {
+			if i == 0 {
+				fmt.Fprintln(w, comment, typename, ":", line)
+			} else {
+				fmt.Fprintln(w, comment, line)
+			}
+		}
+	}
 	fmt.Fprintf(w, "type %s %s\n", typename, underlying) // nolint
 
 	fmt.Fprintln(w, "")
@@ -62,9 +70,17 @@ func (t *IntEnum) writeCode(w io.Writer) error {
 	typename := t._Enum.metadata.Name
 	underlying := t._Enum.metadata.underlying
 
-	fmt.Fprintf(w, "%s %s", comment, typename) // nolint
 	// TODO: description
 	fmt.Fprintln(w, "")
+	if doc := t._Enum.metadata.Doc; doc != "" {
+		for i, line := range strings.Split(doc, "\n") {
+			if i == 0 {
+				fmt.Fprintln(w, comment, typename, ":", line)
+			} else {
+				fmt.Fprintln(w, comment, line)
+			}
+		}
+	}
 	fmt.Fprintf(w, "type %s %s\n", typename, underlying) // nolint
 
 	fmt.Fprintln(w, "")

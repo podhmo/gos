@@ -22,7 +22,7 @@ func ExampleWriteCode() {
 	}
 
 	// Output:
-	// # RGBColor
+	// # RGBColor : rgb
 	// type RGBColor string
 	//
 	// const (
