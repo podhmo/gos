@@ -1,6 +1,8 @@
 package seed
 
-import "os"
+import (
+	"os"
+)
 
 type Builder struct {
 	Metadata *BuilderMetadata
@@ -29,7 +31,9 @@ func (b *Builder) BuildTarget(name string) Symbol {
 
 func (b *Builder) Type(name string) *Type {
 	t := &Type{
-		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{Name: Symbol(name)}},
+		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{
+			Name: Symbol(name),
+		}},
 	}
 	t.ret = t
 	b.Metadata.Types = append(b.Metadata.Types, t)
@@ -45,17 +49,17 @@ type TypeBuilder[R any] struct {
 	ret      R
 }
 
-func (b *TypeBuilder[R]) Var(name string, typ Symbol) R {
-	b.Metadata.Vars = append(b.Metadata.Vars, Var{Name: name, Type: typ})
-	return b.ret
-}
-func (b *TypeBuilder[R]) Field(name string, typ Symbol) R {
-	b.Metadata.Fields = append(b.Metadata.Fields, Var{Name: name, Type: typ})
+func (b *TypeBuilder[R]) Field(name string, typ Symbol, tag string) R {
+	b.Metadata.Fields = append(b.Metadata.Fields, Var{Name: name, Type: typ, Tag: tag})
 	return b.ret
 }
 
 func (b *TypeBuilder[R]) NeedBuilder() R {
 	b.Metadata.NeedBuilder = true
+	return b.ret
+}
+func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
+	b.Metadata.Constructor = &Constructor{Args: args}
 	return b.ret
 }
 
@@ -65,11 +69,22 @@ type TypeMetadata struct {
 	Name Symbol
 
 	NeedBuilder bool
-	Vars        []Var
-	Fields      []Var
+	Constructor *Constructor
+	Fields      []Var // fields of Metadata
 }
 
 type Var struct {
 	Name string
 	Type Symbol
+	Tag  string
+}
+
+type Constructor struct {
+	Args []Arg
+}
+
+type Arg struct {
+	Name     string
+	Type     Symbol
+	Variadic bool // as ...<type>
 }

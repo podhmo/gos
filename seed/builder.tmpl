@@ -77,11 +77,13 @@ func (b *Builder) lookup{{$target}}(name string) {{$target}}Builder {
 {{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
 {{if $t.Metadata.NeedBuilder }}
 // {{$name}} builds {{$target}} for {{$name}}
-func (b *Builder) {{$name}}() *{{$name}}{{$target}} {
+func (b *Builder) {{$name}}({{if (not (eq $t.Metadata.Constructor nil))}}{{range $_,$a := $t.Metadata.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *{{$name}}{{$target}} {
 	t := &{{$name}}{{$target}}{
 		{{$name}}Builder: &{{$name}}Builder[*{{$name}}{{$target}}]{
 			_{{$target}}:    &_{{$target}}[*{{$name}}{{$target}}]{rootbuilder: b, metadata: &{{$target}}Metadata{Name: "", underlying: {{$name | printf "%q"}}}},
-			metadata: &{{$name}}Metadata{},
+			metadata: &{{$name}}Metadata{
+				{{if (not (eq $t.Metadata.Constructor nil))}}{{range $_,$a := $t.Metadata.Constructor.Args}}{{$a.Name}}: {{$a.Name | toLower}}, {{end}}{{end}}
+			},
 		},
 	}
 	t.ret = t
@@ -101,12 +103,6 @@ type {{$name}}Builder[R {{$target}}Builder] struct {
 }
 
 {{else}}
-type {{$name}}{{$target}} struct {
-	metadata *{{$name}}Metadata
-}
-func (t *{{$name}}{{$target}}) GetMetadata() *{{$name}}Metadata {
-	return t.metadata
-}
 {{end}}
 {{end}}{{end}}
 
@@ -146,7 +142,18 @@ type {{$target}}Metadata struct {
 }
 
 {{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
+{{if $t.Metadata.NeedBuilder }}
 type {{$name}}Metadata struct {
+{{- range $_, $f := $t.Metadata.Fields}}
+	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
+{{end -}}
 }
+{{else}}
+type {{$name}} struct {
+{{- range $_, $f := $t.Metadata.Fields}}
+	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
+{{end -}}
+}
+{{end}}
 {{end}}{{end}}
 {{end}}{{end}}{{end}}

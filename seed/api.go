@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -16,6 +17,7 @@ type Command struct {
 	*Config
 
 	Template string
+	FuncMap  template.FuncMap
 	fs       *flag.FlagSet
 }
 
@@ -44,12 +46,18 @@ func NewCommand(args []string) *Command {
 		config.Builder = true
 		config.Metadata = true
 	}
-	return &Command{Config: &config, Template: Template, fs: fs}
+
+	funcMap := template.FuncMap{
+		"toLower": strings.ToLower,
+		"toUpper": strings.ToUpper,
+	}
+	return &Command{Config: &config, Template: Template, FuncMap: funcMap, fs: fs}
 }
 
 func (c *Command) Do(b *Builder) error {
 	options := c.Config
-	t := template.Must(template.New("").Parse(c.Template))
+
+	t := template.Must(template.New("").Funcs(c.FuncMap).Parse(c.Template))
 
 	if options.Builder {
 		fmt.Fprintln(os.Stderr, "--builder.go----------------------------------------")
