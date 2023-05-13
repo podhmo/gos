@@ -3,12 +3,16 @@ package genum
 
 import (
 	"fmt"
-	"sync"
 	"strings"
+	"sync"
+
+	"io"
 )
 
 type EnumBuilder interface {
 	GetEnumMetadata() *EnumMetadata
+
+	writeCode(io.Writer) error
 }
 
 // DefineEnum names Enum value.
@@ -21,7 +25,7 @@ func DefineEnum[T interface {
 }
 
 type Builder struct {
-	mu          	sync.Mutex
+	mu          sync.Mutex
 	namedEnums  []EnumBuilder
 	nameToIDMap map[string][]int
 }
@@ -72,16 +76,13 @@ func (b *Builder) lookupEnum(name string) EnumBuilder {
 	return b.namedEnums[ids[0]]
 }
 
-
-
-
 // Int builds Enum for Int
-func (b *Builder) Int(members ...IntValue,) *IntEnum {
+func (b *Builder) Int(members ...IntValue) *IntEnum {
 	t := &IntEnum{
 		IntBuilder: &IntBuilder[*IntEnum]{
-			_Enum:    &_Enum[*IntEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "Int"}},
+			_Enum: &_Enum[*IntEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "Int"}},
 			metadata: &IntMetadata{
-				Members: members, 
+				Members: members,
 			},
 		},
 	}
@@ -100,7 +101,6 @@ func (t *IntEnum) GetMetadata() *IntMetadata {
 type IntBuilder[R EnumBuilder] struct {
 	*_Enum[R]
 	metadata *IntMetadata
-	ret R
 }
 
 // begin setter of Int ----------------------------------------
@@ -113,19 +113,13 @@ func (b *IntBuilder[R]) Default(value int) R {
 
 // end setter of Int ----------------------------------------
 
-
-
-
-
-
-
 // String builds Enum for String
-func (b *Builder) String(members ...StringValue,) *StringEnum {
+func (b *Builder) String(members ...StringValue) *StringEnum {
 	t := &StringEnum{
 		StringBuilder: &StringBuilder[*StringEnum]{
-			_Enum:    &_Enum[*StringEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "String"}},
+			_Enum: &_Enum[*StringEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "String"}},
 			metadata: &StringMetadata{
-				Members: members, 
+				Members: members,
 			},
 		},
 	}
@@ -144,7 +138,6 @@ func (t *StringEnum) GetMetadata() *StringMetadata {
 type StringBuilder[R EnumBuilder] struct {
 	*_Enum[R]
 	metadata *StringMetadata
-	ret R
 }
 
 // begin setter of String ----------------------------------------
@@ -156,10 +149,6 @@ func (b *StringBuilder[R]) Default(value string) R {
 }
 
 // end setter of String ----------------------------------------
-
-
-
-
 
 // internal Enum
 

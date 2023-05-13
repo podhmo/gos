@@ -8,33 +8,25 @@ type EnumMetadata struct {
 	Doc string `json:"Doc"`
 }
 
-
-
 type IntMetadata struct {
-	Default int  `json:"default"`
+	Default int `json:"default"`
 
 	Members []IntValue
 }
 
-
-
 type IntValue struct {
 	Name string
 
-	Value string
+	Value int
 
 	Doc string
 }
 
-
-
 type StringMetadata struct {
-	Default string  `json:"default"`
+	Default string `json:"default"`
 
 	Members []StringValue
 }
-
-
 
 type StringValue struct {
 	Name string
@@ -43,5 +35,3 @@ type StringValue struct {
 
 	Doc string
 }
-
-
