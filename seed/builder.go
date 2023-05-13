@@ -1,6 +1,7 @@
 package seed
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
@@ -65,12 +66,26 @@ func (b *Builder) Constructor(args ...Arg) *Builder {
 	return b
 }
 
-func (b *Builder) Type(name string, tvars ...TypeVar) *Type {
+func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
+	tvars := make([]*TypeVar, 0, len(typeVarOrFieldList))
+	fields := make([]*Field, 0, len(typeVarOrFieldList))
+	for _, tattr := range typeVarOrFieldList {
+		switch t := tattr.(type) {
+		case *TypeVar:
+			tvars = append(tvars, t)
+		case *Field:
+			fields = append(fields, t)
+		default:
+			panic(fmt.Sprintf("unexpected type: %T", tattr))
+		}
+	}
+
 	t := &Type{
 		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{
 			Name:       Symbol(name),
 			Underlying: name,
 			TVars:      tvars,
+			Fields:     fields,
 			Used:       map[string]bool{},
 		}},
 	}
@@ -86,11 +101,6 @@ type Type struct {
 type TypeBuilder[R any] struct {
 	Metadata *TypeMetadata
 	ret      R
-}
-
-func (b *TypeBuilder[R]) Field(name string, typ Symbol, tag string) R {
-	b.Metadata.Fields = append(b.Metadata.Fields, Field{Name: name, Type: typ, Tag: tag})
-	return b.ret
 }
 
 func (b *TypeBuilder[R]) NeedBuilder() R {
@@ -131,11 +141,11 @@ type BuilderMetadata struct {
 type TypeMetadata struct {
 	Name       Symbol
 	Underlying string
-	TVars      []TypeVar
+	TVars      []*TypeVar
 
 	NeedBuilder bool
 	Constructor *Constructor
-	Fields      []Field // fields of Metadata
+	Fields      []*Field // fields of Metadata
 
 	Used map[string]bool
 }
@@ -165,3 +175,12 @@ type Import struct {
 	Name string
 	Path string
 }
+
+// ----------------------------------------
+
+type typeAttr interface {
+	typeattr()
+}
+
+func (t *TypeVar) typeattr() {}
+func (t *Field) typeattr()   {}
