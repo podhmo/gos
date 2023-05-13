@@ -11,22 +11,18 @@ type Builder struct {
 
 func NewBuilder(pkgname string) *Builder {
 	return &Builder{
-		Metadata: &BuilderMetadata{Args: os.Args[1:], PkgName: pkgname},
+		Metadata: &BuilderMetadata{SysArgs: os.Args[1:], PkgName: pkgname},
 	}
 }
 
-type BuilderMetadata struct {
-	Target Symbol
-	Types  []*Type
-
-	Imports          []Import
-	InterfaceMethods []string
-
-	Args    []string // runtime os.Args[1:]
-	PkgName string   // package {{.PkgName}}}
-}
-
 type Symbol string
+
+func (s Symbol) Pointer() Symbol {
+	return "*" + s
+}
+func (s Symbol) Slice() Symbol {
+	return "[]" + s
+}
 
 func (b *Builder) BuildTarget(name string) Symbol {
 	b.Metadata.Target = Symbol(name)
@@ -48,11 +44,21 @@ func (b *Builder) NamedImport(name string, path string) Symbol {
 	return Symbol(name)
 }
 
+func (b *Builder) Field(name string, typ Symbol, tag string) *Builder {
+	b.Metadata.Fields = append(b.Metadata.Fields, Var{Name: name, Type: typ, Tag: tag})
+	return b
+}
+func (b *Builder) Constructor(args ...Arg) *Builder {
+	b.Metadata.Constructor = &Constructor{Args: args}
+	return b
+}
+
 func (b *Builder) Type(name string) *Type {
 	t := &Type{
 		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{
-			Name: Symbol(name),
-			Used: map[string]bool{},
+			Name:       Symbol(name),
+			Underlying: name,
+			Used:       map[string]bool{},
 		}},
 	}
 	t.ret = t
@@ -78,6 +84,10 @@ func (b *TypeBuilder[R]) NeedBuilder() R {
 	b.Metadata.NeedBuilder = true
 	return b.ret
 }
+func (b *TypeBuilder[R]) Underlying(v string) R {
+	b.Metadata.Underlying = v
+	return b.ret
+}
 func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
 	b.Metadata.Constructor = &Constructor{Args: args}
 	for _, a := range args {
@@ -87,9 +97,22 @@ func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
 }
 
 // metadata
+type BuilderMetadata struct {
+	Target Symbol
+	Types  []*Type
+
+	Imports          []Import
+	InterfaceMethods []string
+	Constructor      *Constructor
+	Fields           []Var // fields of Metadata
+
+	SysArgs []string // runtime os.Args[1:]
+	PkgName string   // package {{.PkgName}}}
+}
 
 type TypeMetadata struct {
-	Name Symbol
+	Name       Symbol
+	Underlying string
 
 	NeedBuilder bool
 	Constructor *Constructor
