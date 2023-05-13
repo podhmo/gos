@@ -8,32 +8,21 @@ import (
 
 func main() {
 	w := os.Stdout
-	{
-		b := genum.NewBuilder[int]()
+	b := genum.NewEnumBuilder()
 
-		// simple
-		genum.Define("OneTwo", b.Enum(
-			b.Value(1).Name("One").Default(true),
-			b.Value(2).Name("Two"),
-		))
+	genum.DefineEnum("Ordering", b.String(
+		genum.StringValue{Value: "desc", Doc: "降順"},
+		genum.StringValue{Value: "asc", Doc: "昇順"},
+	)).Default("desc")
 
-		if err := genum.WriteCode(w, b); err != nil {
-			panic(err)
-		}
-	}
+	genum.DefineEnum("Season", b.Int(
+		genum.IntValue{Name: "Spring", Value: 0},
+		genum.IntValue{Name: "Summer", Value: 1},
+		genum.IntValue{Name: "Autumn", Value: 2},
+		genum.IntValue{Name: "Wrinter", Value: 3},
+	))
 
-	{
-		b := genum.NewBuilder[string]()
-
-		// complex
-		genum.Define("RGBColor", b.Enum(
-			b.Value("R").Name("Red").Doc("red color").Default(true),
-			b.Value("G").Name("Green").Doc("green color"),
-			b.Value("B").Name("Blue").Doc("blue color"),
-		).Doc("rgb"))
-
-		if err := genum.WriteCode(w, b); err != nil {
-			panic(err)
-		}
+	if err := genum.WriteCode(w, b); err != nil {
+		panic(err)
 	}
 }
