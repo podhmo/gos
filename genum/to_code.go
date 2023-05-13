@@ -22,10 +22,8 @@ func WriteCode(w io.Writer, b *Builder) error {
 
 // customization
 func (t *StringEnum) writeCode(w io.Writer) error {
-	// padding := t.rootbuilder.Config.Padding
-	// comment := t.rootbuilder.Config.Comment
-	padding := "\t"
-	comment := "//"
+	padding := t.rootbuilder.Config.Padding // "\t"
+	comment := t.rootbuilder.Config.Comment // //
 
 	typename := t._Enum.metadata.Name
 	underlying := t._Enum.metadata.underlying
@@ -58,10 +56,8 @@ func (t *StringEnum) writeCode(w io.Writer) error {
 }
 
 func (t *IntEnum) writeCode(w io.Writer) error {
-	// padding := t.rootbuilder.Config.Padding
-	// comment := t.rootbuilder.Config.Comment
-	padding := "\t"
-	comment := "//"
+	padding := t.rootbuilder.Config.Padding // "\t"
+	comment := t.rootbuilder.Config.Comment // //
 
 	typename := t._Enum.metadata.Name
 	underlying := t._Enum.metadata.underlying
