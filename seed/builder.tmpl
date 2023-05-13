@@ -12,6 +12,7 @@ type {{$target}}Builder interface {
 	Get{{$target}}Metadata() *{{$target}}Metadata
 }
 
+// Define{{$target}} names {{$target}} value.
 func Define{{$target}}[T interface {
 	{{$target}}Builder
 	store{{$target}}(name string)
@@ -30,6 +31,7 @@ func New{{$target}}Builder() *Builder {
 	return &Builder{nameToIDMap: map[string][]int{}}
 }
 
+// Each{{$target}} iterates named {{$target}}.
 func (b *Builder) Each{{$target}}s(fn func({{$target}}Builder) error) error {
 	for _, t := range b.named{{$target}}s {
 		if err := fn(t); err != nil {
@@ -74,6 +76,7 @@ func (b *Builder) lookup{{$target}}(name string) {{$target}}Builder {
 
 {{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
 {{if $t.Metadata.NeedBuilder }}
+// {{$name}} builds {{$target}} for {{$name}}
 func (b *Builder) {{$name}}() *{{$name}}{{$target}} {
 	t := &{{$name}}{{$target}}{
 		{{$name}}Builder: &{{$name}}Builder[*{{$name}}{{$target}}]{
