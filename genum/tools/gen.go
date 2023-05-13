@@ -18,6 +18,7 @@ func main() {
 func run(cmd *seed.Command) error {
 	options := cmd.Config
 	b := seed.NewBuilder(options.PkgName)
+	b.Metadata.GeneratedBy = "github.com/podhmo/gos/genum/tools"
 
 	// define
 	b.BuildTarget("Enum")

@@ -11,7 +11,11 @@ type Builder struct {
 
 func NewBuilder(pkgname string) *Builder {
 	return &Builder{
-		Metadata: &BuilderMetadata{SysArgs: os.Args[1:], PkgName: pkgname},
+		Metadata: &BuilderMetadata{
+			PkgName:     pkgname,
+			SysArgs:     os.Args[1:],
+			GeneratedBy: "github.com/podhmo/gos/seed",
+		},
 	}
 }
 
@@ -106,8 +110,9 @@ type BuilderMetadata struct {
 	Constructor      *Constructor
 	Fields           []Var // fields of Metadata
 
-	SysArgs []string // runtime os.Args[1:]
-	PkgName string   // package {{.PkgName}}}
+	SysArgs     []string // runtime os.Args[1:]
+	PkgName     string   // package {{.PkgName}}}
+	GeneratedBy string   // github.com/podhmo/gos/seed
 }
 
 type TypeMetadata struct {
