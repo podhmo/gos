@@ -7,7 +7,7 @@ type EnumMetadata struct {
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
 
-	Doc string `json:"Doc"`
+	Doc string `json:"description"`
 }
 
 type IntMetadata struct {
