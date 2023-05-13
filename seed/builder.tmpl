@@ -34,7 +34,7 @@ type Builder struct {
 	nameToIDMap map[string][]int
 {{- range $_, $f := $root.Fields}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
-{{end -}}
+{{end}}
 }
 
 func New{{$target}}Builder({{if (not (eq $root.Constructor nil))}}{{range $_,$a := $root.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *Builder {
@@ -116,7 +116,7 @@ type {{$name}}Builder[R {{$target}}Builder] struct {
 	metadata *{{$name}}Metadata
 }
 
-// begin setter of {{$name}} ----------------------------------------
+// begin setter of {{$name}} --------------------
 {{range $_, $f := $t.Metadata.Fields}}{{if (not (index $t.Metadata.Used $f.Name))}}
 // {{$f.Name}} set Metadata.{{$f.Name}}
 func (b *{{$name}}Builder[R]) {{$f.Name}}(value {{$f.Type}}) R {
@@ -124,7 +124,7 @@ func (b *{{$name}}Builder[R]) {{$f.Name}}(value {{$f.Type}}) R {
 	return b.ret
 }
 {{end}}{{end}}
-// end setter of {{$name}} ----------------------------------------
+// end setter of {{$name}} --------------------
 
 {{else}}
 {{end}}
