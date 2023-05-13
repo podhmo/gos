@@ -21,6 +21,8 @@ func run(cmd *seed.Command) error {
 
 	// define
 	b.BuildTarget("Enum")
+	b.InterfaceMethods(`writeCode(io.Writer) error`)
+	b.Import("io")
 
 	b.Type("Int").NeedBuilder().
 		Field("Default", seed.Symbol("int"), `json:"default"`).
@@ -28,7 +30,7 @@ func run(cmd *seed.Command) error {
 		Constructor(seed.Arg{Name: "Members", Type: seed.Symbol("IntValue"), Variadic: true})
 	b.Type("IntValue").
 		Field("Name", seed.Symbol("string"), "").
-		Field("Value", seed.Symbol("string"), "").
+		Field("Value", seed.Symbol("int"), "").
 		Field("Doc", seed.Symbol("string"), "")
 
 	b.Type("String").NeedBuilder().
