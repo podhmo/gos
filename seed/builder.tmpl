@@ -89,9 +89,11 @@ func (b *Builder) {{$name}}({{if (not (eq $t.Metadata.Constructor nil))}}{{range
 	t.ret = t
 	return t
 }
+
 type {{$name}}{{$target}} struct {
 	*{{$name}}Builder[*{{$name}}{{$target}}]
 }
+
 func (t *{{$name}}{{$target}}) GetMetadata() *{{$name}}Metadata {
 	return t.metadata
 }
@@ -102,9 +104,19 @@ type {{$name}}Builder[R {{$target}}Builder] struct {
 	ret R
 }
 
+// begin setter of {{$name}} ----------------------------------------
+{{range $_, $f := $t.Metadata.Fields}}{{if (not (index $t.Metadata.Used $f.Name))}}
+// {{$f.Name}} set Metadata.{{$f.Name}}
+func (b *{{$name}}Builder[R]) {{$f.Name}}(value {{$f.Type}}) R {
+	b.metadata.{{$f.Name}} = value
+	return b.ret
+}
+{{end}}{{end}}
+// end setter of {{$name}} ----------------------------------------
+
 {{else}}
 {{end}}
-{{end}}{{end}}
+{{end}}{{end -}}
 
 // internal {{$target}}
 
@@ -119,7 +131,7 @@ func (t *_{{$target}}[R]) Get{{$target}}Metadata() *{{$target}}Metadata {
 	return t.metadata
 }
 func (t *_{{$target}}[R]) Doc(stmts ...string) R {
-	t.metadata.Description = strings.Join(stmts, "\n")
+	t.metadata.Doc = strings.Join(stmts, "\n")
 	return t.ret
 }
 func (t *_{{$target}}[R]) store{{$target}}(name string) {
@@ -138,7 +150,7 @@ type {{$target}}Metadata struct {
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
 
-	Description string `json:"description"`
+	Doc string `json:"Doc"`
 }
 
 {{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}

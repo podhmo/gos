@@ -33,6 +33,7 @@ func (b *Builder) Type(name string) *Type {
 	t := &Type{
 		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{
 			Name: Symbol(name),
+			Used: map[string]bool{},
 		}},
 	}
 	t.ret = t
@@ -60,6 +61,9 @@ func (b *TypeBuilder[R]) NeedBuilder() R {
 }
 func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
 	b.Metadata.Constructor = &Constructor{Args: args}
+	for _, a := range args {
+		b.Metadata.Used[a.Name] = true
+	}
 	return b.ret
 }
 
@@ -71,6 +75,8 @@ type TypeMetadata struct {
 	NeedBuilder bool
 	Constructor *Constructor
 	Fields      []Var // fields of Metadata
+
+	Used map[string]bool
 }
 
 type Var struct {
