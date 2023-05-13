@@ -25,18 +25,22 @@ func run() error {
 	Type := b.BuildTarget("Type")
 	// goStringType := seed.Symbol("string") // unexported string is go-primitive
 
-	Int := b.Type("Int").NeedBuilder()
-	String := b.Type("String").NeedBuilder()
+	Int := b.Type("Int").
+		NeedBuilder().Underlying("intger")
+	String := b.Type("String").
+		NeedBuilder().Underlying("string")
 
-	Array := b.Type("Array", seed.TypeVar{Name: "Items", Type: seed.Symbol("TypeBuilder")}).NeedBuilder()
-	Map := b.Type("Map", seed.TypeVar{Name: "Items", Type: seed.Symbol("TypeBuilder")}).NeedBuilder()
+	Array := b.Type("Array", seed.TypeVar{Name: "Items", Type: seed.Symbol("TypeBuilder")}).
+		NeedBuilder().Underlying("array")
+	Map := b.Type("Map", seed.TypeVar{Name: "Items", Type: seed.Symbol("TypeBuilder")}).
+		NeedBuilder().Underlying("map")
 
 	Field := b.Type("Field").
-		NeedBuilder()
+		NeedBuilder().Underlying("field") //?
 	Object := b.Type("Object").
 		Field("Fields", seed.Symbol("[]*FieldType"), `json:"-"`).
 		Constructor(seed.Arg{Name: "Fields", Type: seed.Symbol("*FieldType"), Variadic: true}).
-		NeedBuilder()
+		NeedBuilder().Underlying("object")
 
 	// Param := b.Type("Param")
 	// ParamType := Param.Metadata.Name
