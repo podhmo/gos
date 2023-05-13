@@ -26,6 +26,8 @@ func NewBuilder(pkgname string, fields ...*Field) *Builder {
 	}
 }
 
+var Root = NewBuilder("")
+
 type Symbol string
 
 func (s Symbol) Pointer() Symbol {
