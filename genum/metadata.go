@@ -1,22 +1,47 @@
 package genum
 
-type TypeMetadata struct {
-	id          int
-	Name        string `json:"-"`
-	Description string `json:"description,omitempty"`
+type EnumMetadata struct {
+	id         int    // required by reference
+	Name       string `json:"-"` // required by reference (and toString)
+	underlying string `json:"-"` // required by toString
 
-	IsNewType bool `json:"-"` // TODO: remove
-
-	underlying string `json:"-"`
+	Doc string `json:"Doc"`
 }
 
-// customization
-type EnumMetadata[T any] struct {
+
+
+type IntMetadata struct {
+	Default int  `json:"default"`
+
+	Members []IntValue
 }
 
-type ValueMetadata[T any] struct {
-	Name    string `json:"name"`
-	Value   T      `json:"value"`
-	Doc     string `json:"doc,omitempty"`
-	Default bool   `json:"-"`
+
+
+type IntValue struct {
+	Name string
+
+	Value string
+
+	Doc string
 }
+
+
+
+type StringMetadata struct {
+	Default string  `json:"default"`
+
+	Members []StringValue
+}
+
+
+
+type StringValue struct {
+	Name string
+
+	Value string
+
+	Doc string
+}
+
+
