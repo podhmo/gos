@@ -19,11 +19,9 @@ func run(cmd *seed.Command) error {
 	options := cmd.Config
 	b := seed.NewBuilder(options.PkgName)
 
-	b.Import("io")
-
 	// define
 	b.BuildTarget("Enum")
-	b.InterfaceMethods(`writeCode(io.Writer) error`)
+	b.InterfaceMethods(`writeCoder // see: to_code.go`)
 
 	b.Field("Config", seed.Symbol("*Config"), "")
 	b.Constructor(seed.Arg{Name: "Config", Type: seed.Symbol("*Config")})

@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-
-	"io"
 )
 
 type EnumBuilder interface {
 	GetEnumMetadata() *EnumMetadata
 
-	writeCode(io.Writer) error
+	writeCoder // see: to_code.go
+
 }
 
 // DefineEnum names Enum value.

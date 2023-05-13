@@ -33,5 +33,4 @@ func ExampleWriteCode() {
 	// @@# "blue color"
 	// @@RGBColorGreen RGBColor = "B"
 	// )
-
 }
