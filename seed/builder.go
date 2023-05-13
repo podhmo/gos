@@ -49,7 +49,7 @@ func (b *Builder) NamedImport(name string, path string) Symbol {
 }
 
 func (b *Builder) Field(name string, typ Symbol, tag string) *Builder {
-	b.Metadata.Fields = append(b.Metadata.Fields, Var{Name: name, Type: typ, Tag: tag})
+	b.Metadata.Fields = append(b.Metadata.Fields, Field{Name: name, Type: typ, Tag: tag})
 	return b
 }
 func (b *Builder) Constructor(args ...Arg) *Builder {
@@ -80,7 +80,7 @@ type TypeBuilder[R any] struct {
 }
 
 func (b *TypeBuilder[R]) Field(name string, typ Symbol, tag string) R {
-	b.Metadata.Fields = append(b.Metadata.Fields, Var{Name: name, Type: typ, Tag: tag})
+	b.Metadata.Fields = append(b.Metadata.Fields, Field{Name: name, Type: typ, Tag: tag})
 	return b.ret
 }
 
@@ -108,7 +108,7 @@ type BuilderMetadata struct {
 	Imports          []Import
 	InterfaceMethods []string
 	Constructor      *Constructor
-	Fields           []Var // fields of Metadata
+	Fields           []Field // fields of Metadata
 
 	SysArgs     []string // runtime os.Args[1:]
 	PkgName     string   // package {{.PkgName}}}
@@ -121,12 +121,12 @@ type TypeMetadata struct {
 
 	NeedBuilder bool
 	Constructor *Constructor
-	Fields      []Var // fields of Metadata
+	Fields      []Field // fields of Metadata
 
 	Used map[string]bool
 }
 
-type Var struct {
+type Field struct {
 	Name string
 	Type Symbol
 	Tag  string
