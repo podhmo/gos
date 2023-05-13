@@ -107,7 +107,6 @@ func (t *{{$name}}{{$target}}) GetMetadata() *{{$name}}Metadata {
 type {{$name}}Builder[R {{$target}}Builder] struct {
 	*_{{$target}}[R]
 	metadata *{{$name}}Metadata
-	ret R
 }
 
 // begin setter of {{$name}} ----------------------------------------
