@@ -1,3 +1,4 @@
+{{define "Builder" -}}
 package M
 
 type {{.Target}}Builder interface {
@@ -28,3 +29,15 @@ type {{$name}} struct {
 }
 {{end}}
 {{end}}{{end}}
+{{end}}
+
+----------------------------------------
+
+{{define "Metadata" -}}
+package M
+
+{{range $_, $t := .Types}}{{with $name := ($t.Metadata.Name)}}
+type {{$name}}Metadata struct {
+}
+{{end}}{{end}}
+{{end}}

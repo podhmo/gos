@@ -37,7 +37,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, Type, Int, String, Array, Map, Field, Object, Param, ActionInput, ActionOutput, Action)
 		fmt.Fprintln(os.Stderr, b.Metadata.Types)
 		t := template.Must(template.New("").Parse(tmpl))
-		if err := t.Execute(os.Stdout, b.Metadata); err != nil {
+
+		if err := t.ExecuteTemplate(os.Stdout, "Builder", b.Metadata); err != nil {
+			panic(err)
+		}
+
+		fmt.Println("----------------------------------------")
+		if err := t.ExecuteTemplate(os.Stdout, "Metadata", b.Metadata); err != nil {
 			panic(err)
 		}
 	}
