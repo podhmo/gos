@@ -6,15 +6,18 @@ type Builder struct {
 	Metadata *BuilderMetadata
 }
 
-func NewBuilder() *Builder {
-	return &Builder{Metadata: &BuilderMetadata{Args: os.Args[1:]}}
+func NewBuilder(pkgname string) *Builder {
+	return &Builder{
+		Metadata: &BuilderMetadata{Args: os.Args[1:], PkgName: pkgname},
+	}
 }
 
 type BuilderMetadata struct {
 	Target Symbol
 	Types  []*Type
 
-	Args []string // runtime os.Args[1:]
+	Args    []string // runtime os.Args[1:]
+	PkgName string   // package {{.PkgName}}}
 }
 
 type Symbol string
