@@ -1,23 +1,31 @@
-{{define "Builder" -}}
+{{define "Builder" -}}{{with $root := .}}{{with $target := ($root.Target)}}
 package M
 
-type {{.Target}}Builder interface {
-	Get{{.Target}}Metadata *{{.Target}}Metadata
+type {{$target}}Builder interface {
+	Get{{$target}}Metadata *{{$target}}Metadata
+}
+
+func Define{{$target}}[T interface {
+	{{$target}}Builder
+	store{{$target}}(name string)
+}](name string, t T) T {
+	t.store{{$target}}(name)
+	return t
 }
 
 type Builder struct {}
 
-{{range $_, $t := .Types}}{{with $name := ($t.Metadata.Name)}}
+{{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
 {{if $t.Metadata.NeedBuilder }}
-func (b *Builder) {{$name}}() *{{$name}} {
-	t := &{{$name}}{
+func (b *Builder) {{$name}}() *{{$name}}{{$target}} {
+	t := &{{$name}}{{$target}}{
 		{{$name}}Builder: &{{$name}}Builder[*{{$name}}]{Metadata: &{{$name}}Metadata{}},
 	}
 	t.ret = t
 	return t
 }
-type {{$name}} struct {
-	*{{$name}}Builder[*{{$name}}]
+type {{$name}}{{$target}} struct {
+	*{{$name}}Builder[*{{$name}}{{$target}}]
 }
 
 type {{$name}}Builder[R any] struct {
@@ -25,19 +33,19 @@ type {{$name}}Builder[R any] struct {
 	ret R
 }
 {{else}}
-type {{$name}} struct {
+type {{$name}}{{$target}} struct {
 }
 {{end}}
 {{end}}{{end}}
-{{end}}
+{{end}}{{end}}{{end}}
 
 ----------------------------------------
 
-{{define "Metadata" -}}
+{{define "Metadata" -}}{{with $root := .}}{{with $target := ($root.Target)}}
 package M
 
 {{range $_, $t := .Types}}{{with $name := ($t.Metadata.Name)}}
 type {{$name}}Metadata struct {
 }
 {{end}}{{end}}
-{{end}}
+{{end}}{{end}}{{end}}
