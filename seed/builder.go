@@ -2,6 +2,7 @@ package seed
 
 import (
 	"os"
+	"strings"
 )
 
 type Builder struct {
@@ -18,6 +19,7 @@ type BuilderMetadata struct {
 	Target Symbol
 	Types  []*Type
 
+	Imports          []Import
 	InterfaceMethods []string
 
 	Args    []string // runtime os.Args[1:]
@@ -30,9 +32,20 @@ func (b *Builder) BuildTarget(name string) Symbol {
 	b.Metadata.Target = Symbol(name)
 	return Symbol(name)
 }
+
 func (b *Builder) InterfaceMethods(methods ...string) *Builder {
 	b.Metadata.InterfaceMethods = append(b.Metadata.InterfaceMethods, methods...)
 	return b
+}
+
+func (b *Builder) Import(path string) Symbol {
+	b.Metadata.Imports = append(b.Metadata.Imports, Import{Path: path})
+	parts := strings.Split(path, "/")
+	return Symbol(parts[len(parts)-1])
+}
+func (b *Builder) NamedImport(name string, path string) Symbol {
+	b.Metadata.Imports = append(b.Metadata.Imports, Import{Name: name, Path: path})
+	return Symbol(name)
 }
 
 func (b *Builder) Type(name string) *Type {
@@ -99,4 +112,9 @@ type Arg struct {
 	Name     string
 	Type     Symbol
 	Variadic bool // as ...<type>
+}
+
+type Import struct {
+	Name string
+	Path string
 }
