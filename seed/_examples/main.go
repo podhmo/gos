@@ -53,15 +53,15 @@ func run() error {
 		b.Field("Description", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"-"`),
 	).Constructor(
-		seed.Arg{Name: "Name", Type: seed.Symbol("string")},
-		seed.Arg{Name: "Typ", Type: seed.Symbol("TypeBuilder")},
+		b.Arg("Name", seed.Symbol("string")),
+		b.Arg("Typ", seed.Symbol("TypeBuilder")),
 	).NeedBuilder().Underlying("field") //?
 
 	Object := b.Type("Object",
 		b.Field("Fields", seed.Symbol("[]*FieldType")).Tag(`json:"-"`),
 		b.Field("Strict", seed.Symbol("bool")).Tag(`json:"-"`),
 	).Constructor(
-		seed.Arg{Name: "Fields", Type: seed.Symbol("*FieldType"), Variadic: true},
+		b.Arg("Fields", seed.Symbol("*FieldType")).Variadic(),
 	).NeedBuilder().Underlying("object")
 
 	// Param := b.Type("Param")
