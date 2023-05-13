@@ -32,6 +32,8 @@ func main() {
 
 	// emit
 	{
+		tmpl := seed.Template
+
 		fmt.Fprintln(os.Stderr, Type, Int, String, Array, Map, Field, Object, Param, ActionInput, ActionOutput, Action)
 		fmt.Fprintln(os.Stderr, b.Metadata.Types)
 		t := template.Must(template.New("").Parse(tmpl))
@@ -40,32 +42,3 @@ func main() {
 		}
 	}
 }
-
-const tmpl = `
-package M
-
-type Builder struct {}
-
-{{range $_, $t := .Types}}{{with $name := ($t.Metadata.Name)}}
-{{if $t.Metadata.NeedBuilder }}
-func (b *Builder) {{$name}}() *{{$name}} {
-	t := &{{$name}}{
-		{{$name}}Builder: &{{$name}}Builder[*{{$name}}]{Metadata: &{{$name}}Metadata{}},
-	}
-	t.ret = t
-	return t
-}
-type {{$name}} struct {
-	*{{$name}}Builder[*{{$name}}]
-}
-
-type {{$name}}Builder[R any] struct {
-	Metadata *{{$name}}Metadata
-	ret R
-}
-{{else}}
-type {{$name}} struct {
-}
-{{end}}
-{{end}}{{end}}
-`

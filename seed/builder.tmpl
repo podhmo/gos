@@ -1,0 +1,30 @@
+package M
+
+type {{.Target}}Builder interface {
+	Get{{.Target}}Metadata *{{.Target}}Metadata
+}
+
+type Builder struct {}
+
+{{range $_, $t := .Types}}{{with $name := ($t.Metadata.Name)}}
+{{if $t.Metadata.NeedBuilder }}
+func (b *Builder) {{$name}}() *{{$name}} {
+	t := &{{$name}}{
+		{{$name}}Builder: &{{$name}}Builder[*{{$name}}]{Metadata: &{{$name}}Metadata{}},
+	}
+	t.ret = t
+	return t
+}
+type {{$name}} struct {
+	*{{$name}}Builder[*{{$name}}]
+}
+
+type {{$name}}Builder[R any] struct {
+	Metadata *{{$name}}Metadata
+	ret R
+}
+{{else}}
+type {{$name}} struct {
+}
+{{end}}
+{{end}}{{end}}
