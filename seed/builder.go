@@ -57,11 +57,12 @@ func (b *Builder) Constructor(args ...Arg) *Builder {
 	return b
 }
 
-func (b *Builder) Type(name string) *Type {
+func (b *Builder) Type(name string, tvars ...TypeVar) *Type {
 	t := &Type{
 		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{
 			Name:       Symbol(name),
 			Underlying: name,
+			TVars:      tvars,
 			Used:       map[string]bool{},
 		}},
 	}
@@ -118,12 +119,18 @@ type BuilderMetadata struct {
 type TypeMetadata struct {
 	Name       Symbol
 	Underlying string
+	TVars      []TypeVar
 
 	NeedBuilder bool
 	Constructor *Constructor
 	Fields      []Field // fields of Metadata
 
 	Used map[string]bool
+}
+
+type TypeVar struct { // e.g. [T any]
+	Name string
+	Type Symbol
 }
 
 type Field struct {
