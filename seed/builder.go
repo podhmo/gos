@@ -18,6 +18,8 @@ type BuilderMetadata struct {
 	Target Symbol
 	Types  []*Type
 
+	InterfaceMethods []string
+
 	Args    []string // runtime os.Args[1:]
 	PkgName string   // package {{.PkgName}}}
 }
@@ -27,6 +29,10 @@ type Symbol string
 func (b *Builder) BuildTarget(name string) Symbol {
 	b.Metadata.Target = Symbol(name)
 	return Symbol(name)
+}
+func (b *Builder) InterfaceMethods(methods ...string) *Builder {
+	b.Metadata.InterfaceMethods = append(b.Metadata.InterfaceMethods, methods...)
+	return b
 }
 
 func (b *Builder) Type(name string) *Type {
