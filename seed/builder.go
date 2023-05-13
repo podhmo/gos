@@ -32,6 +32,10 @@ func (b *Builder) BuildTarget(name string) Symbol {
 	b.Metadata.Target = Symbol(name)
 	return Symbol(name)
 }
+func (b *Builder) NeedReference() *Builder {
+	b.Metadata.NeedReference = true
+	return b
+}
 
 func (b *Builder) InterfaceMethods(methods ...string) *Builder {
 	b.Metadata.InterfaceMethods = append(b.Metadata.InterfaceMethods, methods...)
@@ -105,6 +109,8 @@ func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
 type BuilderMetadata struct {
 	Target Symbol
 	Types  []*Type
+
+	NeedReference bool
 
 	Imports          []Import
 	InterfaceMethods []string

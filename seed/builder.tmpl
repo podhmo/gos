@@ -86,6 +86,33 @@ func (b *Builder) lookup{{$target}}(name string) {{$target}}Builder {
 	return b.named{{$target}}s[ids[0]]
 }
 
+{{if $root.NeedReference}}
+func (b *Builder) ReferenceByName(name string) *{{$target}}Ref {
+	return &{{$target}}Ref{Name: name, rootbuilder: b}
+}
+func (b *Builder) Reference(typ {{$target}}Builder) *{{$target}}Ref {
+	name := typ.Get{{$target}}Metadata().Name
+	return &{{$target}}Ref{Name: name, rootbuilder: b, _{{$target}}: typ}
+}
+
+type {{$target}}Ref struct {
+	Name string
+	_{{$target}} {{$target}}Builder
+
+	rootbuilder *Builder
+}
+
+func (t *{{$target}}Ref) get{{$target}}() {{$target}}Builder {
+	if t._{{$target}} != nil {
+		return t._{{$target}}
+	}
+	t._{{$target}} = t.rootbuilder.lookup{{$target}}(t.Name)
+	return t._{{$target}}
+}
+func (t *{{$target}}Ref) Get{{$target}}Metadata() *{{$target}}Metadata {
+	return t.get{{$target}}().Get{{$target}}Metadata()
+}
+{{end}}
 
 {{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
 {{if $t.Metadata.NeedBuilder }}
