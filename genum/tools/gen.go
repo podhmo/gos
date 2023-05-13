@@ -21,10 +21,12 @@ func run(cmd *seed.Command) error {
 
 	// define
 	b.BuildTarget("Enum")
-	b.InterfaceMethods(`writeCode(io.Writer) error`)
-	b.Import("io")
+	b.InterfaceMethods(`writeCoder // see: to_code.go`)
 
-	b.Type("Int").NeedBuilder().
+	b.Field("Config", seed.Symbol("*Config"), "")
+	b.Constructor(seed.Arg{Name: "Config", Type: seed.Symbol("*Config")})
+
+	b.Type("Int").NeedBuilder().Underlying("int").
 		Field("Default", seed.Symbol("int"), `json:"default"`).
 		Field("Members", seed.Symbol("[]IntValue"), "").
 		Constructor(seed.Arg{Name: "Members", Type: seed.Symbol("IntValue"), Variadic: true})
@@ -33,7 +35,7 @@ func run(cmd *seed.Command) error {
 		Field("Value", seed.Symbol("int"), "").
 		Field("Doc", seed.Symbol("string"), "")
 
-	b.Type("String").NeedBuilder().
+	b.Type("String").NeedBuilder().Underlying("string").
 		Field("Default", seed.Symbol("string"), `json:"default"`).
 		Field("Members", seed.Symbol("[]StringValue"), "").
 		Constructor(seed.Arg{Name: "Members", Type: seed.Symbol("StringValue"), Variadic: true})
@@ -41,6 +43,7 @@ func run(cmd *seed.Command) error {
 		Field("Name", seed.Symbol("string"), "").
 		Field("Value", seed.Symbol("string"), "").
 		Field("Doc", seed.Symbol("string"), "")
+
 	// emit
 	if err := cmd.Do(b); err != nil {
 		return fmt.Errorf("emit: %w", err)

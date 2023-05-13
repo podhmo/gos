@@ -22,17 +22,23 @@ func WriteCode(w io.Writer, b *Builder) error {
 
 // customization
 func (t *StringEnum) writeCode(w io.Writer) error {
-	// padding := t.rootbuilder.Config.Padding
-	// comment := t.rootbuilder.Config.Comment
-	padding := "\t"
-	comment := "//"
+	padding := t.rootbuilder.Config.Padding // "\t"
+	comment := t.rootbuilder.Config.Comment // //
 
 	typename := t._Enum.metadata.Name
 	underlying := t._Enum.metadata.underlying
 
-	fmt.Fprintf(w, "%s %s", comment, typename) // nolint
 	// TODO: description
 	fmt.Fprintln(w, "")
+	if doc := t._Enum.metadata.Doc; doc != "" {
+		for i, line := range strings.Split(doc, "\n") {
+			if i == 0 {
+				fmt.Fprintln(w, comment, typename, ":", line)
+			} else {
+				fmt.Fprintln(w, comment, line)
+			}
+		}
+	}
 	fmt.Fprintf(w, "type %s %s\n", typename, underlying) // nolint
 
 	fmt.Fprintln(w, "")
@@ -58,17 +64,23 @@ func (t *StringEnum) writeCode(w io.Writer) error {
 }
 
 func (t *IntEnum) writeCode(w io.Writer) error {
-	// padding := t.rootbuilder.Config.Padding
-	// comment := t.rootbuilder.Config.Comment
-	padding := "\t"
-	comment := "//"
+	padding := t.rootbuilder.Config.Padding // "\t"
+	comment := t.rootbuilder.Config.Comment // //
 
 	typename := t._Enum.metadata.Name
 	underlying := t._Enum.metadata.underlying
 
-	fmt.Fprintf(w, "%s %s", comment, typename) // nolint
 	// TODO: description
 	fmt.Fprintln(w, "")
+	if doc := t._Enum.metadata.Doc; doc != "" {
+		for i, line := range strings.Split(doc, "\n") {
+			if i == 0 {
+				fmt.Fprintln(w, comment, typename, ":", line)
+			} else {
+				fmt.Fprintln(w, comment, line)
+			}
+		}
+	}
 	fmt.Fprintf(w, "type %s %s\n", typename, underlying) // nolint
 
 	fmt.Fprintln(w, "")
