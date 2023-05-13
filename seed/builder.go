@@ -89,8 +89,24 @@ func (b *Builder) Field(name string, typ Symbol) *Field {
 	t.ret = t
 	return t
 }
-func (b *Builder) Constructor(args ...Arg) *Builder {
-	b.Metadata.Constructor = &Constructor{Args: args}
+func (b *Builder) Arg(name string, typ Symbol) *Arg {
+	t := &Arg{
+		ArgBuilder: &ArgBuilder[*Arg]{
+			Metadata: &ArgMetadata{
+				Name: name,
+				Type: typ,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+func (b *Builder) Constructor(args ...*Arg) *Builder {
+	metadata := make([]*ArgMetadata, len(args))
+	for i, a := range args {
+		metadata[i] = a.Metadata
+	}
+	b.Metadata.Constructor = &Constructor{Args: metadata}
 	return b
 }
 
@@ -139,9 +155,13 @@ func (b *TypeBuilder[R]) Underlying(v string) R {
 	b.Metadata.Underlying = v
 	return b.ret
 }
-func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
-	b.Metadata.Constructor = &Constructor{Args: args}
-	for _, a := range args {
+func (b *TypeBuilder[R]) Constructor(args ...*Arg) R {
+	metadata := make([]*ArgMetadata, len(args))
+	for i, a := range args {
+		metadata[i] = a.Metadata
+	}
+	b.Metadata.Constructor = &Constructor{Args: metadata}
+	for _, a := range metadata {
 		b.Metadata.Used[a.Name] = true
 	}
 	return b.ret
@@ -190,10 +210,10 @@ type FieldMetadata struct {
 }
 
 type Constructor struct {
-	Args []Arg
+	Args []*ArgMetadata
 }
 
-type Arg struct {
+type ArgMetadata struct {
 	Name     string
 	Type     Symbol
 	Variadic bool // as ...<type>
@@ -205,10 +225,6 @@ type Import struct {
 }
 
 // ----------------------------------------
-
-type typeAttr interface {
-	typeattr()
-}
 
 type Field struct {
 	*FieldBuilder[*Field]
@@ -230,6 +246,23 @@ type TypeVarBuilder[R any] struct {
 	Metadata *TypeVarMetadata
 	ret      R
 }
+type Arg struct {
+	*ArgBuilder[*Arg]
+}
+type ArgBuilder[R any] struct {
+	Metadata *ArgMetadata
+	ret      R
+}
+
+func (b *ArgBuilder[R]) Variadic() R {
+	b.Metadata.Variadic = true
+	return b.ret
+}
+
+type typeAttr interface {
+	typeattr()
+}
 
 func (t *TypeVar) typeattr() {}
 func (t *Field) typeattr()   {}
+func (t *Arg) typeattr()     {}
