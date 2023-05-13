@@ -1,18 +1,20 @@
 package seed
 
+import "os"
+
 type Builder struct {
 	Metadata *BuilderMetadata
 }
 
 func NewBuilder() *Builder {
-	return &Builder{Metadata: &BuilderMetadata{}}
+	return &Builder{Metadata: &BuilderMetadata{Args: os.Args[1:]}}
 }
 
 type BuilderMetadata struct {
 	Target Symbol
 	Types  []*Type
 
-	// needbuilders
+	Args []string // runtime os.Args[1:]
 }
 
 type Symbol string
