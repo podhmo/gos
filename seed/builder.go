@@ -32,6 +32,10 @@ func (b *Builder) BuildTarget(name string) Symbol {
 	b.Metadata.Target = Symbol(name)
 	return Symbol(name)
 }
+func (b *Builder) NeedReference() *Builder {
+	b.Metadata.NeedReference = true
+	return b
+}
 
 func (b *Builder) InterfaceMethods(methods ...string) *Builder {
 	b.Metadata.InterfaceMethods = append(b.Metadata.InterfaceMethods, methods...)
@@ -49,7 +53,11 @@ func (b *Builder) NamedImport(name string, path string) Symbol {
 }
 
 func (b *Builder) Field(name string, typ Symbol, tag string) *Builder {
-	b.Metadata.Fields = append(b.Metadata.Fields, Var{Name: name, Type: typ, Tag: tag})
+	b.Metadata.Fields = append(b.Metadata.Fields, Field{Name: name, Type: typ, Tag: tag})
+	return b
+}
+func (b *Builder) TargetField(name string, typ Symbol, tag string) *Builder {
+	b.Metadata.TargetFields = append(b.Metadata.TargetFields, Field{Name: name, Type: typ, Tag: tag})
 	return b
 }
 func (b *Builder) Constructor(args ...Arg) *Builder {
@@ -57,11 +65,12 @@ func (b *Builder) Constructor(args ...Arg) *Builder {
 	return b
 }
 
-func (b *Builder) Type(name string) *Type {
+func (b *Builder) Type(name string, tvars ...TypeVar) *Type {
 	t := &Type{
 		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{
 			Name:       Symbol(name),
 			Underlying: name,
+			TVars:      tvars,
 			Used:       map[string]bool{},
 		}},
 	}
@@ -80,7 +89,7 @@ type TypeBuilder[R any] struct {
 }
 
 func (b *TypeBuilder[R]) Field(name string, typ Symbol, tag string) R {
-	b.Metadata.Fields = append(b.Metadata.Fields, Var{Name: name, Type: typ, Tag: tag})
+	b.Metadata.Fields = append(b.Metadata.Fields, Field{Name: name, Type: typ, Tag: tag})
 	return b.ret
 }
 
@@ -102,13 +111,17 @@ func (b *TypeBuilder[R]) Constructor(args ...Arg) R {
 
 // metadata
 type BuilderMetadata struct {
-	Target Symbol
-	Types  []*Type
+	Target       Symbol
+	TargetFields []Field // fields of Metadata
+
+	Types []*Type
+
+	NeedReference bool
 
 	Imports          []Import
 	InterfaceMethods []string
 	Constructor      *Constructor
-	Fields           []Var // fields of Metadata
+	Fields           []Field // fields of builder
 
 	SysArgs     []string // runtime os.Args[1:]
 	PkgName     string   // package {{.PkgName}}}
@@ -118,15 +131,21 @@ type BuilderMetadata struct {
 type TypeMetadata struct {
 	Name       Symbol
 	Underlying string
+	TVars      []TypeVar
 
 	NeedBuilder bool
 	Constructor *Constructor
-	Fields      []Var // fields of Metadata
+	Fields      []Field // fields of Metadata
 
 	Used map[string]bool
 }
 
-type Var struct {
+type TypeVar struct { // e.g. [T any]
+	Name string
+	Type Symbol
+}
+
+type Field struct {
 	Name string
 	Type Symbol
 	Tag  string
