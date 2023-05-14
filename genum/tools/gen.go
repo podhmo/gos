@@ -17,33 +17,42 @@ func main() {
 
 func run(cmd *seed.Command) error {
 	options := cmd.Config
-	b := seed.NewBuilder(options.PkgName)
+	b := seed.NewBuilder(options.PkgName,
+		seed.Root.Field("Config", seed.Symbol("*Config")),
+	)
 	b.Metadata.GeneratedBy = "github.com/podhmo/gos/genum/tools"
 
 	// define
 	b.BuildTarget("Enum")
 	b.InterfaceMethods(`writeCoder // see: to_code.go`)
 
-	b.Field("Config", seed.Symbol("*Config"), "")
-	b.Constructor(seed.Arg{Name: "Config", Type: seed.Symbol("*Config")})
+	b.Constructor(
+		b.Arg("Config", seed.Symbol("*Config")),
+	)
 
-	b.Type("Int").NeedBuilder().Underlying("int").
-		Field("Default", seed.Symbol("int"), `json:"default"`).
-		Field("Members", seed.Symbol("[]IntValue"), "").
-		Constructor(seed.Arg{Name: "Members", Type: seed.Symbol("IntValue"), Variadic: true})
-	b.Type("IntValue").
-		Field("Name", seed.Symbol("string"), "").
-		Field("Value", seed.Symbol("int"), "").
-		Field("Doc", seed.Symbol("string"), "")
+	b.Type("Int",
+		b.Field("Default", seed.Symbol("int")).Tag(`json:"default"`),
+		b.Field("Members", seed.Symbol("[]IntValue")),
+	).Constructor(
+		b.Arg("Members", seed.Symbol("IntValue")).Variadic(),
+	).NeedBuilder().Underlying("int")
+	b.Type("IntValue",
+		b.Field("Name", seed.Symbol("string")),
+		b.Field("Value", seed.Symbol("int")),
+		b.Field("Doc", seed.Symbol("string")),
+	)
 
-	b.Type("String").NeedBuilder().Underlying("string").
-		Field("Default", seed.Symbol("string"), `json:"default"`).
-		Field("Members", seed.Symbol("[]StringValue"), "").
-		Constructor(seed.Arg{Name: "Members", Type: seed.Symbol("StringValue"), Variadic: true})
-	b.Type("StringValue").
-		Field("Name", seed.Symbol("string"), "").
-		Field("Value", seed.Symbol("string"), "").
-		Field("Doc", seed.Symbol("string"), "")
+	b.Type("String",
+		b.Field("Default", seed.Symbol("string")).Tag(`json:"default"`),
+		b.Field("Members", seed.Symbol("[]StringValue")),
+	).Constructor(
+		b.Arg("Members", seed.Symbol("StringValue")).Variadic(),
+	).NeedBuilder().Underlying("string")
+	b.Type("StringValue",
+		b.Field("Name", seed.Symbol("string")),
+		b.Field("Value", seed.Symbol("string")),
+		b.Field("Doc", seed.Symbol("string")),
+	)
 
 	// emit
 	if err := cmd.Do(b); err != nil {

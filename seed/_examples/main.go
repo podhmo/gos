@@ -22,44 +22,47 @@ func run() error {
 	b := seed.NewBuilder(options.PkgName)
 	b.NeedReference()
 
-	Type := b.BuildTarget("Type")
-	b.TargetField("Format", seed.Symbol("string"), `json:"format"`)
+	Type := b.BuildTarget("Type",
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format"`),
+	)
 
 	Bool := b.Type("Bool").
 		NeedBuilder().Underlying("boolean")
-	Int := b.Type("Int").
-		Field("Maximum", seed.Symbol("int64"), `json:"maximum,omitempty"`).
-		Field("Minimum", seed.Symbol("int64"), `json:"minimum,omitempty"`).
-		NeedBuilder().Underlying("intger")
-	String := b.Type("String").
-		Field("Pattern", seed.Symbol("string"), `json:"pattern,omitempty"`).
-		Field("MaxLength", seed.Symbol("int64"), `json:"maxlength,omitempty"`).
-		Field("MinLength", seed.Symbol("int64"), `json:"minlength,omitempty"`).
-		NeedBuilder().Underlying("string")
+	Int := b.Type("Int",
+		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
+		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
+	).NeedBuilder().Underlying("intger")
+	String := b.Type("String",
+		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
+		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
+		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minlength,omitempty"`),
+	).NeedBuilder().Underlying("string")
 
-	Array := b.Type("Array", seed.TypeVar{Name: "Items", Type: seed.Symbol("TypeBuilder")}).
-		Field("MaxItems", seed.Symbol("int64"), `json:"maxitems,omitempty"`).
-		Field("MinItems", seed.Symbol("int64"), `json:"minitems,omitempty"`).
-		NeedBuilder().Underlying("array")
-	Map := b.Type("Map", seed.TypeVar{Name: "Items", Type: seed.Symbol("TypeBuilder")}).
-		Field("Pattern", seed.Symbol("string"), `json:"pattern,omitempty"`).
-		NeedBuilder().Underlying("map")
+	Array := b.Type("Array",
+		b.TypeVar("Items", seed.Symbol("TypeBuilder")),
+		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxitems,omitempty"`),
+		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minitems,omitempty"`),
+	).NeedBuilder().Underlying("array")
+	Map := b.Type("Map", b.TypeVar("Items", seed.Symbol("TypeBuilder")),
+		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
+	).NeedBuilder().Underlying("map")
 
-	Field := b.Type("Field").
-		Field("Name", seed.Symbol("string"), `json:"-"`).
-		Field("Typ", seed.Symbol("TypeBuilder"), `json:"-"`).
-		Field("Description", seed.Symbol("string"), `json:"description,omitempty"`).
-		Field("Required", seed.Symbol("bool"), `json:"-"`).
-		Constructor(
-			seed.Arg{Name: "Name", Type: seed.Symbol("string")},
-			seed.Arg{Name: "Typ", Type: seed.Symbol("TypeBuilder")},
-		).
-		NeedBuilder().Underlying("field") //?
-	Object := b.Type("Object").
-		Field("Fields", seed.Symbol("[]*FieldType"), `json:"-"`).
-		Field("Strict", seed.Symbol("bool"), `json:"-"`).
-		Constructor(seed.Arg{Name: "Fields", Type: seed.Symbol("*FieldType"), Variadic: true}).
-		NeedBuilder().Underlying("object")
+	Field := b.Type("Field",
+		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
+		b.Field("Description", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
+		b.Field("Required", seed.Symbol("bool")).Tag(`json:"-"`),
+	).Constructor(
+		b.Arg("Name", seed.Symbol("string")),
+		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+	).NeedBuilder().Underlying("field") //?
+
+	Object := b.Type("Object",
+		b.Field("Fields", seed.Symbol("[]*FieldType")).Tag(`json:"-"`),
+		b.Field("Strict", seed.Symbol("bool")).Tag(`json:"-"`),
+	).Constructor(
+		b.Arg("Fields", seed.Symbol("*FieldType")).Variadic(),
+	).NeedBuilder().Underlying("object")
 
 	// Param := b.Type("Param")
 	// ParamType := Param.Metadata.Name

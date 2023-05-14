@@ -107,7 +107,7 @@ type IntBuilder[R EnumBuilder] struct {
 	metadata *IntMetadata
 }
 
-// begin setter of Int ----------------------------------------
+// begin setter of Int --------------------
 
 // Default set Metadata.Default
 func (b *IntBuilder[R]) Default(value int) R {
@@ -115,7 +115,7 @@ func (b *IntBuilder[R]) Default(value int) R {
 	return b.ret
 }
 
-// end setter of Int ----------------------------------------
+// end setter of Int --------------------
 
 // String builds Enum for String
 func (b *Builder) String(members ...StringValue) *StringEnum {
@@ -144,7 +144,7 @@ type StringBuilder[R EnumBuilder] struct {
 	metadata *StringMetadata
 }
 
-// begin setter of String ----------------------------------------
+// begin setter of String --------------------
 
 // Default set Metadata.Default
 func (b *StringBuilder[R]) Default(value string) R {
@@ -152,7 +152,7 @@ func (b *StringBuilder[R]) Default(value string) R {
 	return b.ret
 }
 
-// end setter of String ----------------------------------------
+// end setter of String --------------------
 
 // internal Enum
 
@@ -170,6 +170,7 @@ func (t *_Enum[R]) Doc(stmts ...string) R {
 	t.metadata.Doc = strings.Join(stmts, "\n")
 	return t.ret
 }
+
 func (t *_Enum[R]) storeEnum(name string) {
 	t.metadata.Name = name
 	t.rootbuilder.storeEnum(t.ret)
