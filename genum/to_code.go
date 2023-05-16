@@ -26,7 +26,7 @@ func WriteCode(w io.Writer, b *Builder) error {
 }
 
 // customization
-func (t *StringEnum) writeCode(w io.Writer) error {
+func (t *String) writeCode(w io.Writer) error {
 	padding := t.rootbuilder.Config.Padding // "\t"
 	comment := t.rootbuilder.Config.Comment // //
 
@@ -68,7 +68,7 @@ func (t *StringEnum) writeCode(w io.Writer) error {
 	return nil
 }
 
-func (t *IntEnum) writeCode(w io.Writer) error {
+func (t *Int) writeCode(w io.Writer) error {
 	padding := t.rootbuilder.Config.Padding // "\t"
 	comment := t.rootbuilder.Config.Comment // //
 
