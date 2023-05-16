@@ -127,7 +127,7 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 	}
 
 	t := &Type{
-		TypeBuilder: &TypeBuilder[*Type]{Metadata: &TypeMetadata{
+		typeBuilder: &typeBuilder[*Type]{Metadata: &TypeMetadata{
 			Name:       Symbol(name),
 			Underlying: name,
 			TVars:      tvars,
@@ -141,23 +141,23 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 }
 
 type Type struct {
-	*TypeBuilder[*Type]
+	*typeBuilder[*Type]
 }
 
-type TypeBuilder[R any] struct {
+type typeBuilder[R any] struct {
 	Metadata *TypeMetadata
 	ret      R
 }
 
-func (b *TypeBuilder[R]) NeedBuilder() R {
+func (b *typeBuilder[R]) NeedBuilder() R {
 	b.Metadata.NeedBuilder = true
 	return b.ret
 }
-func (b *TypeBuilder[R]) Underlying(v string) R {
+func (b *typeBuilder[R]) Underlying(v string) R {
 	b.Metadata.Underlying = v
 	return b.ret
 }
-func (b *TypeBuilder[R]) Constructor(args ...*Arg) R {
+func (b *typeBuilder[R]) Constructor(args ...*Arg) R {
 	metadata := make([]*ArgMetadata, len(args))
 	for i, a := range args {
 		metadata[i] = a.Metadata
