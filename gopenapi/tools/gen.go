@@ -66,8 +66,40 @@ func run() error {
 		}),
 	).NeedBuilder().Underlying("object")
 
+	Action := b.Type("Action",
+		b.Field("Name", seed.Symbol("string")),
+		b.Field("Input", "*Input"),
+		b.Field("Output", "*Output"),
+	).Constructor(
+		b.Arg("Name", seed.Symbol("string")),
+		b.Arg("Input", "*Input"),
+		b.Arg("Output", "*Output"),
+	).NeedBuilder().Underlying("")
+
+	Input := b.Type("Input",
+		b.Field("Params", "[]*Param"),
+	).Constructor(
+		b.Arg("Params", "*Param").Variadic(),
+	).NeedBuilder().Underlying("")
+	Output := b.Type("Output",
+		b.Field("Typ", seed.Symbol("TypeBuilder")),
+	).Constructor(
+		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+	).NeedBuilder().Underlying("")
+	Param := b.Type("Param",
+		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`),
+		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
+		b.Field("Description", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
+		b.Field("Required", seed.Symbol("bool")).Tag(`json:"required"`).Default("true"),
+	).Constructor(
+		b.Arg("Name", seed.Symbol("string")),
+		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+		b.Arg("In", seed.Symbol("string")), // query,header,path,cookie,body
+	).NeedBuilder().Underlying("")
+
 	fmt.Fprintln(os.Stderr, Type, Bool, Int, String, Array, Map, Field, Object)
-	// fmt.Fprintln(os.Stderr, Param, ActionInput, ActionOutput, Action)
+	fmt.Fprintln(os.Stderr, Action, Input, Output, Param)
 
 	// for transform
 	b.Footer(`
