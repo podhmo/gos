@@ -12,7 +12,12 @@ type writeCoder interface {
 
 func WriteCode(w io.Writer, b *Builder) error {
 	return b.EachEnums(func(typ EnumBuilder) error {
-		if err := typ.writeCode(w); err != nil {
+		t, ok := typ.(writeCoder)
+		if !ok {
+			return nil
+		}
+
+		if err := t.writeCode(w); err != nil {
 			return fmt.Errorf("%s: %w", typ.GetEnumMetadata().Name, err)
 		}
 		fmt.Fprintln(w, "")
