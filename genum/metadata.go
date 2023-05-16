@@ -10,7 +10,7 @@ type EnumMetadata struct {
 	Doc string `json:"description"`
 }
 
-type IntEnumMetadata struct {
+type IntMetadata struct {
 	Default int `json:"default"`
 
 	Members []*IntValueMetadata
@@ -24,7 +24,7 @@ type IntValueMetadata struct {
 	Doc string
 }
 
-type StringEnumMetadata struct {
+type StringMetadata struct {
 	Default string `json:"default"`
 
 	Members []*StringValueMetadata

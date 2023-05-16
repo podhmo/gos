@@ -77,12 +77,12 @@ func (b *Builder) lookupEnum(name string) EnumBuilder {
 	return b.namedEnums[ids[0]]
 }
 
-// IntEnum builds Enum for IntEnum
-func (b *Builder) IntEnum(members ...*IntValue) *IntEnum {
-	t := &IntEnum{
-		IntEnumBuilder: &IntEnumBuilder[*IntEnum]{
-			_Enum: &_Enum[*IntEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
-			metadata: &IntEnumMetadata{
+// Int builds Enum for Int
+func (b *Builder) Int(members ...*IntValue) *Int {
+	t := &Int{
+		IntBuilder: &IntBuilder[*Int]{
+			_Enum: &_Enum[*Int]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
+			metadata: &IntMetadata{
 				Members: mapslice(members, func(x *IntValue) *IntValueMetadata { return x.metadata }),
 			},
 		},
@@ -91,28 +91,28 @@ func (b *Builder) IntEnum(members ...*IntValue) *IntEnum {
 	return t
 }
 
-type IntEnum struct {
-	*IntEnumBuilder[*IntEnum]
+type Int struct {
+	*IntBuilder[*Int]
 }
 
-func (t *IntEnum) GetMetadata() *IntEnumMetadata {
+func (t *Int) GetMetadata() *IntMetadata {
 	return t.metadata
 }
 
-type IntEnumBuilder[R EnumBuilder] struct {
+type IntBuilder[R EnumBuilder] struct {
 	*_Enum[R]
-	metadata *IntEnumMetadata
+	metadata *IntMetadata
 }
 
-// begin setter of IntEnum --------------------
+// begin setter of Int --------------------
 
 // Default set Metadata.Default
-func (b *IntEnumBuilder[R]) Default(value int) R {
+func (b *IntBuilder[R]) Default(value int) R {
 	b.metadata.Default = value
 	return b.ret
 }
 
-// end setter of IntEnum --------------------
+// end setter of Int --------------------
 
 // IntValue builds Enum for IntValue
 func (b *Builder) IntValue(name string, value int) *IntValue {
@@ -151,12 +151,12 @@ func (b *IntValueBuilder[R]) Doc(value string) R {
 
 // end setter of IntValue --------------------
 
-// StringEnum builds Enum for StringEnum
-func (b *Builder) StringEnum(members ...*StringValue) *StringEnum {
-	t := &StringEnum{
-		StringEnumBuilder: &StringEnumBuilder[*StringEnum]{
-			_Enum: &_Enum[*StringEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
-			metadata: &StringEnumMetadata{
+// String builds Enum for String
+func (b *Builder) String(members ...*StringValue) *String {
+	t := &String{
+		StringBuilder: &StringBuilder[*String]{
+			_Enum: &_Enum[*String]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
+			metadata: &StringMetadata{
 				Members: mapslice(members, func(x *StringValue) *StringValueMetadata { return x.metadata }),
 			},
 		},
@@ -165,28 +165,28 @@ func (b *Builder) StringEnum(members ...*StringValue) *StringEnum {
 	return t
 }
 
-type StringEnum struct {
-	*StringEnumBuilder[*StringEnum]
+type String struct {
+	*StringBuilder[*String]
 }
 
-func (t *StringEnum) GetMetadata() *StringEnumMetadata {
+func (t *String) GetMetadata() *StringMetadata {
 	return t.metadata
 }
 
-type StringEnumBuilder[R EnumBuilder] struct {
+type StringBuilder[R EnumBuilder] struct {
 	*_Enum[R]
-	metadata *StringEnumMetadata
+	metadata *StringMetadata
 }
 
-// begin setter of StringEnum --------------------
+// begin setter of String --------------------
 
 // Default set Metadata.Default
-func (b *StringEnumBuilder[R]) Default(value string) R {
+func (b *StringBuilder[R]) Default(value string) R {
 	b.metadata.Default = value
 	return b.ret
 }
 
-// end setter of StringEnum --------------------
+// end setter of String --------------------
 
 // StringValue builds Enum for StringValue
 func (b *Builder) StringValue(value string) *StringValue {
