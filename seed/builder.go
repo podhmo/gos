@@ -252,6 +252,8 @@ type FieldMetadata struct {
 	Name string
 	Type Symbol
 	Tag  string
+
+	Default string
 }
 
 type Constructor struct {
@@ -288,6 +290,10 @@ func (b *fieldBuilder[R]) GetMetadata() *FieldMetadata {
 // Tag is setter method for set metadata.Tag
 func (b *fieldBuilder[R]) Tag(v string) R {
 	b.metadata.Tag = v
+	return b.ret
+}
+func (b *fieldBuilder[R]) Default(v string) R {
+	b.metadata.Default = v
 	return b.ret
 }
 
