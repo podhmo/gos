@@ -30,40 +30,45 @@ func run(cmd *seed.Command) error {
 	)
 
 	// int
-	b.Type("Int",
-		b.Field("Default", seed.Symbol("int")).Tag(`json:"default"`),
-		b.Field("Members", seed.Symbol("[]*IntValueMetadata")),
-	).Constructor(
-		b.Arg("Members", seed.Symbol("*IntValue")).Variadic().Transform(func(v string) string {
-			return fmt.Sprintf("mapslice(%s, func(x *IntValue) *IntValueMetadata { return x.metadata})", v)
-		}),
-	).NeedBuilder().Underlying("int") // generate Int, IntMetadata
+	{
+		b.Type("Int",
+			b.Field("Default", seed.Symbol("int")).Tag(`json:"default"`),
+			b.Field("Members", seed.Symbol("[]*IntValueMetadata")),
+		).Constructor(
+			// b.Members[i] = members[i].metadata
+			b.Arg("Members", seed.Symbol("*IntValue")).Variadic().Transform(func(v string) string {
+				return fmt.Sprintf("mapslice(%s, func(x *IntValue) *IntValueMetadata { return x.metadata})", v)
+			}),
+		).NeedBuilder().Underlying("int") // generate Int, IntMetadata
 
-	b.Type("IntValue",
-		b.Field("Name", seed.Symbol("string")),
-		b.Field("Value", seed.Symbol("int")),
-		b.Field("Doc", seed.Symbol("string")),
-	).Constructor(
-		b.Arg("Value", seed.Symbol("int")),
-		b.Arg("Name", seed.Symbol("string")),
-	).NeedBuilder() // generate IntValue, IntValueMetadata
+		b.Type("IntValue",
+			b.Field("Name", seed.Symbol("string")),
+			b.Field("Value", seed.Symbol("int")),
+			b.Field("Doc", seed.Symbol("string")),
+		).Constructor(
+			b.Arg("Value", seed.Symbol("int")),
+			b.Arg("Name", seed.Symbol("string")),
+		).NeedBuilder() // generate IntValue, IntValueMetadata
+	}
 
 	// string
-	b.Type("String",
-		b.Field("Default", seed.Symbol("string")).Tag(`json:"default"`),
-		b.Field("Members", seed.Symbol("[]*StringValueMetadata")),
-	).Constructor(
-		b.Arg("Members", seed.Symbol("*StringValue")).Variadic().Transform(func(v string) string {
-			return fmt.Sprintf("mapslice(%s, func(x *StringValue) *StringValueMetadata { return x.metadata})", v)
-		}),
-	).NeedBuilder().Underlying("string")
-	b.Type("StringValue",
-		b.Field("Name", seed.Symbol("string")),
-		b.Field("Value", seed.Symbol("string")),
-		b.Field("Doc", seed.Symbol("string")),
-	).Constructor(
-		b.Arg("Value", seed.Symbol("string")),
-	).NeedBuilder()
+	{
+		b.Type("String",
+			b.Field("Default", seed.Symbol("string")).Tag(`json:"default"`),
+			b.Field("Members", seed.Symbol("[]*StringValueMetadata")),
+		).Constructor(
+			b.Arg("Members", seed.Symbol("*StringValue")).Variadic().Transform(func(v string) string {
+				return fmt.Sprintf("mapslice(%s, func(x *StringValue) *StringValueMetadata { return x.metadata})", v)
+			}),
+		).NeedBuilder().Underlying("string")
+		b.Type("StringValue",
+			b.Field("Name", seed.Symbol("string")),
+			b.Field("Value", seed.Symbol("string")),
+			b.Field("Doc", seed.Symbol("string")),
+		).Constructor(
+			b.Arg("Value", seed.Symbol("string")),
+		).NeedBuilder()
+	}
 
 	// for transform
 	b.Footer(`
