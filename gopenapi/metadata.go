@@ -62,6 +62,10 @@ type ActionMetadata struct {
 	Output *Output
 
 	DefaultStatus int
+
+	Method string
+
+	Path string
 }
 
 type InputMetadata struct {

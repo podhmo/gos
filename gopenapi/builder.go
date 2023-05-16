@@ -417,6 +417,18 @@ func (b *ActionBuilder[R]) DefaultStatus(value int) R {
 	return b.ret
 }
 
+// Method set Metadata.Method
+func (b *ActionBuilder[R]) Method(value string) R {
+	b.metadata.Method = value
+	return b.ret
+}
+
+// Path set Metadata.Path
+func (b *ActionBuilder[R]) Path(value string) R {
+	b.metadata.Path = value
+	return b.ret
+}
+
 // end setter of Action --------------------
 
 // Input builds Type for Input
