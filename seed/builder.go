@@ -227,7 +227,7 @@ type BuilderMetadata struct {
 type TypeMetadata struct {
 	Name       Symbol
 	Underlying string
-	TVars      []*TypeVarMetadata
+	TVars      TypeVarMetadataList
 
 	NeedBuilder bool
 	Constructor *Constructor
@@ -261,6 +261,9 @@ type Import struct {
 	Name string
 	Path string
 }
+
+// ----------------------------------------
+type TypeVarMetadataList []*TypeVarMetadata
 
 // ----------------------------------------
 
