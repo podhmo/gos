@@ -131,7 +131,7 @@ func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} 
 	return t
 }
 
-type {{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Name}} {{$tv.Type}}, {{end}}]{{end}} struct {
+type {{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.NameAndTypes}}]{{end}} struct {
 	*{{$name}}Builder[{{$t.TVars.Names}}*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}]
 }
 
@@ -139,7 +139,7 @@ func (t *{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{e
 	return t.metadata
 }
 
-type {{$name}}Builder[{{range $_, $tv := $t.TVars}}{{$tv.Name}} {{$tv.Type}}, {{end}}R {{$target}}Builder] struct {
+type {{$name}}Builder[{{$t.TVars.NameAndTypes}}R {{$target}}Builder] struct {
 	*_{{$target}}[R]
 	metadata *{{$name}}Metadata
 
