@@ -35,7 +35,7 @@ func main() {
 		b.Output(
 			b.String(),
 		),
-	)
+	).Method("GET").Path("/hello")
 
 	doc, err := gopenapi.ToSchema(b)
 	if err != nil {
