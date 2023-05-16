@@ -30,7 +30,7 @@ func run(cmd *seed.Command) error {
 	)
 
 	// int
-	b.Type("IntEnum",
+	b.Type("Int",
 		b.Field("Default", seed.Symbol("int")).Tag(`json:"default"`),
 		b.Field("Members", seed.Symbol("[]*IntValueMetadata")),
 	).Constructor(
@@ -49,7 +49,7 @@ func run(cmd *seed.Command) error {
 	).NeedBuilder() // generate IntValue, IntValueMetadata
 
 	// string
-	b.Type("StringEnum",
+	b.Type("String",
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default"`),
 		b.Field("Members", seed.Symbol("[]*StringValueMetadata")),
 	).Constructor(
