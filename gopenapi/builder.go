@@ -379,6 +379,143 @@ func (b *ObjectBuilder[R]) Strict(value bool) R {
 
 // end setter of Object --------------------
 
+// Action builds Type for Action
+func (b *Builder) Action(name string, input *Input, output *Output) *Action {
+	t := &Action{
+		ActionBuilder: &ActionBuilder[*Action]{
+			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			metadata: &ActionMetadata{
+				Name: name, Input: input, Output: output,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Action struct {
+	*ActionBuilder[*Action]
+}
+
+func (t *Action) GetMetadata() *ActionMetadata {
+	return t.metadata
+}
+
+type ActionBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *ActionMetadata
+}
+
+// begin setter of Action --------------------
+
+// end setter of Action --------------------
+
+// Input builds Type for Input
+func (b *Builder) Input(params ...*Param) *Input {
+	t := &Input{
+		InputBuilder: &InputBuilder[*Input]{
+			_Type: &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			metadata: &InputMetadata{
+				Params: params,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Input struct {
+	*InputBuilder[*Input]
+}
+
+func (t *Input) GetMetadata() *InputMetadata {
+	return t.metadata
+}
+
+type InputBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *InputMetadata
+}
+
+// begin setter of Input --------------------
+
+// end setter of Input --------------------
+
+// Output builds Type for Output
+func (b *Builder) Output(typ TypeBuilder) *Output {
+	t := &Output{
+		OutputBuilder: &OutputBuilder[*Output]{
+			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			metadata: &OutputMetadata{
+				Typ: typ,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Output struct {
+	*OutputBuilder[*Output]
+}
+
+func (t *Output) GetMetadata() *OutputMetadata {
+	return t.metadata
+}
+
+type OutputBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *OutputMetadata
+}
+
+// begin setter of Output --------------------
+
+// end setter of Output --------------------
+
+// Param builds Type for Param
+func (b *Builder) Param(name string, typ TypeBuilder, in string) *Param {
+	t := &Param{
+		ParamBuilder: &ParamBuilder[*Param]{
+			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			metadata: &ParamMetadata{
+				Name: name, Typ: typ, In: in,
+				Required: true,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Param struct {
+	*ParamBuilder[*Param]
+}
+
+func (t *Param) GetMetadata() *ParamMetadata {
+	return t.metadata
+}
+
+type ParamBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *ParamMetadata
+}
+
+// begin setter of Param --------------------
+
+// Description set Metadata.Description
+func (b *ParamBuilder[R]) Description(value string) R {
+	b.metadata.Description = value
+	return b.ret
+}
+
+// Required set Metadata.Required
+func (b *ParamBuilder[R]) Required(value bool) R {
+	b.metadata.Required = value
+	return b.ret
+}
+
+// end setter of Param --------------------
+
 // internal Type
 
 type _Type[R TypeBuilder] struct {

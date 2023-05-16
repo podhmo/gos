@@ -53,3 +53,31 @@ type ObjectMetadata struct {
 
 	Strict bool `json:"-"`
 }
+
+type ActionMetadata struct {
+	Name string
+
+	Input *Input
+
+	Output *Output
+}
+
+type InputMetadata struct {
+	Params []*Param
+}
+
+type OutputMetadata struct {
+	Typ TypeBuilder
+}
+
+type ParamMetadata struct {
+	Name string `json:"-"`
+
+	In string `json:"in"`
+
+	Typ TypeBuilder `json:"-"`
+
+	Description string `json:"description,omitempty"`
+
+	Required bool `json:"required"`
+}
