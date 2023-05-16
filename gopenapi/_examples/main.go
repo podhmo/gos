@@ -50,6 +50,9 @@ func main() {
 	if err := enc.Encode(doc); err != nil {
 		panic(err)
 	}
-	fmt.Fprintln(os.Stderr, gopenapi.ToString(Person))
-	fmt.Fprintln(os.Stderr, gopenapi.ToString(Hello))
+
+	fmt.Fprintln(os.Stderr, "type  \t", gopenapi.ToString(Person))
+	fmt.Fprintln(os.Stderr, "action\t", gopenapi.ToString(Hello))
+	fmt.Fprintln(os.Stderr, "input \t", gopenapi.ToString(Hello.GetMetadata().Input))
+	fmt.Fprintln(os.Stderr, "output\t", gopenapi.ToString(Hello.GetMetadata().Output))
 }
