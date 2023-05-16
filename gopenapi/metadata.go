@@ -60,6 +60,8 @@ type ActionMetadata struct {
 	Input *Input
 
 	Output *Output
+
+	DefaultStatus int
 }
 
 type InputMetadata struct {

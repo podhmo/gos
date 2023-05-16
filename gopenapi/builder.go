@@ -13,6 +13,8 @@ type TypeBuilder interface {
 
 	writeTyper // see: ./to_string.go
 
+	toSchemer // see: ./to_schema.go
+
 }
 
 // DefineType names Type value.
@@ -386,6 +388,7 @@ func (b *Builder) Action(name string, input *Input, output *Output) *Action {
 			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
 			metadata: &ActionMetadata{
 				Name: name, Input: input, Output: output,
+				DefaultStatus: 200,
 			},
 		},
 	}
@@ -407,6 +410,12 @@ type ActionBuilder[R TypeBuilder] struct {
 }
 
 // begin setter of Action --------------------
+
+// DefaultStatus set Metadata.DefaultStatus
+func (b *ActionBuilder[R]) DefaultStatus(value int) R {
+	b.metadata.DefaultStatus = value
+	return b.ret
+}
 
 // end setter of Action --------------------
 
