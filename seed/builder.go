@@ -283,41 +283,6 @@ func (tvs TypeVarMetadataList) Names() string {
 	}
 	return b.String()
 }
-
-func (tvs TypeVarMetadataList) AsType() string {
-	if len(tvs) == 0 {
-		return ""
-	}
-	b := pool.Get().(*strings.Builder)
-	defer pool.Put(b)
-	b.Reset()
-	b.WriteRune('[')
-	for _, tv := range tvs {
-		b.WriteString(tv.Name)
-		b.WriteString(", ")
-	}
-	b.WriteRune(']')
-	return b.String()
-}
-
-func (tvs TypeVarMetadataList) AsDefType() string {
-	if len(tvs) == 0 {
-		return ""
-	}
-	b := pool.Get().(*strings.Builder)
-	defer pool.Put(b)
-	b.Reset()
-	b.WriteRune('[')
-	for _, tv := range tvs {
-		b.WriteString(tv.Name)
-		b.WriteRune(' ')
-		b.WriteString(string(tv.Type))
-		b.WriteString(", ")
-	}
-	b.WriteRune(']')
-	return b.String()
-}
-
 func (tvs TypeVarMetadataList) NameAndTypes() string {
 	b := pool.Get().(*strings.Builder)
 	defer pool.Put(b)
