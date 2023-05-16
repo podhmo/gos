@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/podhmo/gos/gopenapi"
-	"github.com/podhmo/gos/seed"
 )
 
 func main() {
@@ -30,23 +30,24 @@ func main() {
 	// Hello :: func(name string) string
 	b.Action("hello",
 		b.Input(
-			b.Param("name", seed.Symbol("string"), "path"),
+			b.Param("name", b.String(), "path"),
 		).Doc("input"),
 		b.Output(
 			b.String(),
-		).Doc("output"),
+		),
 	)
 
-	// doc, err := gopenapi.ToSchema(b)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	doc, err := gopenapi.ToSchema(b)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Fprintln(os.Stderr, Name, Person, TestScore)
+	// fmt.Fprintln(os.Stderr)
 
-	// enc := json.NewEncoder(os.Stdout)
-	// enc.SetIndent("", "  ")
-	// if err := enc.Encode(doc); err != nil {
-	// 	panic(err)
-	// }
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(doc); err != nil {
+		panic(err)
+	}
 }
