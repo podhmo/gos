@@ -167,6 +167,12 @@ func (b *Builder) GeneratedBy(v string) *Builder {
 	return b
 }
 
+// Footer is setter method for adding footer.
+func (b *Builder) Footer(v string) *Builder {
+	b.metadata.Footer = strings.TrimSpace(v)
+	return b
+}
+
 type Type struct {
 	*typeBuilder[*Type]
 }
@@ -222,6 +228,7 @@ type BuilderMetadata struct {
 	SysArgs     []string // runtime os.Args[1:]
 	PkgName     string   // package {{.PkgName}}}
 	GeneratedBy string   // github.com/podhmo/gos/seed
+	Footer      string
 }
 
 type TypeMetadata struct {
@@ -255,6 +262,8 @@ type ArgMetadata struct {
 	Name     string
 	Type     Symbol
 	Variadic bool // as ...<type>
+
+	Transform func(string) string
 }
 
 type Import struct {
@@ -309,6 +318,13 @@ func (b *argBuilder[R]) GetMetadata() *ArgMetadata {
 // Variadic is setter method for set metadata.Variadic is true
 func (b *argBuilder[R]) Variadic() R {
 	b.metadata.Variadic = true
+	return b.ret
+}
+
+// Transform is setter method for setting transform function.
+// (This method is typically used when the parent data has children of type XXXMetadata.)
+func (b *argBuilder[R]) Transform(fn func(string) string) R {
+	b.metadata.Transform = fn
 	return b.ret
 }
 
