@@ -31,7 +31,7 @@ func run() error {
 	Int := b.Type("Int",
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
-	).NeedBuilder().Underlying("intger")
+	).NeedBuilder().Underlying("integer")
 	String := b.Type("String",
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
 		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
