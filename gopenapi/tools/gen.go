@@ -26,7 +26,10 @@ func run() error {
 	Type := b.BuildTarget("Type",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format"`),
 	)
-	b.InterfaceMethods("writeTyper // see: ./to_string.go")
+	b.InterfaceMethods(
+		"writeTyper // see: ./to_string.go",
+		"toSchemer // see: ./to_schema.go",
+	)
 
 	// ----------------------------------------
 	// types
@@ -76,6 +79,7 @@ func run() error {
 		b.Field("Name", seed.Symbol("string")),
 		b.Field("Input", "*Input"),
 		b.Field("Output", "*Output"),
+		b.Field("DefaultStatus", seed.Symbol("int")).Default("200"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Input", "*Input"),
@@ -88,9 +92,9 @@ func run() error {
 		b.Arg("Params", "*Param").Variadic(),
 	).NeedBuilder().Underlying("")
 	Output := b.Type("Output",
-		b.Field("Typ", seed.Symbol("TypeBuilder")),
+		b.Field("Typ", "TypeBuilder"),
 	).Constructor(
-		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+		b.Arg("Typ", "TypeBuilder"),
 	).NeedBuilder().Underlying("")
 
 	Param := b.Type("Param",
