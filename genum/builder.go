@@ -115,12 +115,12 @@ func (b *IntBuilder[R]) Default(value int) R {
 // end setter of Int --------------------
 
 // IntValue builds Enum for IntValue
-func (b *Builder) IntValue(name string, value int) *IntValue {
+func (b *Builder) IntValue(value int, name string) *IntValue {
 	t := &IntValue{
 		IntValueBuilder: &IntValueBuilder[*IntValue]{
 			_Enum: &_Enum[*IntValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "IntValue"}},
 			metadata: &IntValueMetadata{
-				Name: name, Value: value,
+				Value: value, Name: name,
 			},
 		},
 	}
