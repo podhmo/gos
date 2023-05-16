@@ -131,11 +131,11 @@ func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} 
 	return t
 }
 
-type {{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.NameAndTypes}}]{{end}} struct {
-	*{{$name}}Builder[{{$t.TVars.Names}}*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}]
+type {{$name}}{{$target}}{{$t.TVars.AsDefType}} struct {
+	*{{$name}}Builder[{{$t.TVars.Names}}*{{$name}}{{$target}}{{$t.TVars.AsType}}]
 }
 
-func (t *{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}) GetMetadata() *{{$name}}Metadata {
+func (t *{{$name}}{{$target}}{{$t.TVars.AsType}}) GetMetadata() *{{$name}}Metadata {
 	return t.metadata
 }
 
