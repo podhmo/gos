@@ -69,7 +69,7 @@ func (b *Builder) NamedImport(name string, path string) Symbol {
 
 func (b *Builder) TypeVar(name string, typ Symbol) *TypeVar {
 	t := &TypeVar{
-		TypeVarBuilder: &TypeVarBuilder[*TypeVar]{
+		typeVarBuilder: &typeVarBuilder[*TypeVar]{
 			Metadata: &TypeVarMetadata{
 				Name: name,
 				Type: typ,
@@ -81,7 +81,7 @@ func (b *Builder) TypeVar(name string, typ Symbol) *TypeVar {
 }
 func (b *Builder) Field(name string, typ Symbol) *Field {
 	t := &Field{
-		FieldBuilder: &FieldBuilder[*Field]{
+		fieldBuilder: &fieldBuilder[*Field]{
 			Metadata: &FieldMetadata{
 				Name: name,
 				Type: typ,
@@ -93,7 +93,7 @@ func (b *Builder) Field(name string, typ Symbol) *Field {
 }
 func (b *Builder) Arg(name string, typ Symbol) *Arg {
 	t := &Arg{
-		ArgBuilder: &ArgBuilder[*Arg]{
+		argBuilder: &argBuilder[*Arg]{
 			Metadata: &ArgMetadata{
 				Name: name,
 				Type: typ,
@@ -229,34 +229,34 @@ type Import struct {
 // ----------------------------------------
 
 type Field struct {
-	*FieldBuilder[*Field]
+	*fieldBuilder[*Field]
 }
-type FieldBuilder[R any] struct {
+type fieldBuilder[R any] struct {
 	Metadata *FieldMetadata
 	ret      R
 }
 
-func (b *FieldBuilder[R]) Tag(v string) R {
+func (b *fieldBuilder[R]) Tag(v string) R {
 	b.Metadata.Tag = v
 	return b.ret
 }
 
 type TypeVar struct {
-	*TypeVarBuilder[*TypeVar]
+	*typeVarBuilder[*TypeVar]
 }
-type TypeVarBuilder[R any] struct {
+type typeVarBuilder[R any] struct {
 	Metadata *TypeVarMetadata
 	ret      R
 }
 type Arg struct {
-	*ArgBuilder[*Arg]
+	*argBuilder[*Arg]
 }
-type ArgBuilder[R any] struct {
+type argBuilder[R any] struct {
 	Metadata *ArgMetadata
 	ret      R
 }
 
-func (b *ArgBuilder[R]) Variadic() R {
+func (b *argBuilder[R]) Variadic() R {
 	b.Metadata.Variadic = true
 	return b.ret
 }
