@@ -41,6 +41,7 @@ func (s Symbol) Slice() Symbol {
 	return "[]" + s
 }
 
+// BuildTarget is setter method for setting the name of your root builder's type
 func (b *Builder) BuildTarget(name string, fields ...*Field) Symbol {
 	b.metadata.Target = Symbol(name)
 
@@ -51,26 +52,34 @@ func (b *Builder) BuildTarget(name string, fields ...*Field) Symbol {
 	b.metadata.TargetFields = metadata
 	return Symbol(name)
 }
+
+// NeedReference is setter method if you need reference functions in generated code.
 func (b *Builder) NeedReference() *Builder {
 	b.metadata.NeedReference = true
 	return b
 }
 
+// InterfaceMethods is setter method if your builder requires more interfaces
+// (e.g. "String() string", "fmt.Stringer", ...)
 func (b *Builder) InterfaceMethods(methods ...string) *Builder {
 	b.metadata.InterfaceMethods = append(b.metadata.InterfaceMethods, methods...)
 	return b
 }
 
+// Import is setter method adding import path in generated code.
 func (b *Builder) Import(path string) Symbol {
 	b.metadata.Imports = append(b.metadata.Imports, Import{Path: path})
 	parts := strings.Split(path, "/")
 	return Symbol(parts[len(parts)-1])
 }
+
+// Import is setter method adding import path with name in generated code.
 func (b *Builder) NamedImport(name string, path string) Symbol {
 	b.metadata.Imports = append(b.metadata.Imports, Import{Name: name, Path: path})
 	return Symbol(name)
 }
 
+// TypeVar is factory method for TypeVar builder.
 func (b *Builder) TypeVar(name string, typ Symbol) *TypeVar {
 	t := &TypeVar{
 		typeVarBuilder: &typeVarBuilder[*TypeVar]{
@@ -83,6 +92,8 @@ func (b *Builder) TypeVar(name string, typ Symbol) *TypeVar {
 	t.ret = t
 	return t
 }
+
+// TypeVar is factory method for Field builder.
 func (b *Builder) Field(name string, typ Symbol) *Field {
 	t := &Field{
 		fieldBuilder: &fieldBuilder[*Field]{
@@ -95,6 +106,8 @@ func (b *Builder) Field(name string, typ Symbol) *Field {
 	t.ret = t
 	return t
 }
+
+// Arg is factory method for Arg builder.
 func (b *Builder) Arg(name string, typ Symbol) *Arg {
 	t := &Arg{
 		argBuilder: &argBuilder[*Arg]{
@@ -107,6 +120,8 @@ func (b *Builder) Arg(name string, typ Symbol) *Arg {
 	t.ret = t
 	return t
 }
+
+// Constructor is setter method customize your root builder's factory.
 func (b *Builder) Constructor(args ...*Arg) *Builder {
 	metadata := make([]*ArgMetadata, len(args))
 	for i, a := range args {
@@ -116,6 +131,7 @@ func (b *Builder) Constructor(args ...*Arg) *Builder {
 	return b
 }
 
+// Type is factory method for Type builder.
 func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 	tvars := make([]*TypeVarMetadata, 0, len(typeVarOrFieldList))
 	fields := make([]*FieldMetadata, 0, len(typeVarOrFieldList))
@@ -144,6 +160,8 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 	return t
 }
 
+// GeneratedBy is setter method for auto generated comment.
+// (default value is "github.com/podhmo/gos/seed" )
 func (b *Builder) GeneratedBy(v string) *Builder {
 	b.metadata.GeneratedBy = v
 	return b
@@ -162,14 +180,19 @@ func (t *typeBuilder[R]) GetMetadata() *TypeMetadata {
 	return t.metadata
 }
 
+// NeedBuilder is setter method for the generated go type needs builder implementation.
 func (b *typeBuilder[R]) NeedBuilder() R {
 	b.metadata.NeedBuilder = true
 	return b.ret
 }
+
+// Underlying is setter method if you can set underlying type (default is same as TypeName)
 func (b *typeBuilder[R]) Underlying(v string) R {
 	b.metadata.Underlying = v
 	return b.ret
 }
+
+// Constructor is setter method for cusotmization of builder factory
 func (b *typeBuilder[R]) Constructor(args ...*Arg) R {
 	metadata := make([]*ArgMetadata, len(args))
 	for i, a := range args {
@@ -253,6 +276,7 @@ func (b *fieldBuilder[R]) GetMetadata() *FieldMetadata {
 	return b.metadata
 }
 
+// Tag is setter method for set metadata.Tag
 func (b *fieldBuilder[R]) Tag(v string) R {
 	b.metadata.Tag = v
 	return b.ret
@@ -282,6 +306,7 @@ func (b *argBuilder[R]) GetMetadata() *ArgMetadata {
 	return b.metadata
 }
 
+// Variadic is setter method for set metadata.Variadic is true
 func (b *argBuilder[R]) Variadic() R {
 	b.metadata.Variadic = true
 	return b.ret
