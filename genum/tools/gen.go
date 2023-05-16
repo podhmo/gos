@@ -44,8 +44,8 @@ func run(cmd *seed.Command) error {
 		b.Field("Value", seed.Symbol("int")),
 		b.Field("Doc", seed.Symbol("string")),
 	).Constructor(
-		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Value", seed.Symbol("int")),
+		b.Arg("Name", seed.Symbol("string")),
 	).NeedBuilder() // generate IntValue, IntValueMetadata
 
 	// string
