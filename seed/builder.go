@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 )
 
 type Builder struct {
@@ -264,6 +265,24 @@ type Import struct {
 
 // ----------------------------------------
 type TypeVarMetadataList []*TypeVarMetadata
+
+var pool = &sync.Pool{
+	New: func() any {
+		var b strings.Builder
+		return &b
+	},
+}
+
+func (tvs TypeVarMetadataList) Names() string {
+	b := pool.Get().(*strings.Builder)
+	defer pool.Put(b)
+	b.Reset()
+	for _, tv := range tvs {
+		b.WriteString(tv.Name)
+		b.WriteString(", ")
+	}
+	return b.String()
+}
 
 // ----------------------------------------
 
