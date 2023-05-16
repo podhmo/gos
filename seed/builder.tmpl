@@ -117,10 +117,10 @@ func (t *{{$target}}Ref) Get{{$target}}Metadata() *{{$target}}Metadata {
 {{range $_, $t := $root.Types}}{{with $name := ($t.Name)}}
 {{if $t.NeedBuilder }}
 // {{$name}} builds {{$target}} for {{$name}}
-func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} {{$tv.Type}}, {{end}}{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}} {
-	t := &{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}}{
-		{{$name}}Builder: &{{$name}}Builder[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}}]{
-			_{{$target}}:    &_{{$target}}[*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}}]{rootbuilder: b, metadata: &{{$target}}Metadata{Name: "", underlying: {{$t.Underlying | printf "%q"}}}},
+func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} {{$tv.Type}}, {{end}}{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}} {
+	t := &{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}{
+		{{$name}}Builder: &{{$name}}Builder[{{$t.TVars.Types}}*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}]{
+			_{{$target}}:    &_{{$target}}[*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}]{rootbuilder: b, metadata: &{{$target}}Metadata{Name: "", underlying: {{$t.Underlying | printf "%q"}}}},
 			metadata: &{{$name}}Metadata{
 				{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name}}: {{$a.Name | toLower}}, {{end}}{{end}}
 			},
