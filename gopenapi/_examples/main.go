@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/podhmo/gos/gopenapi"
+	"github.com/podhmo/gos/seed"
 )
 
 func main() {
@@ -24,6 +25,17 @@ func main() {
 		b.Field("title", b.String()),
 		b.Field("tests", b.Map(b.Int()).Pattern(`\-score$`).Doc("score (0~100)")),
 	))
+
+	// TODO:
+	// Hello :: func(name string) string
+	b.Action("hello",
+		b.Input(
+			b.Param("name", seed.Symbol("string"), "path"),
+		).Doc("input"),
+		b.Output(
+			b.String(),
+		).Doc("output"),
+	)
 
 	// doc, err := gopenapi.ToSchema(b)
 	// if err != nil {
