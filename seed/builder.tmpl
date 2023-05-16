@@ -197,7 +197,12 @@ func (t *_{{$target}}[R]) store{{$target}}(name string) {
 	t.metadata.Name = name
 	t.rootbuilder.store{{$target}}(t.ret)
 }
-{{end}}{{end}}{{end}}
+{{if $root.Footer}}
+
+// footer. ----
+{{$root.Footer}}
+{{end}}
+{{end}}{{end}}{{end -}}
 
 ----------------------------------------
 
@@ -232,4 +237,4 @@ type {{$name}} struct {
 }
 {{end}}
 {{end}}{{end}}
-{{end}}{{end}}{{end}}
+{{end}}{{end}}{{end -}}

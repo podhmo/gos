@@ -167,6 +167,12 @@ func (b *Builder) GeneratedBy(v string) *Builder {
 	return b
 }
 
+// Footer is setter method for adding footer.
+func (b *Builder) Footer(v string) *Builder {
+	b.metadata.Footer = strings.TrimSpace(v)
+	return b
+}
+
 type Type struct {
 	*typeBuilder[*Type]
 }
@@ -222,6 +228,7 @@ type BuilderMetadata struct {
 	SysArgs     []string // runtime os.Args[1:]
 	PkgName     string   // package {{.PkgName}}}
 	GeneratedBy string   // github.com/podhmo/gos/seed
+	Footer      string
 }
 
 type TypeMetadata struct {
