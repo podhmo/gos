@@ -13,7 +13,7 @@ type Builder struct {
 func NewBuilder(pkgname string, fields ...*Field) *Builder {
 	metadata := make([]*FieldMetadata, len(fields))
 	for i, f := range fields {
-		metadata[i] = f.Metadata
+		metadata[i] = f.metadata
 	}
 
 	return &Builder{
@@ -42,7 +42,7 @@ func (b *Builder) BuildTarget(name string, fields ...*Field) Symbol {
 
 	metadata := make([]*FieldMetadata, len(fields))
 	for i, f := range fields {
-		metadata[i] = f.Metadata
+		metadata[i] = f.metadata
 	}
 	b.Metadata.TargetFields = metadata
 	return Symbol(name)
@@ -70,7 +70,7 @@ func (b *Builder) NamedImport(name string, path string) Symbol {
 func (b *Builder) TypeVar(name string, typ Symbol) *TypeVar {
 	t := &TypeVar{
 		typeVarBuilder: &typeVarBuilder[*TypeVar]{
-			Metadata: &TypeVarMetadata{
+			metadata: &TypeVarMetadata{
 				Name: name,
 				Type: typ,
 			},
@@ -82,7 +82,7 @@ func (b *Builder) TypeVar(name string, typ Symbol) *TypeVar {
 func (b *Builder) Field(name string, typ Symbol) *Field {
 	t := &Field{
 		fieldBuilder: &fieldBuilder[*Field]{
-			Metadata: &FieldMetadata{
+			metadata: &FieldMetadata{
 				Name: name,
 				Type: typ,
 			},
@@ -94,7 +94,7 @@ func (b *Builder) Field(name string, typ Symbol) *Field {
 func (b *Builder) Arg(name string, typ Symbol) *Arg {
 	t := &Arg{
 		argBuilder: &argBuilder[*Arg]{
-			Metadata: &ArgMetadata{
+			metadata: &ArgMetadata{
 				Name: name,
 				Type: typ,
 			},
@@ -106,7 +106,7 @@ func (b *Builder) Arg(name string, typ Symbol) *Arg {
 func (b *Builder) Constructor(args ...*Arg) *Builder {
 	metadata := make([]*ArgMetadata, len(args))
 	for i, a := range args {
-		metadata[i] = a.Metadata
+		metadata[i] = a.metadata
 	}
 	b.Metadata.Constructor = &Constructor{Args: metadata}
 	return b
@@ -118,16 +118,16 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 	for _, tattr := range typeVarOrFieldList {
 		switch t := tattr.(type) {
 		case *TypeVar:
-			tvars = append(tvars, t.Metadata)
+			tvars = append(tvars, t.metadata)
 		case *Field:
-			fields = append(fields, t.Metadata)
+			fields = append(fields, t.metadata)
 		default:
 			panic(fmt.Sprintf("unexpected type: %T", tattr))
 		}
 	}
 
 	t := &Type{
-		typeBuilder: &typeBuilder[*Type]{Metadata: &TypeMetadata{
+		typeBuilder: &typeBuilder[*Type]{metadata: &TypeMetadata{
 			Name:       Symbol(name),
 			Underlying: name,
 			TVars:      tvars,
@@ -136,7 +136,7 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 		}},
 	}
 	t.ret = t
-	b.Metadata.Types = append(b.Metadata.Types, t.Metadata)
+	b.Metadata.Types = append(b.Metadata.Types, t.metadata)
 	return t
 }
 
@@ -145,26 +145,30 @@ type Type struct {
 }
 
 type typeBuilder[R any] struct {
-	Metadata *TypeMetadata
+	metadata *TypeMetadata
 	ret      R
 }
 
+func (t *typeBuilder[R]) GetMetadata() *TypeMetadata {
+	return t.metadata
+}
+
 func (b *typeBuilder[R]) NeedBuilder() R {
-	b.Metadata.NeedBuilder = true
+	b.metadata.NeedBuilder = true
 	return b.ret
 }
 func (b *typeBuilder[R]) Underlying(v string) R {
-	b.Metadata.Underlying = v
+	b.metadata.Underlying = v
 	return b.ret
 }
 func (b *typeBuilder[R]) Constructor(args ...*Arg) R {
 	metadata := make([]*ArgMetadata, len(args))
 	for i, a := range args {
-		metadata[i] = a.Metadata
+		metadata[i] = a.metadata
 	}
-	b.Metadata.Constructor = &Constructor{Args: metadata}
+	b.metadata.Constructor = &Constructor{Args: metadata}
 	for _, a := range metadata {
-		b.Metadata.Used[a.Name] = true
+		b.metadata.Used[a.Name] = true
 	}
 	return b.ret
 }
@@ -232,12 +236,16 @@ type Field struct {
 	*fieldBuilder[*Field]
 }
 type fieldBuilder[R any] struct {
-	Metadata *FieldMetadata
+	metadata *FieldMetadata
 	ret      R
 }
 
+func (b *fieldBuilder[R]) GetMetadata() *FieldMetadata {
+	return b.metadata
+}
+
 func (b *fieldBuilder[R]) Tag(v string) R {
-	b.Metadata.Tag = v
+	b.metadata.Tag = v
 	return b.ret
 }
 
@@ -245,19 +253,28 @@ type TypeVar struct {
 	*typeVarBuilder[*TypeVar]
 }
 type typeVarBuilder[R any] struct {
-	Metadata *TypeVarMetadata
+	metadata *TypeVarMetadata
 	ret      R
 }
+
+func (b *typeVarBuilder[R]) GetMetadata() *TypeVarMetadata {
+	return b.metadata
+}
+
 type Arg struct {
 	*argBuilder[*Arg]
 }
 type argBuilder[R any] struct {
-	Metadata *ArgMetadata
+	metadata *ArgMetadata
 	ret      R
 }
 
+func (b *argBuilder[R]) GetMetadata() *ArgMetadata {
+	return b.metadata
+}
+
 func (b *argBuilder[R]) Variadic() R {
-	b.Metadata.Variadic = true
+	b.metadata.Variadic = true
 	return b.ret
 }
 
