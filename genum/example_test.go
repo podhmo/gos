@@ -11,9 +11,9 @@ func ExampleWriteCode() {
 	b := genum.NewEnumBuilder(config)
 
 	genum.DefineEnum("RGBColor", b.String(
-		genum.StringValue{Name: "Red", Value: "R", Doc: "red color"},
-		genum.StringValue{Name: "Green", Value: "G", Doc: "green color"},
-		genum.StringValue{Name: "Blue", Value: "B", Doc: "blue color"},
+		b.StringValue("R").Name("Red").Doc("red color"),
+		b.StringValue("G").Name("Green").Doc("green color"),
+		b.StringValue("B").Name("Blue").Doc("blue color"),
 	)).Doc("rgb").Default("R")
 
 	w := os.Stdout
