@@ -83,7 +83,7 @@ func (b *Builder) Int(members ...*IntValue) *Int {
 		IntBuilder: &IntBuilder[*Int]{
 			_Enum: &_Enum[*Int]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
 			metadata: &IntMetadata{
-				Members: mapslice(members, func(x *IntValue) *IntValueMetadata { return x.metadata }),
+				Members: toSlice(members, func(x *IntValue) *IntValueMetadata { return x.metadata }),
 			},
 		},
 	}
@@ -157,7 +157,7 @@ func (b *Builder) String(members ...*StringValue) *String {
 		StringBuilder: &StringBuilder[*String]{
 			_Enum: &_Enum[*String]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
 			metadata: &StringMetadata{
-				Members: mapslice(members, func(x *StringValue) *StringValueMetadata { return x.metadata }),
+				Members: toSlice(members, func(x *StringValue) *StringValueMetadata { return x.metadata }),
 			},
 		},
 	}
@@ -254,7 +254,8 @@ func (t *_Enum[R]) storeEnum(name string) {
 }
 
 // footer. ----
-func mapslice[S, D any](src []S, conv func(S) D) []D {
+// toSlice is list.map as you know.
+func toSlice[S, D any](src []S, conv func(S) D) []D {
 	dst := make([]D, len(src))
 	for i, x := range src {
 		dst[i] = conv(x)

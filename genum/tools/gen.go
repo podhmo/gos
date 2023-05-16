@@ -37,7 +37,7 @@ func run(cmd *seed.Command) error {
 		).Constructor(
 			// b.Members[i] = members[i].metadata
 			b.Arg("Members", seed.Symbol("*IntValue")).Variadic().Transform(func(v string) string {
-				return fmt.Sprintf("mapslice(%s, func(x *IntValue) *IntValueMetadata { return x.metadata})", v)
+				return fmt.Sprintf("toSlice(%s, func(x *IntValue) *IntValueMetadata { return x.metadata})", v)
 			}),
 		).NeedBuilder().Underlying("int") // generate Int, IntMetadata
 
@@ -58,7 +58,7 @@ func run(cmd *seed.Command) error {
 			b.Field("Members", seed.Symbol("[]*StringValueMetadata")),
 		).Constructor(
 			b.Arg("Members", seed.Symbol("*StringValue")).Variadic().Transform(func(v string) string {
-				return fmt.Sprintf("mapslice(%s, func(x *StringValue) *StringValueMetadata { return x.metadata})", v)
+				return fmt.Sprintf("toSlice(%s, func(x *StringValue) *StringValueMetadata { return x.metadata})", v)
 			}),
 		).NeedBuilder().Underlying("string")
 		b.Type("StringValue",
@@ -72,7 +72,8 @@ func run(cmd *seed.Command) error {
 
 	// for transform
 	b.Footer(`
-	func mapslice[S, D any](src []S, conv func(S) D) []D {
+	// toSlice is list.map as you know.
+	func toSlice[S, D any](src []S, conv func(S) D) []D {
 		dst := make([]D, len(src))
 		for i, x := range src {
 			dst[i] = conv(x)
