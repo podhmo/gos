@@ -7,7 +7,7 @@ import (
 )
 
 type Builder struct {
-	Metadata *BuilderMetadata
+	metadata *BuilderMetadata
 }
 
 func NewBuilder(pkgname string, fields ...*Field) *Builder {
@@ -17,13 +17,17 @@ func NewBuilder(pkgname string, fields ...*Field) *Builder {
 	}
 
 	return &Builder{
-		Metadata: &BuilderMetadata{
+		metadata: &BuilderMetadata{
 			PkgName:     pkgname,
 			SysArgs:     os.Args[1:],
 			GeneratedBy: "github.com/podhmo/gos/seed",
 			Fields:      metadata,
 		},
 	}
+}
+
+func (b *Builder) GetMetadata() *BuilderMetadata {
+	return b.metadata
 }
 
 var Root = NewBuilder("")
@@ -38,32 +42,32 @@ func (s Symbol) Slice() Symbol {
 }
 
 func (b *Builder) BuildTarget(name string, fields ...*Field) Symbol {
-	b.Metadata.Target = Symbol(name)
+	b.metadata.Target = Symbol(name)
 
 	metadata := make([]*FieldMetadata, len(fields))
 	for i, f := range fields {
 		metadata[i] = f.metadata
 	}
-	b.Metadata.TargetFields = metadata
+	b.metadata.TargetFields = metadata
 	return Symbol(name)
 }
 func (b *Builder) NeedReference() *Builder {
-	b.Metadata.NeedReference = true
+	b.metadata.NeedReference = true
 	return b
 }
 
 func (b *Builder) InterfaceMethods(methods ...string) *Builder {
-	b.Metadata.InterfaceMethods = append(b.Metadata.InterfaceMethods, methods...)
+	b.metadata.InterfaceMethods = append(b.metadata.InterfaceMethods, methods...)
 	return b
 }
 
 func (b *Builder) Import(path string) Symbol {
-	b.Metadata.Imports = append(b.Metadata.Imports, Import{Path: path})
+	b.metadata.Imports = append(b.metadata.Imports, Import{Path: path})
 	parts := strings.Split(path, "/")
 	return Symbol(parts[len(parts)-1])
 }
 func (b *Builder) NamedImport(name string, path string) Symbol {
-	b.Metadata.Imports = append(b.Metadata.Imports, Import{Name: name, Path: path})
+	b.metadata.Imports = append(b.metadata.Imports, Import{Name: name, Path: path})
 	return Symbol(name)
 }
 
@@ -108,7 +112,7 @@ func (b *Builder) Constructor(args ...*Arg) *Builder {
 	for i, a := range args {
 		metadata[i] = a.metadata
 	}
-	b.Metadata.Constructor = &Constructor{Args: metadata}
+	b.metadata.Constructor = &Constructor{Args: metadata}
 	return b
 }
 
@@ -136,8 +140,13 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 		}},
 	}
 	t.ret = t
-	b.Metadata.Types = append(b.Metadata.Types, t.metadata)
+	b.metadata.Types = append(b.metadata.Types, t.metadata)
 	return t
+}
+
+func (b *Builder) GeneratedBy(v string) *Builder {
+	b.metadata.GeneratedBy = v
+	return b
 }
 
 type Type struct {

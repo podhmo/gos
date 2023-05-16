@@ -70,7 +70,7 @@ func (c *Command) Do(b *Builder) error {
 			defer f.Close()
 			w = f
 		}
-		if err := t.ExecuteTemplate(w, "Builder", b.Metadata); err != nil {
+		if err := t.ExecuteTemplate(w, "Builder", b.metadata); err != nil {
 			return fmt.Errorf("write builder.go: %w", err)
 		}
 	}
@@ -86,7 +86,7 @@ func (c *Command) Do(b *Builder) error {
 			defer f.Close()
 			w = f
 		}
-		if err := t.ExecuteTemplate(w, "Metadata", b.Metadata); err != nil {
+		if err := t.ExecuteTemplate(w, "Metadata", b.metadata); err != nil {
 			return fmt.Errorf("write metadata.go: %w", err)
 		}
 	}
