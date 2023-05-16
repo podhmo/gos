@@ -114,45 +114,45 @@ func (t *{{$target}}Ref) Get{{$target}}Metadata() *{{$target}}Metadata {
 }
 {{end}}
 
-{{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
-{{if $t.Metadata.NeedBuilder }}
+{{range $_, $t := $root.Types}}{{with $name := ($t.Name)}}
+{{if $t.NeedBuilder }}
 // {{$name}} builds {{$target}} for {{$name}}
-func (b *Builder) {{$name}}({{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name | toLower}} {{$tv.Type}}, {{end}}{{if (not (eq $t.Metadata.Constructor nil))}}{{range $_,$a := $t.Metadata.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *{{$name}}{{$target}}{{if (lt 0 (len $t.Metadata.TVars))}}[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Type}}, {{end}}]{{end}} {
-	t := &{{$name}}{{$target}}{{if (lt 0 (len $t.Metadata.TVars))}}[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Type}}, {{end}}]{{end}}{
-		{{$name}}Builder: &{{$name}}Builder[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Type}}, {{end}}*{{$name}}{{$target}}{{if (lt 0 (len $t.Metadata.TVars))}}[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Type}}, {{end}}]{{end}}]{
-			_{{$target}}:    &_{{$target}}[*{{$name}}{{$target}}{{if (lt 0 (len $t.Metadata.TVars))}}[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Type}}, {{end}}]{{end}}]{rootbuilder: b, metadata: &{{$target}}Metadata{Name: "", underlying: {{$t.Metadata.Underlying | printf "%q"}}}},
+func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} {{$tv.Type}}, {{end}}{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}} {
+	t := &{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}}{
+		{{$name}}Builder: &{{$name}}Builder[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}}]{
+			_{{$target}}:    &_{{$target}}[*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Type}}, {{end}}]{{end}}]{rootbuilder: b, metadata: &{{$target}}Metadata{Name: "", underlying: {{$t.Underlying | printf "%q"}}}},
 			metadata: &{{$name}}Metadata{
-				{{if (not (eq $t.Metadata.Constructor nil))}}{{range $_,$a := $t.Metadata.Constructor.Args}}{{$a.Name}}: {{$a.Name | toLower}}, {{end}}{{end}}
+				{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name}}: {{$a.Name | toLower}}, {{end}}{{end}}
 			},
-			{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name | toLower}}: {{$tv.Name | toLower}}, {{end}}
+			{{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}}: {{$tv.Name | toLower}}, {{end}}
 		},
 	}
 	t.ret = t
 	return t
 }
 
-type {{$name}}{{$target}}{{if (lt 0 (len $t.Metadata.TVars))}}[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}} {{$tv.Type}}, {{end}}]{{end}} struct {
-	*{{$name}}Builder[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}}, {{end}}*{{$name}}{{$target}}{{if (lt 0 (len $t.Metadata.TVars))}}[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}}, {{end}}]{{end}}]
+type {{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Name}} {{$tv.Type}}, {{end}}]{{end}} struct {
+	*{{$name}}Builder[{{range $_, $tv := $t.TVars}}{{$tv.Name}}, {{end}}*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Name}}, {{end}}]{{end}}]
 }
 
-func (t *{{$name}}{{$target}}{{if (lt 0 (len $t.Metadata.TVars))}}[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}}, {{end}}]{{end}}) GetMetadata() *{{$name}}Metadata {
+func (t *{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{range $_, $tv := $t.TVars}}{{$tv.Name}}, {{end}}]{{end}}) GetMetadata() *{{$name}}Metadata {
 	return t.metadata
 }
 
-type {{$name}}Builder[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}} {{$tv.Type}}, {{end}}R {{$target}}Builder] struct {
+type {{$name}}Builder[{{range $_, $tv := $t.TVars}}{{$tv.Name}} {{$tv.Type}}, {{end}}R {{$target}}Builder] struct {
 	*_{{$target}}[R]
 	metadata *{{$name}}Metadata
 
-{{- range $_, $tv := $t.Metadata.TVars}}
+{{- range $_, $tv := $t.TVars}}
 	{{$tv.Name | toLower}} {{$tv.Name}}
 {{end}}
 }
 
-{{if (lt 0 (len $t.Metadata.Fields))}}
+{{if (lt 0 (len $t.Fields))}}
 // begin setter of {{$name}} --------------------
-{{range $_, $f := $t.Metadata.Fields}}{{if (not (index $t.Metadata.Used $f.Name))}}
+{{range $_, $f := $t.Fields}}{{if (not (index $t.Used $f.Name))}}
 // {{$f.Name}} set Metadata.{{$f.Name}}
-func (b *{{$name}}Builder[{{range $_, $tv := $t.Metadata.TVars}}{{$tv.Name}}, {{end}}R]) {{$f.Name}}(value {{$f.Type}}) R {
+func (b *{{$name}}Builder[{{range $_, $tv := $t.TVars}}{{$tv.Name}}, {{end}}R]) {{$f.Name}}(value {{$f.Type}}) R {
 	b.metadata.{{$f.Name}} = value
 	return b.ret
 }
@@ -217,16 +217,16 @@ type {{$target}}Metadata struct {
 {{end}}
 }
 
-{{range $_, $t := $root.Types}}{{with $name := ($t.Metadata.Name)}}
-{{if $t.Metadata.NeedBuilder }}
+{{range $_, $t := $root.Types}}{{with $name := ($t.Name)}}
+{{if $t.NeedBuilder }}
 type {{$name}}Metadata struct {
-{{- range $_, $f := $t.Metadata.Fields}}
+{{- range $_, $f := $t.Fields}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
 {{end}}
 }
 {{else}}
 type {{$name}} struct {
-{{- range $_, $f := $t.Metadata.Fields}}
+{{- range $_, $f := $t.Fields}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
 {{end}}
 }

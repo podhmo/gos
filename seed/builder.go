@@ -136,7 +136,7 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 		}},
 	}
 	t.ret = t
-	b.Metadata.Types = append(b.Metadata.Types, t)
+	b.Metadata.Types = append(b.Metadata.Types, t.Metadata)
 	return t
 }
 
@@ -174,7 +174,7 @@ type BuilderMetadata struct {
 	Target       Symbol
 	TargetFields []*FieldMetadata // fields of Metadata
 
-	Types []*Type
+	Types []*TypeMetadata
 
 	NeedReference bool
 
