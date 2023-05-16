@@ -122,7 +122,7 @@ func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} 
 		{{$name}}Builder: &{{$name}}Builder[{{$t.TVars.Types}}*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}]{
 			_{{$target}}:    &_{{$target}}[*{{$name}}{{$target}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}]{rootbuilder: b, metadata: &{{$target}}Metadata{Name: "", underlying: {{$t.Underlying | printf "%q"}}}},
 			metadata: &{{$name}}Metadata{
-				{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name}}: {{$a.Name | toLower}}, {{end}}{{end}}
+				{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name}}: {{if $a.Transform}}{{call $a.Transform (toLower $a.Name)}}{{else}}{{$a.Name | toLower}}{{end}}, {{end}}{{end}}
 			},
 			{{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}}: {{$tv.Name | toLower}}, {{end}}
 		},

@@ -255,6 +255,8 @@ type ArgMetadata struct {
 	Name     string
 	Type     Symbol
 	Variadic bool // as ...<type>
+
+	Transform func(string) string
 }
 
 type Import struct {
@@ -309,6 +311,13 @@ func (b *argBuilder[R]) GetMetadata() *ArgMetadata {
 // Variadic is setter method for set metadata.Variadic is true
 func (b *argBuilder[R]) Variadic() R {
 	b.metadata.Variadic = true
+	return b.ret
+}
+
+// Transform is setter method for setting transform function.
+// (This method is typically used when the parent data has children of type XXXMetadata.)
+func (b *argBuilder[R]) Transform(fn func(string) string) R {
+	b.metadata.Transform = fn
 	return b.ret
 }
 
