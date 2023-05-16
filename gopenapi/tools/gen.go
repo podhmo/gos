@@ -28,6 +28,9 @@ func run() error {
 	)
 	b.InterfaceMethods("writeTyper // see: ./to_string.go")
 
+	// ----------------------------------------
+	// types
+	// ----------------------------------------
 	Bool := b.Type("Bool").NeedBuilder().Underlying("boolean")
 	Int := b.Type("Int",
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
@@ -66,6 +69,9 @@ func run() error {
 		}),
 	).NeedBuilder().Underlying("object")
 
+	// ----------------------------------------
+	// action
+	// ----------------------------------------
 	Action := b.Type("Action",
 		b.Field("Name", seed.Symbol("string")),
 		b.Field("Input", "*Input"),
@@ -86,6 +92,7 @@ func run() error {
 	).Constructor(
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
 	).NeedBuilder().Underlying("")
+
 	Param := b.Type("Param",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`),
