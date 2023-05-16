@@ -24,35 +24,57 @@ func run(cmd *seed.Command) error {
 
 	// define
 	b.BuildTarget("Enum")
-	b.InterfaceMethods(`writeCoder // see: to_code.go`)
 
 	b.Constructor(
 		b.Arg("Config", seed.Symbol("*Config")),
 	)
 
+	// int
 	b.Type("Int",
 		b.Field("Default", seed.Symbol("int")).Tag(`json:"default"`),
-		b.Field("Members", seed.Symbol("[]IntValue")),
+		b.Field("Members", seed.Symbol("[]*IntValueMetadata")),
 	).Constructor(
-		b.Arg("Members", seed.Symbol("IntValue")).Variadic(),
-	).NeedBuilder().Underlying("int")
+		b.Arg("Members", seed.Symbol("*IntValue")).Variadic().Transform(func(v string) string {
+			return fmt.Sprintf("mapslice(%s, func(x *IntValue) *IntValueMetadata { return x.metadata})", v)
+		}),
+	).NeedBuilder().Underlying("int") // generate Int, IntMetadata
+
 	b.Type("IntValue",
 		b.Field("Name", seed.Symbol("string")),
 		b.Field("Value", seed.Symbol("int")),
 		b.Field("Doc", seed.Symbol("string")),
-	)
+	).Constructor(
+		b.Arg("Value", seed.Symbol("int")),
+		b.Arg("Name", seed.Symbol("string")),
+	).NeedBuilder() // generate IntValue, IntValueMetadata
 
+	// string
 	b.Type("String",
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default"`),
-		b.Field("Members", seed.Symbol("[]StringValue")),
+		b.Field("Members", seed.Symbol("[]*StringValueMetadata")),
 	).Constructor(
-		b.Arg("Members", seed.Symbol("StringValue")).Variadic(),
+		b.Arg("Members", seed.Symbol("*StringValue")).Variadic().Transform(func(v string) string {
+			return fmt.Sprintf("mapslice(%s, func(x *StringValue) *StringValueMetadata { return x.metadata})", v)
+		}),
 	).NeedBuilder().Underlying("string")
 	b.Type("StringValue",
 		b.Field("Name", seed.Symbol("string")),
 		b.Field("Value", seed.Symbol("string")),
 		b.Field("Doc", seed.Symbol("string")),
-	)
+	).Constructor(
+		b.Arg("Value", seed.Symbol("string")),
+	).NeedBuilder()
+
+	// for transform
+	b.Footer(`
+	func mapslice[S, D any](src []S, conv func(S) D) []D {
+		dst := make([]D, len(src))
+		for i, x := range src {
+			dst[i] = conv(x)
+		}
+		return dst
+	}	
+	`)
 
 	// emit
 	if err := cmd.Do(b); err != nil {

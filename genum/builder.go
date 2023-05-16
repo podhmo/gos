@@ -10,9 +10,6 @@ import (
 
 type EnumBuilder interface {
 	GetEnumMetadata() *EnumMetadata
-
-	writeCoder // see: to_code.go
-
 }
 
 // DefineEnum names Enum value.
@@ -81,12 +78,12 @@ func (b *Builder) lookupEnum(name string) EnumBuilder {
 }
 
 // Int builds Enum for Int
-func (b *Builder) Int(members ...IntValue) *IntEnum {
-	t := &IntEnum{
-		IntBuilder: &IntBuilder[*IntEnum]{
-			_Enum: &_Enum[*IntEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
+func (b *Builder) Int(members ...*IntValue) *Int {
+	t := &Int{
+		IntBuilder: &IntBuilder[*Int]{
+			_Enum: &_Enum[*Int]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
 			metadata: &IntMetadata{
-				Members: members,
+				Members: mapslice(members, func(x *IntValue) *IntValueMetadata { return x.metadata }),
 			},
 		},
 	}
@@ -94,11 +91,11 @@ func (b *Builder) Int(members ...IntValue) *IntEnum {
 	return t
 }
 
-type IntEnum struct {
-	*IntBuilder[*IntEnum]
+type Int struct {
+	*IntBuilder[*Int]
 }
 
-func (t *IntEnum) GetMetadata() *IntMetadata {
+func (t *Int) GetMetadata() *IntMetadata {
 	return t.metadata
 }
 
@@ -117,13 +114,13 @@ func (b *IntBuilder[R]) Default(value int) R {
 
 // end setter of Int --------------------
 
-// String builds Enum for String
-func (b *Builder) String(members ...StringValue) *StringEnum {
-	t := &StringEnum{
-		StringBuilder: &StringBuilder[*StringEnum]{
-			_Enum: &_Enum[*StringEnum]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
-			metadata: &StringMetadata{
-				Members: members,
+// IntValue builds Enum for IntValue
+func (b *Builder) IntValue(value int, name string) *IntValue {
+	t := &IntValue{
+		IntValueBuilder: &IntValueBuilder[*IntValue]{
+			_Enum: &_Enum[*IntValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "IntValue"}},
+			metadata: &IntValueMetadata{
+				Value: value, Name: name,
 			},
 		},
 	}
@@ -131,11 +128,48 @@ func (b *Builder) String(members ...StringValue) *StringEnum {
 	return t
 }
 
-type StringEnum struct {
-	*StringBuilder[*StringEnum]
+type IntValue struct {
+	*IntValueBuilder[*IntValue]
 }
 
-func (t *StringEnum) GetMetadata() *StringMetadata {
+func (t *IntValue) GetMetadata() *IntValueMetadata {
+	return t.metadata
+}
+
+type IntValueBuilder[R EnumBuilder] struct {
+	*_Enum[R]
+	metadata *IntValueMetadata
+}
+
+// begin setter of IntValue --------------------
+
+// Doc set Metadata.Doc
+func (b *IntValueBuilder[R]) Doc(value string) R {
+	b.metadata.Doc = value
+	return b.ret
+}
+
+// end setter of IntValue --------------------
+
+// String builds Enum for String
+func (b *Builder) String(members ...*StringValue) *String {
+	t := &String{
+		StringBuilder: &StringBuilder[*String]{
+			_Enum: &_Enum[*String]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
+			metadata: &StringMetadata{
+				Members: mapslice(members, func(x *StringValue) *StringValueMetadata { return x.metadata }),
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type String struct {
+	*StringBuilder[*String]
+}
+
+func (t *String) GetMetadata() *StringMetadata {
 	return t.metadata
 }
 
@@ -153,6 +187,49 @@ func (b *StringBuilder[R]) Default(value string) R {
 }
 
 // end setter of String --------------------
+
+// StringValue builds Enum for StringValue
+func (b *Builder) StringValue(value string) *StringValue {
+	t := &StringValue{
+		StringValueBuilder: &StringValueBuilder[*StringValue]{
+			_Enum: &_Enum[*StringValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "StringValue"}},
+			metadata: &StringValueMetadata{
+				Value: value,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type StringValue struct {
+	*StringValueBuilder[*StringValue]
+}
+
+func (t *StringValue) GetMetadata() *StringValueMetadata {
+	return t.metadata
+}
+
+type StringValueBuilder[R EnumBuilder] struct {
+	*_Enum[R]
+	metadata *StringValueMetadata
+}
+
+// begin setter of StringValue --------------------
+
+// Name set Metadata.Name
+func (b *StringValueBuilder[R]) Name(value string) R {
+	b.metadata.Name = value
+	return b.ret
+}
+
+// Doc set Metadata.Doc
+func (b *StringValueBuilder[R]) Doc(value string) R {
+	b.metadata.Doc = value
+	return b.ret
+}
+
+// end setter of StringValue --------------------
 
 // internal Enum
 
@@ -174,4 +251,13 @@ func (t *_Enum[R]) Doc(stmts ...string) R {
 func (t *_Enum[R]) storeEnum(name string) {
 	t.metadata.Name = name
 	t.rootbuilder.storeEnum(t.ret)
+}
+
+// footer. ----
+func mapslice[S, D any](src []S, conv func(S) D) []D {
+	dst := make([]D, len(src))
+	for i, x := range src {
+		dst[i] = conv(x)
+	}
+	return dst
 }

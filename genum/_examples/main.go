@@ -11,15 +11,15 @@ func main() {
 	b := genum.NewEnumBuilder(genum.DefaultConfig())
 
 	genum.DefineEnum("Ordering", b.String(
-		genum.StringValue{Value: "desc", Doc: "降順"},
-		genum.StringValue{Value: "asc", Doc: "昇順"},
+		b.StringValue("desc").Doc("降順"),
+		b.StringValue("asc").Doc("昇順"),
 	)).Default("desc").Doc("順序")
 
 	genum.DefineEnum("Season", b.Int(
-		genum.IntValue{Name: "Spring", Value: 0},
-		genum.IntValue{Name: "Summer", Value: 1},
-		genum.IntValue{Name: "Autumn", Value: 2},
-		genum.IntValue{Name: "Wrinter", Value: 3},
+		b.IntValue(0, "Spring"),
+		b.IntValue(1, "Summer"),
+		b.IntValue(2, "Autumn"),
+		b.IntValue(3, "Winter"),
 	))
 
 	if err := genum.WriteCode(w, b); err != nil {
