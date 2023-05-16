@@ -91,41 +91,40 @@ func (t *Map[T]) writeType(w io.Writer) error {
 	return nil
 }
 
-// func (t *ActionType) writeType(w io.Writer) error {
-// 	if err := t._Type.writeType(w); err != nil {
-// 		return err
-// 	}
-// 	io.WriteString(w, " ")
-// 	if err := t.input.writeType(w); err != nil {
-// 		return err
-// 	}
-// 	if err := t.output.writeType(w); err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+func (t *Action) writeType(w io.Writer) error {
+	io.WriteString(w, t.metadata.Name)
+	io.WriteString(w, " :: ")
+	if err := t.metadata.Input.writeType(w); err != nil {
+		return err
+	}
+	if err := t.metadata.Output.writeType(w); err != nil {
+		return err
+	}
+	return nil
+}
 
-// func (t *ActionInput) writeType(w io.Writer) error {
-// 	io.WriteString(w, "(") // nolint
-// 	if t != nil {
-// 		for i, p := range t.Params {
-// 			if err := p.typ.writeType(w); err != nil {
-// 				return err
-// 			}
-// 			if i < len(t.Params)-1 {
-// 				io.WriteString(w, ", ")
-// 			}
-// 		}
-// 	}
-// 	io.WriteString(w, ")") // nolint
-// 	return nil
-// }
+func (t *Input) writeType(w io.Writer) error {
+	io.WriteString(w, "(") // nolint
+	if t != nil {
+		for i, p := range t.metadata.Params {
+			if err := p.metadata.Typ.writeType(w); err != nil {
+				return err
+			}
+			if i < len(t.metadata.Params)-1 {
+				io.WriteString(w, ", ")
+			}
+		}
+	}
+	io.WriteString(w, ")") // nolint
+	return nil
+}
 
-// func (t *ActionOutput) writeType(w io.Writer) error {
-// 	if t != nil {
-// 		if err := t.retval.typ.writeType(w); err != nil {
-// 			return err
-// 		}
-// 	}
-// 	return nil
-// }
+func (t *Output) writeType(w io.Writer) error {
+	if t != nil {
+		io.WriteString(w, " => ") // nolint
+		if err := t.metadata.Typ.writeType(w); err != nil {
+			return err
+		}
+	}
+	return nil
+}

@@ -28,7 +28,7 @@ func main() {
 
 	// TODO:
 	// Hello :: func(name string) string
-	b.Action("hello",
+	Hello := b.Action("hello",
 		b.Input(
 			b.Param("name", b.String(), "path"),
 		).Doc("input"),
@@ -50,4 +50,6 @@ func main() {
 	if err := enc.Encode(doc); err != nil {
 		panic(err)
 	}
+	fmt.Fprintln(os.Stderr, gopenapi.ToString(Person))
+	fmt.Fprintln(os.Stderr, gopenapi.ToString(Hello))
 }
