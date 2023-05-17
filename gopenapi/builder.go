@@ -4,7 +4,6 @@ package gopenapi
 
 import (
 	"fmt"
-	"strings"
 	"sync"
 )
 
