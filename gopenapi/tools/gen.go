@@ -40,10 +40,14 @@ func run() error {
 	// ----------------------------------------
 	Bool := b.Type("Bool").NeedBuilder().Underlying("boolean")
 	Int := b.Type("Int",
+		b.Field("Enum", seed.Symbol("[]int64")).Tag(`json:"enum,omitempty"`),
+		b.Field("Default", seed.Symbol("int64")).Tag(`json:"enum,omitempty"`),
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
 	).NeedBuilder().Underlying("integer")
 	String := b.Type("String",
+		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"string,omitempty"`),
+		b.Field("Default", seed.Symbol("string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
 		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
 		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minlength,omitempty"`),
