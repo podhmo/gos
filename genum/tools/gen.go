@@ -21,6 +21,10 @@ func run(cmd *seed.Command) error {
 		seed.Root.Field("Config", seed.Symbol("*Config")),
 	)
 	b.GeneratedBy("github.com/podhmo/gos/genum/tools")
+	b.Constructor(
+		b.Arg("Config", seed.Symbol("*Config")),
+	)
+	b.Import("strings")
 
 	// define
 	b.BuildTarget("Enum",
@@ -28,10 +32,6 @@ func run(cmd *seed.Command) error {
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	}))
-
-	b.Constructor(
-		b.Arg("Config", seed.Symbol("*Config")),
-	)
 
 	// int
 	{

@@ -5,6 +5,8 @@ package genum
 import (
 	"fmt"
 	"sync"
+
+	"strings"
 )
 
 type EnumBuilder interface {
