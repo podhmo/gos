@@ -5,6 +5,8 @@ package gopenapi
 import (
 	"fmt"
 	"sync"
+
+	"strings"
 )
 
 type TypeBuilder interface {
@@ -581,9 +583,8 @@ func (t _Type[R]) Format(value string) R {
 	return t.ret
 }
 
-// Doc set Metadata.Doc
-func (t _Type[R]) Doc(value string) R {
-	t.metadata.Doc = value
+func (t _Type[R]) Doc(stmts ...string) R {
+	t.metadata.Doc = strings.Join(stmts, "\n")
 	return t.ret
 }
 
