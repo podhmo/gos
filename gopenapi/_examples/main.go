@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/podhmo/gos/genum"
 	"github.com/podhmo/gos/gopenapi"
 )
 
@@ -26,6 +27,17 @@ func main() {
 		b.Field("tests", b.Map(b.Int()).Pattern(`\-score$`).Doc("score (0~100)")),
 	))
 
+	// enum, in production, import from other package
+	var orderingEnum *genum.String
+	{
+		b := genum.NewEnumBuilder(genum.DefaultConfig())
+		orderingEnum = b.String(
+			b.StringValue("desc").Doc("降順"),
+			b.StringValue("asc").Doc("昇順"),
+		).Default("desc").Doc("順序")
+	}
+	Ordering := gopenapi.DefineType("Ordering", b.StringFromEnum(orderingEnum))
+
 	// TODO:
 	// Hello :: func(name string) string
 	Hello := b.Action("hello",
@@ -42,7 +54,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Fprintln(os.Stderr, Name, Person, TestScore)
+	fmt.Fprintln(os.Stderr, Name, Person, TestScore, Ordering)
 	// fmt.Fprintln(os.Stderr)
 
 	enc := json.NewEncoder(os.Stdout)
