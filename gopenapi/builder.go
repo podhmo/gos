@@ -158,6 +158,18 @@ type IntBuilder[R TypeBuilder] struct {
 
 // begin setter of Int --------------------
 
+// Enum set Metadata.Enum
+func (b *IntBuilder[R]) Enum(value []int64) R {
+	b.metadata.Enum = value
+	return b.ret
+}
+
+// Default set Metadata.Default
+func (b *IntBuilder[R]) Default(value int64) R {
+	b.metadata.Default = value
+	return b.ret
+}
+
 // Maximum set Metadata.Maximum
 func (b *IntBuilder[R]) Maximum(value int64) R {
 	b.metadata.Maximum = value
@@ -198,6 +210,18 @@ type StringBuilder[R TypeBuilder] struct {
 }
 
 // begin setter of String --------------------
+
+// Enum set Metadata.Enum
+func (b *StringBuilder[R]) Enum(value []string) R {
+	b.metadata.Enum = value
+	return b.ret
+}
+
+// Default set Metadata.Default
+func (b *StringBuilder[R]) Default(value string) R {
+	b.metadata.Default = value
+	return b.ret
+}
 
 // Pattern set Metadata.Pattern
 func (b *StringBuilder[R]) Pattern(value string) R {
