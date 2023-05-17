@@ -158,6 +158,12 @@ func (b *{{$name}}Builder[{{$t.TVars.Names}}R]) {{$f.Name}}(value {{$f.Type}}) R
 	return b.ret
 }
 {{end}}{{end}}
+{{range $_, $s := $t.Setters}}{{with $a := $s.Arg}}
+func (b *{{$name}}Builder[{{$t.TVars.Names}}R]) {{$s.Name}}({{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}}) R {
+	b.metadata.{{$s.Name}} = {{if $a.Transform}}{{call $a.Transform (toLower $a.Name)}}{{else}}{{$a.Name | toLower}}{{end}}
+	return b.ret
+}
+{{end}}{{end}}
 // end setter of {{$name}} --------------------
 {{end -}}
 
