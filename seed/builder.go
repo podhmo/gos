@@ -42,15 +42,23 @@ func (s Symbol) Slice() Symbol {
 }
 
 // BuildTarget is setter method for setting the name of your root builder's type
-func (b *Builder) BuildTarget(name string, fields ...*Field) Symbol {
-	b.metadata.Target = Symbol(name)
-
+func (b *Builder) BuildTarget(name string, fields ...*Field) *Type {
 	metadata := make([]*FieldMetadata, len(fields))
 	for i, f := range fields {
 		metadata[i] = f.metadata
 	}
-	b.metadata.TargetFields = metadata
-	return Symbol(name)
+
+	t := &Type{
+		typeBuilder: &typeBuilder[*Type]{metadata: &TypeMetadata{
+			Name:       Symbol(name),
+			Underlying: name,
+			Fields:     metadata,
+			Used:       map[string]bool{},
+		}},
+	}
+	t.ret = t
+	b.metadata.Target = t.metadata
+	return t
 }
 
 // NeedReference is setter method if you need reference functions in generated code.
@@ -220,10 +228,8 @@ func (b *typeBuilder[R]) Setter(fieldname string, arg *Arg) R {
 
 // metadata
 type BuilderMetadata struct {
-	Target       Symbol
-	TargetFields []*FieldMetadata // fields of Metadata
-
-	Types []*TypeMetadata
+	Target *TypeMetadata
+	Types  []*TypeMetadata
 
 	NeedReference bool
 
