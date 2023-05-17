@@ -211,6 +211,13 @@ func (b *typeBuilder[R]) Constructor(args ...*Arg) R {
 	return b.ret
 }
 
+// Setter is setter method define custom setter method (usually setter method is generated automatically).
+func (b *typeBuilder[R]) Setter(fieldname string, arg *Arg) R {
+	b.metadata.Setters = append(b.metadata.Setters, &SetterDefinition{Name: fieldname, Arg: arg.metadata})
+	b.metadata.Used[fieldname] = true
+	return b.ret
+}
+
 // metadata
 type BuilderMetadata struct {
 	Target       Symbol
@@ -239,6 +246,7 @@ type TypeMetadata struct {
 	NeedBuilder bool
 	Constructor *Constructor
 	Fields      []*FieldMetadata // fields of Metadata
+	Setters     []*SetterDefinition
 
 	Used map[string]bool
 }
@@ -258,6 +266,10 @@ type FieldMetadata struct {
 
 type Constructor struct {
 	Args []*ArgMetadata
+}
+type SetterDefinition struct {
+	Name string
+	Arg  *ArgMetadata
 }
 
 type ArgMetadata struct {

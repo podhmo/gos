@@ -55,6 +55,10 @@ func run() error {
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+	).Setter(
+		"Description", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
+			return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
+		}),
 	).NeedBuilder().Underlying("field") //?
 
 	Object := b.Type("Object",
@@ -64,21 +68,7 @@ func run() error {
 		b.Arg("Fields", seed.Symbol("*FieldType")).Variadic(),
 	).NeedBuilder().Underlying("object")
 
-	// Param := b.Type("Param")
-	// ParamType := Param.Metadata.Name
-	// ActionInput := b.Type("ActionInput").
-	// 	Field("Params", ParamType, "")
-	// ActionOutput := b.Type("ActionOutput").
-	// 	Field("Return", Type, "")
-	// Action := b.Type("Action").
-	// 	Field("Name", goStringType, "").
-	// 	Field("Input", ActionInput.Metadata.Name, "").
-	// 	Field("Output", ActionOutput.Metadata.Name, "").
-	// 	NeedBuilder()
-
 	fmt.Fprintln(os.Stderr, Type, Bool, Int, String, Array, Map, Field, Object)
-	// fmt.Fprintln(os.Stderr, Param, ActionInput, ActionOutput, Action)
-	// fmt.Fprintln(os.Stderr, b.Metadata.Types)
 
 	// emit
 	return cmd.Do(b)
