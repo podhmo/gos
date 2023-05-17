@@ -243,11 +243,16 @@ type _Enum[R EnumBuilder] struct {
 func (t *_Enum[R]) GetEnumMetadata() *EnumMetadata {
 	return t.metadata
 }
-func (t *_Enum[R]) Doc(stmts ...string) R {
-	t.metadata.Doc = strings.Join(stmts, "\n")
+
+// begin setter of Enum --------------------
+
+// Doc set Metadata.Doc
+func (t _Enum[R]) Doc(value string) R {
+	t.metadata.Doc = value
 	return t.ret
 }
 
+// end setter of Enum --------------------
 func (t *_Enum[R]) storeEnum(name string) {
 	t.metadata.Name = name
 	t.rootbuilder.storeEnum(t.ret)
