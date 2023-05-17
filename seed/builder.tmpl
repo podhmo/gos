@@ -185,13 +185,19 @@ func (t *_{{$target}}[R]) Get{{$target}}Metadata() *{{$target}}Metadata {
 
 {{if (lt 0 (len $root.Target.Fields))}}
 // begin setter of {{$target}} --------------------
-{{range $_, $f := $root.Target.Fields}}
+{{range $_, $f := $root.Target.Fields}}{{if (not (index $root.Target.Used $f.Name))}}
 // {{$f.Name}} set Metadata.{{$f.Name}}
 func (t _{{$target}}[R]) {{$f.Name}}(value {{$f.Type}}) R {
 	t.metadata.{{$f.Name}} = value
 	return t.ret
 }
-{{end}}
+{{end}}{{end}}
+{{range $_, $s := $root.Target.Setters}}{{with $a := $s.Arg}}
+func (t _{{$target}}[R]) {{$s.Name}}({{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}}) R {
+	t.metadata.{{$s.Name}} = {{if $a.Transform}}{{call $a.Transform (toLower $a.Name)}}{{else}}{{$a.Name | toLower}}{{end}}
+	return t.ret
+}
+{{end}}{{end}}
 // end setter of {{$target}} --------------------
 {{end -}}
 
