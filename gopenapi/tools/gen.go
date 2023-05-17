@@ -24,8 +24,8 @@ func run() error {
 	b.NeedReference()
 
 	Type := b.BuildTarget("Type",
-		b.Field("Format", seed.Symbol("string")).Tag(`json:"format"`),
-		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description"`),
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
+		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	}))
@@ -40,10 +40,14 @@ func run() error {
 	// ----------------------------------------
 	Bool := b.Type("Bool").NeedBuilder().Underlying("boolean")
 	Int := b.Type("Int",
+		b.Field("Enum", seed.Symbol("[]int64")).Tag(`json:"enum,omitempty"`),
+		b.Field("Default", seed.Symbol("int64")).Tag(`json:"enum,omitempty"`),
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
 	).NeedBuilder().Underlying("integer")
 	String := b.Type("String",
+		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"string,omitempty"`),
+		b.Field("Default", seed.Symbol("string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
 		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
 		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minlength,omitempty"`),

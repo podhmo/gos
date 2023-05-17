@@ -7,22 +7,26 @@ type TypeMetadata struct {
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
 
-	Format string `json:"format"`
-	Doc    string `json:"description"`
+	Format string `json:"format,omitempty"`
+	Doc    string `json:"description,omitempty"`
 }
 
 type BoolMetadata struct {
 }
 
 type IntMetadata struct {
-	Maximum int64 `json:"maximum,omitempty"`
-	Minimum int64 `json:"minimum,omitempty"`
+	Enum    []int64 `json:"enum,omitempty"`
+	Default int64   `json:"enum,omitempty"`
+	Maximum int64   `json:"maximum,omitempty"`
+	Minimum int64   `json:"minimum,omitempty"`
 }
 
 type StringMetadata struct {
-	Pattern   string `json:"pattern,omitempty"`
-	MaxLength int64  `json:"maxlength,omitempty"`
-	MinLength int64  `json:"minlength,omitempty"`
+	Enum      []string `json:"string,omitempty"`
+	Default   string   `json:"enum,omitempty"`
+	Pattern   string   `json:"pattern,omitempty"`
+	MaxLength int64    `json:"maxlength,omitempty"`
+	MinLength int64    `json:"minlength,omitempty"`
 }
 
 type ArrayMetadata struct {

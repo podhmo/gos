@@ -4,7 +4,6 @@ package genum
 
 import (
 	"fmt"
-	"strings"
 	"sync"
 )
 
