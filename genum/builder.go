@@ -245,9 +245,8 @@ func (t *_Enum[R]) GetEnumMetadata() *EnumMetadata {
 
 // begin setter of Enum --------------------
 
-// Doc set Metadata.Doc
-func (t _Enum[R]) Doc(value string) R {
-	t.metadata.Doc = value
+func (t _Enum[R]) Doc(stmts ...string) R {
+	t.metadata.Doc = strings.Join(stmts, "\n")
 	return t.ret
 }
 
