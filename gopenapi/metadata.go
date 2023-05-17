@@ -7,8 +7,8 @@ type TypeMetadata struct {
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
 
-	Format string `json:"format"`
-	Doc    string `json:"description"`
+	Format string `json:"format,omitempty"`
+	Doc    string `json:"description,omitempty"`
 }
 
 type BoolMetadata struct {

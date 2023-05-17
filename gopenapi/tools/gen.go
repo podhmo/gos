@@ -24,8 +24,8 @@ func run() error {
 	b.NeedReference()
 
 	Type := b.BuildTarget("Type",
-		b.Field("Format", seed.Symbol("string")).Tag(`json:"format"`),
-		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description"`),
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
+		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	}))
