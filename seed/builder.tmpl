@@ -14,7 +14,7 @@ import (
 type {{$target}}Builder interface {
 	Get{{$target}}Metadata() *{{$target}}Metadata
 {{range $_, $m := $root.InterfaceMethods}}
-	{{$m}}
+	{{$m -}}
 {{end}}
 }
 

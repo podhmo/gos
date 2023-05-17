@@ -13,9 +13,7 @@ type TypeBuilder interface {
 	GetTypeMetadata() *TypeMetadata
 
 	writeTyper // see: ./to_string.go
-
-	toSchemer // see: ./to_schema.go
-
+	toSchemer  // see: ./to_schema.go
 }
 
 // DefineType names Type value.
