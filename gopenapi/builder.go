@@ -549,16 +549,18 @@ type _Type[R TypeBuilder] struct {
 func (t *_Type[R]) GetTypeMetadata() *TypeMetadata {
 	return t.metadata
 }
-func (t *_Type[R]) Doc(stmts ...string) R {
-	t.metadata.Doc = strings.Join(stmts, "\n")
-	return t.ret
-}
 
 // begin setter of Type --------------------
 
 // Format set Metadata.Format
 func (t _Type[R]) Format(value string) R {
 	t.metadata.Format = value
+	return t.ret
+}
+
+// Doc set Metadata.Doc
+func (t _Type[R]) Doc(value string) R {
+	t.metadata.Doc = value
 	return t.ret
 }
 

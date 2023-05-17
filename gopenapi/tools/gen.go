@@ -25,7 +25,11 @@ func run() error {
 
 	Type := b.BuildTarget("Type",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format"`),
-	)
+		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description"`),
+	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
+		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
+	}))
+
 	b.InterfaceMethods(
 		"writeTyper // see: ./to_string.go",
 		"toSchemer // see: ./to_schema.go",
