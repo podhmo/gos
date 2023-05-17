@@ -2,7 +2,6 @@ package gopenapi
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/podhmo/gos/genum"
 )
@@ -29,7 +28,7 @@ func (b *Builder) StringFromEnum(enum *genum.String) *String {
 		typ.Default(metadata.Default)
 	}
 	if len(docValues) > 0 {
-		typ.Doc(strings.Join(docValues, "\n"))
+		typ.Doc(docValues...)
 	}
 	return typ
 }
@@ -55,7 +54,7 @@ func (b *Builder) IntFromEnum(enum *genum.Int) *Int {
 		typ.Default(int64(metadata.Default))
 	}
 	if len(docValues) > 0 {
-		typ.Doc(strings.Join(docValues, "\n"))
+		typ.Doc(docValues...)
 	}
 	return typ
 }

@@ -23,6 +23,8 @@ func run() error {
 	b.GeneratedBy("github.com/podhmo/gos/gopenapi/tools")
 	b.NeedReference()
 
+	b.Import("strings")
+
 	Type := b.BuildTarget("Type",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
