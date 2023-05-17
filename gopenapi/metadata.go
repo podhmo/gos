@@ -16,14 +16,14 @@ type BoolMetadata struct {
 
 type IntMetadata struct {
 	Enum    []int64 `json:"enum,omitempty"`
-	Default int64   `json:"enum,omitempty"`
+	Default int64   `json:"default,omitempty"`
 	Maximum int64   `json:"maximum,omitempty"`
 	Minimum int64   `json:"minimum,omitempty"`
 }
 
 type StringMetadata struct {
-	Enum      []string `json:"string,omitempty"`
-	Default   string   `json:"enum,omitempty"`
+	Enum      []string `json:"enum,omitempty"`
+	Default   string   `json:"default,omitempty"`
 	Pattern   string   `json:"pattern,omitempty"`
 	MaxLength int64    `json:"maxlength,omitempty"`
 	MinLength int64    `json:"minlength,omitempty"`
