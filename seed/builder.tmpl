@@ -6,7 +6,6 @@ package {{$root.PkgName}}
 import (
 	"fmt"
 	"sync"
-	"strings"
 {{range $_, $im := $root.Imports}}
 	{{if (not (eq $im.Name ""))}}{{$im.Name}} {{end}}{{$im.Path | printf "%q"}}
 {{end -}}
