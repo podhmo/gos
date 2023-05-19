@@ -407,7 +407,7 @@ func (b *ObjectBuilder[R]) Strict(value bool) R {
 func (b *Builder) Action(name string, input *Input, output *Output) *Action {
 	t := &Action{
 		ActionBuilder: &ActionBuilder[*Action]{
-			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}},
 			metadata: &ActionMetadata{
 				Name: name, Input: input, Output: output,
 				DefaultStatus: 200,
@@ -457,7 +457,7 @@ func (b *ActionBuilder[R]) Path(value string) R {
 func (b *Builder) Input(params ...*Param) *Input {
 	t := &Input{
 		InputBuilder: &InputBuilder[*Input]{
-			_Type: &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			_Type: &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}},
 			metadata: &InputMetadata{
 				Params: params,
 			},
@@ -488,7 +488,7 @@ type InputBuilder[R TypeBuilder] struct {
 func (b *Builder) Output(typ TypeBuilder) *Output {
 	t := &Output{
 		OutputBuilder: &OutputBuilder[*Output]{
-			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "output"}},
 			metadata: &OutputMetadata{
 				Typ: typ,
 			},
@@ -519,7 +519,7 @@ type OutputBuilder[R TypeBuilder] struct {
 func (b *Builder) Param(name string, typ TypeBuilder, in string) *Param {
 	t := &Param{
 		ParamBuilder: &ParamBuilder[*Param]{
-			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: ""}},
+			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param"}},
 			metadata: &ParamMetadata{
 				Name: name, Typ: typ, In: in,
 				Required: true,
