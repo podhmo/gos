@@ -232,6 +232,7 @@ type BuilderMetadata struct {
 	Types  []*TypeMetadata
 
 	NeedReference bool
+	NeedStringer  bool
 
 	Imports          []Import
 	InterfaceMethods []string

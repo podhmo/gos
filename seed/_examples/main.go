@@ -21,6 +21,7 @@ func run() error {
 	// define
 	b := seed.NewBuilder(options.PkgName)
 	b.NeedReference()
+	b.Import("strings")
 
 	Type := b.BuildTarget("Type",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format"`),
@@ -62,10 +63,10 @@ func run() error {
 	).NeedBuilder().Underlying("field") //?
 
 	Object := b.Type("Object",
-		b.Field("Fields", seed.Symbol("[]*FieldType")).Tag(`json:"-"`),
+		b.Field("Fields", seed.Symbol("[]*Field")).Tag(`json:"-"`),
 		b.Field("Strict", seed.Symbol("bool")).Tag(`json:"-"`),
 	).Constructor(
-		b.Arg("Fields", seed.Symbol("*FieldType")).Variadic(),
+		b.Arg("Fields", seed.Symbol("*Field")).Variadic(),
 	).NeedBuilder().Underlying("object")
 
 	fmt.Fprintln(os.Stderr, Type, Bool, Int, String, Array, Map, Field, Object)
