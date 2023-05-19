@@ -1,42 +1,11 @@
 package gopenapi
 
 import (
-	"fmt"
 	"io"
-	"strings"
 )
-
-type writeTyper interface {
-	writeType(io.Writer) error
-}
-
-func (t *_Type[R]) String() string {
-	return ToString(t.ret)
-}
-
-func ToString(typ TypeBuilder) string {
-	b := new(strings.Builder)
-	if err := typ.writeType(b); err != nil {
-		return fmt.Sprintf("invalid type: %T", typ)
-	}
-	return b.String()
-}
 
 func (t *TypeRef) writeType(w io.Writer) error {
 	return t.getType().writeType(w)
-}
-
-func (t *_Type[R]) writeType(w io.Writer) error {
-	if t.metadata.Name != "" {
-		if _, err := io.WriteString(w, t.metadata.Name); err != nil {
-			return err
-		}
-	} else {
-		if _, err := io.WriteString(w, t.metadata.underlying); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // customization
