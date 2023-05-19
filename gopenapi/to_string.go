@@ -10,6 +10,10 @@ type writeTyper interface {
 	writeType(io.Writer) error
 }
 
+func (t *_Type[R]) String() string {
+	return ToString(t.ret)
+}
+
 func ToString(typ TypeBuilder) string {
 	b := new(strings.Builder)
 	if err := typ.writeType(b); err != nil {
