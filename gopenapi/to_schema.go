@@ -105,7 +105,7 @@ func (t *Object) toSchema(b *Builder) *orderedmap.OrderedMap {
 			}
 
 			def := v.metadata.Typ.toSchema(b)
-			def, err := maplib.Merge(def, v)
+			def, err := maplib.Merge(def, v.metadata)
 			if err != nil {
 				panic(err)
 			}
@@ -140,18 +140,18 @@ func (t TypeRef) toSchema(b *Builder) *orderedmap.OrderedMap {
 
 func (t *Action) toSchema(b *Builder) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
-	doc.Set("operationId", t.GetTypeMetadata().Name)
+	doc.Set("operationId", t.metadata.Name)
 	responses := orderedmap.New()
 	responses.Set("responses", responses)
 	res := orderedmap.New()
 	doc.Set(strconv.Itoa(t.metadata.DefaultStatus), res)
-	res.Set("description", "")
+	res.Set("description", t._Type.metadata.Doc)
 	content := orderedmap.New()
 	res.Set("content", content)
 	appjson := orderedmap.New()
 	content.Set("applicatioin/json", appjson)
 	if t.metadata.Output != nil {
-		appjson.Set("schema", t.metadata.Output.toSchema(b))
+		appjson.Set("schema", t.metadata.Output.metadata.Typ.toSchema(b))
 	}
 	return doc
 }
