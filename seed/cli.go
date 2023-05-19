@@ -59,6 +59,7 @@ func NewCommand(args []string) *Command {
 
 func (c *Command) Do(b *Builder) error {
 	options := c.Config
+	b.metadata.NeedStringer = options.ToString
 
 	t := template.Must(template.New("").Funcs(c.FuncMap).Parse(c.Template))
 
