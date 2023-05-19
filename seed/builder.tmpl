@@ -14,7 +14,7 @@ import (
 
 type {{$target}}Builder interface {
 	Get{{$target}}Metadata() *{{$target}}Metadata
-	write{{$target}}(io.Writer) error  // to_string.go
+	write{{$target}}(io.Writer) error  // see: ./to_string.go
 {{range $_, $m := $root.InterfaceMethods}}
 	{{$m -}}
 {{end}}
