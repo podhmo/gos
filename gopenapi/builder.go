@@ -451,6 +451,12 @@ func (b *ActionBuilder[R]) Path(value string) R {
 	return b.ret
 }
 
+// Tags set Metadata.Tags
+func (b *ActionBuilder[R]) Tags(value []string) R {
+	b.metadata.Tags = value
+	return b.ret
+}
+
 // end setter of Action --------------------
 
 // Input builds Type for Input

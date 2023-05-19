@@ -57,6 +57,7 @@ type ActionMetadata struct {
 	DefaultStatus int
 	Method        string
 	Path          string
+	Tags          []string
 }
 
 type InputMetadata struct {
