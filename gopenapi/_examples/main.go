@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/iancoleman/orderedmap"
 	"github.com/podhmo/gos/genum"
 	"github.com/podhmo/gos/gopenapi"
 )
@@ -23,7 +24,7 @@ func main() {
 	)).Doc("person object")
 
 	PersonSummary := gopenapi.DefineType("PersonSummary", b.Object(
-		Person.OnlyFields("name", "nickname")...
+		Person.OnlyFields("name", "nickname")...,
 	)).Doc("person objec summary")
 
 	TestScore := gopenapi.DefineType("TestScore", b.Object(
@@ -51,7 +52,7 @@ func main() {
 		b.Output(
 			b.String(),
 		),
-	).Method("GET").Path("/hello")
+	).Doc("greeting hello")
 
 	doc, err := gopenapi.ToSchema(b)
 	if err != nil {
@@ -72,4 +73,29 @@ func main() {
 	fmt.Fprintln(os.Stderr, "action\t", gopenapi.ToString(Hello))
 	fmt.Fprintln(os.Stderr, "input \t", gopenapi.ToString(Hello.GetMetadata().Input))
 	fmt.Fprintln(os.Stderr, "output\t", gopenapi.ToString(Hello.GetMetadata().Output))
+
+	// routing
+	{
+		r := gopenapi.NewRouter()
+		{
+			r := r.Tagged("greeting")
+			r.Post("/hello", Hello)
+		}
+		{
+			r := r.Tagged("people")
+			r.Get("/people", b.Action("ListPerson",
+				b.Input(
+					b.Query("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})),
+				),
+				b.Output(b.Array(PersonSummary)),
+			).Doc("list person"))
+		}
+
+		doc := orderedmap.New()
+		r.ToSchemaWith(b, doc)
+
+		if err := enc.Encode(doc); err != nil {
+			panic(err)
+		}
+	}
 }
