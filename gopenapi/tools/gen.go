@@ -89,6 +89,7 @@ func run() error {
 		b.Field("DefaultStatus", seed.Symbol("int")).Default("200"),
 		b.Field("Method", seed.Symbol("string")),
 		b.Field("Path", seed.Symbol("string")),
+		b.Field("Tags", seed.Symbol("[]string")),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Input", "*Input"),
