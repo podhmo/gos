@@ -99,12 +99,12 @@ func (t *Object) toSchema(b *Builder) *orderedmap.OrderedMap {
 	if len(t.metadata.Fields) > 0 {
 		properties := orderedmap.New()
 		for _, v := range t.metadata.Fields {
-			name := v.Name
-			if v.Required {
+			name := v.metadata.Name
+			if v.metadata.Required {
 				required = append(required, name)
 			}
 
-			def := v.Typ.toSchema(b)
+			def := v.metadata.Typ.toSchema(b)
 			def, err := maplib.Merge(def, v)
 			if err != nil {
 				panic(err)
