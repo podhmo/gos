@@ -33,7 +33,6 @@ func run() error {
 	}))
 
 	b.InterfaceMethods(
-		"writeTyper // see: ./to_string.go",
 		"toSchemer // see: ./to_schema.go",
 	)
 
