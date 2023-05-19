@@ -88,3 +88,16 @@ func (t *Object) IgnoreFields(names ...string) []*Field {
 	}
 	return fields
 }
+
+func (b *Builder) Query(name string, typ TypeBuilder) *Param {
+	return b.Param(name, typ, "query")
+}
+func (b *Builder) Path(name string, typ TypeBuilder) *Param {
+	return b.Param(name, typ, "path").Required(true)
+}
+func (b *Builder) Header(name string, typ TypeBuilder) *Param {
+	return b.Param(name, typ, "header")
+}
+func (b *Builder) Cookie(name string, typ TypeBuilder) *Param {
+	return b.Param(name, typ, "cookie")
+}
