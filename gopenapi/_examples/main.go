@@ -47,7 +47,7 @@ func main() {
 func mount(r *gopenapi.Router) {
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello", Hello)
+		r.Post("/hello/{name}", Hello)
 	}
 	{
 		r := r.Tagged("people")
@@ -99,7 +99,7 @@ var (
 	// Hello :: func(name string) string
 	Hello = b.Action("hello",
 		b.Input(
-			b.Param("name", b.String(), "path"),
+			b.Path("name", b.String()),
 		).Doc("input"),
 		b.Output(
 			b.String(),
