@@ -74,12 +74,10 @@ func run() error {
 	).NeedBuilder().Underlying("field") //?
 
 	Object := b.Type("Object",
-		b.Field("Fields", seed.Symbol("[]*FieldMetadata")).Tag(`json:"-"`),
+		b.Field("Fields", seed.Symbol("[]*Field")).Tag(`json:"-"`),
 		b.Field("Strict", seed.Symbol("bool")).Tag(`json:"-"`).Default("true"),
 	).Constructor(
-		b.Arg("Fields", seed.Symbol("*Field")).Variadic().Transform(func(v string) string {
-			return fmt.Sprintf("toSlice(%s, func(x *Field) *FieldMetadata { return x.metadata})", v)
-		}),
+		b.Arg("Fields", seed.Symbol("*Field")).Variadic(),
 	).NeedBuilder().Underlying("object")
 
 	// ----------------------------------------

@@ -372,7 +372,7 @@ func (b *Builder) Object(fields ...*Field) *Object {
 		ObjectBuilder: &ObjectBuilder[*Object]{
 			_Type: &_Type[*Object]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "object"}},
 			metadata: &ObjectMetadata{
-				Fields: toSlice(fields, func(x *Field) *FieldMetadata { return x.metadata }),
+				Fields: fields,
 				Strict: true,
 			},
 		},

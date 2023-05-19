@@ -47,8 +47,8 @@ func (t *Object) writeType(w io.Writer) error {
 	io.WriteString(w, "{") // nolint
 	n := len(t.metadata.Fields) - 1
 	for i, f := range t.metadata.Fields {
-		io.WriteString(w, f.Name) // nolint
-		if !f.Required {
+		io.WriteString(w, f.metadata.Name) // nolint
+		if !f.metadata.Required {
 			io.WriteString(w, "?") // nolint
 		}
 		if i < n {

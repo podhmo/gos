@@ -22,6 +22,10 @@ func main() {
 		b.Field("friends", b.Array(b.ReferenceByName("Person"))).Required(false),
 	)).Doc("person object")
 
+	PersonSummary := gopenapi.DefineType("PersonSummary", b.Object(
+		Person.OnlyFields("name", "nickname")...
+	)).Doc("person objec summary")
+
 	TestScore := gopenapi.DefineType("TestScore", b.Object(
 		b.Field("title", b.String()),
 		b.Field("tests", b.Map(b.Int()).Pattern(`\-score$`).Doc("score (0~100)")),
@@ -54,7 +58,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Fprintln(os.Stderr, Name, Person, TestScore, Ordering)
+	fmt.Fprintln(os.Stderr, Name, Person, PersonSummary, TestScore, Ordering)
 	// fmt.Fprintln(os.Stderr)
 
 	enc := json.NewEncoder(os.Stdout)
@@ -64,6 +68,7 @@ func main() {
 	}
 
 	fmt.Fprintln(os.Stderr, "type  \t", gopenapi.ToString(Person))
+	fmt.Fprintln(os.Stderr, "type  \t", gopenapi.ToString(PersonSummary))
 	fmt.Fprintln(os.Stderr, "action\t", gopenapi.ToString(Hello))
 	fmt.Fprintln(os.Stderr, "input \t", gopenapi.ToString(Hello.GetMetadata().Input))
 	fmt.Fprintln(os.Stderr, "output\t", gopenapi.ToString(Hello.GetMetadata().Output))

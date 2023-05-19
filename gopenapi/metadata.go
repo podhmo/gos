@@ -46,8 +46,8 @@ type FieldMetadata struct {
 }
 
 type ObjectMetadata struct {
-	Fields []*FieldMetadata `json:"-"`
-	Strict bool             `json:"-"`
+	Fields []*Field `json:"-"`
+	Strict bool     `json:"-"`
 }
 
 type ActionMetadata struct {
