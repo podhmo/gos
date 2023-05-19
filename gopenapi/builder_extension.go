@@ -58,3 +58,33 @@ func (b *Builder) IntFromEnum(enum *genum.Int) *Int {
 	}
 	return typ
 }
+
+func (t *Object) OnlyFields(names ...string) []*Field {
+	fields := make([]*Field, 0, len(t.metadata.Fields))
+	for _, f := range t.metadata.Fields {
+		for _, name := range names {
+			if f.metadata.Name == name {
+				fields = append(fields, f)
+				break
+			}
+		}
+	}
+	return fields
+}
+
+func (t *Object) IgnoreFields(names ...string) []*Field {
+	fields := make([]*Field, 0, len(t.metadata.Fields))
+	for _, f := range t.metadata.Fields {
+		found := false
+		for _, name := range names {
+			if f.metadata.Name == name {
+				found = true
+				break
+			}
+		}
+		if !found {
+			fields = append(fields, f)
+		}
+	}
+	return fields
+}
