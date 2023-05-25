@@ -60,18 +60,23 @@ type ActionMetadata struct {
 	Tags          []string
 }
 
-type InputMetadata struct {
-	Params []*Param
-}
-
-type OutputMetadata struct {
-	Typ TypeBuilder
-}
-
 type ParamMetadata struct {
 	Name        string      `json:"-"`
 	In          string      `json:"in"`
 	Typ         TypeBuilder `json:"-"`
 	Description string      `json:"description,omitempty"`
 	Required    bool        `json:"required"`
+}
+
+type Body struct {
+	Typ TypeBuilder `json:"-"`
+}
+
+type InputMetadata struct {
+	Params []*Param
+	Body   *Body
+}
+
+type OutputMetadata struct {
+	Typ TypeBuilder
 }
