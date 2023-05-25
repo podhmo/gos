@@ -52,6 +52,7 @@ func mount(r *gopenapi.Router) {
 	{
 		r := r.Tagged("people")
 		r.Get("/people", ListPerson)
+		r.Post("/people", CreatePerson)
 	}
 }
 
@@ -61,6 +62,7 @@ var (
 	Name = gopenapi.DefineType("Name", b.String().MinLength(1))
 
 	Person = gopenapi.DefineType("Person", b.Object(
+		b.Field("id", b.String()),
 		b.Field("name", b.String()).Doc("name of person"),
 		b.Field("age", b.Int().Format("int32")),
 		b.Field("nickname", b.Reference(Name)).Required(false),
@@ -112,4 +114,12 @@ var (
 		),
 		b.Output(b.Array(PersonSummary)),
 	).Doc("list person")
+
+	CreatePerson = b.Action("CreatePerson",
+		b.Input(
+			b.Query("verbose", b.Bool()),
+			&gopenapi.Body{b.Object(Person.IgnoreFields("id")...)},
+		),
+		b.Output(Person),
+	).Doc("create person")
 )
