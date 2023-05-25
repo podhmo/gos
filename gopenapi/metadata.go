@@ -57,14 +57,7 @@ type ActionMetadata struct {
 	DefaultStatus int
 	Method        string
 	Path          string
-}
-
-type InputMetadata struct {
-	Params []*Param
-}
-
-type OutputMetadata struct {
-	Typ TypeBuilder
+	Tags          []string
 }
 
 type ParamMetadata struct {
@@ -73,4 +66,17 @@ type ParamMetadata struct {
 	Typ         TypeBuilder `json:"-"`
 	Description string      `json:"description,omitempty"`
 	Required    bool        `json:"required"`
+}
+
+type BodyMetadata struct {
+	Typ TypeBuilder `json:"-"`
+}
+
+type InputMetadata struct {
+	Params []*Param
+	Body   *Body
+}
+
+type OutputMetadata struct {
+	Typ TypeBuilder
 }

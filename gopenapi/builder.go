@@ -451,18 +451,109 @@ func (b *ActionBuilder[R]) Path(value string) R {
 	return b.ret
 }
 
+// Tags set Metadata.Tags
+func (b *ActionBuilder[R]) Tags(value []string) R {
+	b.metadata.Tags = value
+	return b.ret
+}
+
 // end setter of Action --------------------
 
-// Input builds Type for Input
-func (b *Builder) Input(params ...*Param) *Input {
-	t := &Input{
-		InputBuilder: &InputBuilder[*Input]{
-			_Type: &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}},
-			metadata: &InputMetadata{
-				Params: params,
+// Param builds Type for Param
+func (b *Builder) Param(name string, typ TypeBuilder, in string) *Param {
+	t := &Param{
+		ParamBuilder: &ParamBuilder[*Param]{
+			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param"}},
+			metadata: &ParamMetadata{
+				Name: name, Typ: typ, In: in,
+				Required: true,
 			},
 		},
 	}
+	t.ret = t
+	return t
+}
+
+type Param struct {
+	*ParamBuilder[*Param]
+}
+
+func (t *Param) GetMetadata() *ParamMetadata {
+	return t.metadata
+}
+
+type ParamBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *ParamMetadata
+}
+
+// begin setter of Param --------------------
+
+// Description set Metadata.Description
+func (b *ParamBuilder[R]) Description(value string) R {
+	b.metadata.Description = value
+	return b.ret
+}
+
+// Required set Metadata.Required
+func (b *ParamBuilder[R]) Required(value bool) R {
+	b.metadata.Required = value
+	return b.ret
+}
+
+// end setter of Param --------------------
+
+// Body builds Type for Body
+func (b *Builder) Body(typ TypeBuilder) *Body {
+	t := &Body{
+		BodyBuilder: &BodyBuilder[*Body]{
+			_Type: &_Type[*Body]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "Body"}},
+			metadata: &BodyMetadata{
+				Typ: typ,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Body struct {
+	*BodyBuilder[*Body]
+}
+
+func (t *Body) GetMetadata() *BodyMetadata {
+	return t.metadata
+}
+
+type BodyBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *BodyMetadata
+}
+
+// begin setter of Body --------------------
+
+// end setter of Body --------------------
+
+// Input builds Type for Input
+func (b *Builder) Input(params ...paramOrBody) *Input {
+	t := &Input{
+		InputBuilder: &InputBuilder[*Input]{
+			_Type:    &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}},
+			metadata: &InputMetadata{},
+		},
+	}
+
+	t.metadata.Params, t.metadata.Body = func() (v1 []*Param, v2 *Body) {
+		for _, a := range params {
+			switch a := a.(type) {
+			case *Param:
+				v1 = append(v1, a)
+			case *Body:
+				v2 = a
+			}
+		}
+		return
+	}()
 	t.ret = t
 	return t
 }
@@ -515,50 +606,6 @@ type OutputBuilder[R TypeBuilder] struct {
 
 // end setter of Output --------------------
 
-// Param builds Type for Param
-func (b *Builder) Param(name string, typ TypeBuilder, in string) *Param {
-	t := &Param{
-		ParamBuilder: &ParamBuilder[*Param]{
-			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param"}},
-			metadata: &ParamMetadata{
-				Name: name, Typ: typ, In: in,
-				Required: true,
-			},
-		},
-	}
-	t.ret = t
-	return t
-}
-
-type Param struct {
-	*ParamBuilder[*Param]
-}
-
-func (t *Param) GetMetadata() *ParamMetadata {
-	return t.metadata
-}
-
-type ParamBuilder[R TypeBuilder] struct {
-	*_Type[R]
-	metadata *ParamMetadata
-}
-
-// begin setter of Param --------------------
-
-// Description set Metadata.Description
-func (b *ParamBuilder[R]) Description(value string) R {
-	b.metadata.Description = value
-	return b.ret
-}
-
-// Required set Metadata.Required
-func (b *ParamBuilder[R]) Required(value bool) R {
-	b.metadata.Required = value
-	return b.ret
-}
-
-// end setter of Param --------------------
-
 // internal Type
 
 type _Type[R TypeBuilder] struct {
@@ -590,6 +637,15 @@ func (t *_Type[R]) storeType(name string) {
 	t.metadata.Name = name
 	t.rootbuilder.storeType(t.ret)
 }
+
+// paramOrBody is the one of pseudo sum types (union).
+type paramOrBody interface {
+	paramorbody()
+}
+
+func (t *Param) paramorbody() {}
+
+func (t *Body) paramorbody() {}
 
 // footer. ----
 // toSlice is list.map as you know.
