@@ -118,7 +118,11 @@ var (
 	CreatePerson = b.Action("CreatePerson",
 		b.Input(
 			b.Query("verbose", b.Bool()),
-			&gopenapi.Body{b.Object(Person.IgnoreFields("id")...)},
+			&gopenapi.Body{b.Object(
+				append(Person.IgnoreFields("id", "father", "friends"),
+					b.Field("fatherId", b.String()),
+					b.Field("friendIdList", b.Array(b.String())))...,
+			)},
 		),
 		b.Output(Person),
 	).Doc("create person")
