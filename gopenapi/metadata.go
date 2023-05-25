@@ -68,7 +68,7 @@ type ParamMetadata struct {
 	Required    bool        `json:"required"`
 }
 
-type Body struct {
+type BodyMetadata struct {
 	Typ TypeBuilder `json:"-"`
 }
 

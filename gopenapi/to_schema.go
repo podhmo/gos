@@ -165,7 +165,7 @@ func (t *Action) toSchema(b *Builder) *orderedmap.OrderedMap {
 			requestBody.Set("content", content)
 			appjson := orderedmap.New()
 			content.Set("application/json", appjson)
-			appjson.Set("schema", body.Typ.toSchema(b))
+			appjson.Set("schema", body.metadata.Typ.toSchema(b))
 		}
 	}
 

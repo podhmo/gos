@@ -503,6 +503,37 @@ func (b *ParamBuilder[R]) Required(value bool) R {
 
 // end setter of Param --------------------
 
+// Body builds Type for Body
+func (b *Builder) Body(typ TypeBuilder) *Body {
+	t := &Body{
+		BodyBuilder: &BodyBuilder[*Body]{
+			_Type: &_Type[*Body]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "Body"}},
+			metadata: &BodyMetadata{
+				Typ: typ,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Body struct {
+	*BodyBuilder[*Body]
+}
+
+func (t *Body) GetMetadata() *BodyMetadata {
+	return t.metadata
+}
+
+type BodyBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *BodyMetadata
+}
+
+// begin setter of Body --------------------
+
+// end setter of Body --------------------
+
 // Input builds Type for Input
 func (b *Builder) Input(params ...paramOrBody) *Input {
 	t := &Input{

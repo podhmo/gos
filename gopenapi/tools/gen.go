@@ -111,7 +111,7 @@ func run() error {
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
 	).Constructor(
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
-	)
+	).NeedBuilder()
 	paramOrBody := b.Union("paramOrBody", Param, Body)
 
 	Input := b.Type("Input",
