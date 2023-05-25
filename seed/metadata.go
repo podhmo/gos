@@ -1,8 +1,9 @@
 package seed
 
 type BuilderMetadata struct {
-	Target *TypeMetadata
-	Types  []*TypeMetadata
+	Target     *TypeMetadata
+	Types      []*TypeMetadata
+	UnionTypes []*UnionTypeMetadata
 
 	NeedReference bool
 	NeedStringer  bool
@@ -31,6 +32,12 @@ type TypeMetadata struct {
 	Used map[string]bool
 }
 
+type UnionTypeMetadata struct {
+	Type          *TypeMetadata
+	Args          []*TypeMetadata // symbol?
+	DistinguishID string
+}
+
 type TypeVarMetadata struct { // e.g. [T any]
 	Name string
 	Type Symbol
@@ -57,7 +64,8 @@ type ArgMetadata struct {
 	Type     Symbol
 	Variadic bool // as ...<type>
 
-	Transform func(string) string
+	BindFields []string
+	Transform  func(string) string
 }
 
 type Import struct {
