@@ -120,8 +120,9 @@ func (b *Builder) Arg(name string, typ Symbol) *Arg {
 	t := &Arg{
 		argBuilder: &argBuilder[*Arg]{
 			metadata: &ArgMetadata{
-				Name: name,
-				Type: typ,
+				Name:       name,
+				Type:       typ,
+				BindFields: []string{name},
 			},
 		},
 	}
@@ -165,6 +166,30 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 	}
 	t.ret = t
 	b.metadata.Types = append(b.metadata.Types, t.metadata)
+	return t
+}
+
+// Union is factory method for Union type builder.
+func (b *Builder) Union(name string, types ...*Type) *UnionType {
+	args := make([]*TypeMetadata, len(types))
+	for i, typ := range types {
+		args[i] = typ.metadata
+	}
+	tb := &typeBuilder[*UnionType]{metadata: &TypeMetadata{
+		Name:       Symbol(name),
+		Underlying: name,
+		Used:       map[string]bool{},
+	}}
+	t := &UnionType{
+		typeBuilder: tb,
+		metadata: &UnionTypeMetadata{
+			Type:          tb.metadata,
+			Args:          args,
+			DistinguishID: strings.ToLower(name),
+		},
+	}
+	t.ret = t
+	b.metadata.UnionTypes = append(b.metadata.UnionTypes, t.metadata)
 	return t
 }
 
@@ -214,7 +239,9 @@ func (b *typeBuilder[R]) Constructor(args ...*Arg) R {
 	}
 	b.metadata.Constructor = &Constructor{Args: metadata}
 	for _, a := range metadata {
-		b.metadata.Used[a.Name] = true
+		for _, name := range a.BindFields {
+			b.metadata.Used[name] = true
+		}
 	}
 	return b.ret
 }
@@ -246,6 +273,16 @@ func (b *fieldBuilder[R]) Tag(v string) R {
 func (b *fieldBuilder[R]) Default(v string) R {
 	b.metadata.Default = v
 	return b.ret
+}
+
+type UnionType struct {
+	*typeBuilder[*UnionType]
+	metadata *UnionTypeMetadata
+}
+
+func (t *UnionType) DistinguishID(name string) *UnionType {
+	t.metadata.DistinguishID = name
+	return t
 }
 
 type TypeVar struct {
@@ -282,6 +319,12 @@ func (b *argBuilder[R]) Variadic() R {
 // (This method is typically used when the parent data has children of type XXXMetadata.)
 func (b *argBuilder[R]) Transform(fn func(string) string) R {
 	b.metadata.Transform = fn
+	return b.ret
+}
+
+// BindFields is setter method for setting bind field via constructor.
+func (b *argBuilder[R]) BindFields(fieldNames ...string) R {
+	b.metadata.BindFields = fieldNames
 	return b.ret
 }
 
