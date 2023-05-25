@@ -129,7 +129,6 @@ func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} 
 			{{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}}: {{$tv.Name | toLower}}, {{end}}
 		},
 	}
-
 	{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{if (lt 1 (len $a.BindFields))}}{{with $lastIndex := (lastIndex $a.BindFields)}}
 	{{range $i,$f := $a.BindFields}}t.metadata.{{$f}}{{if (eq $i $lastIndex)}} = {{else}}, {{end}}{{end}}{{if $a.Transform}}{{call $a.Transform (toLower $a.Name)}}{{else}}{{$a.Name | toLower}}{{end}}
 	{{end}}{{end}}{{end}}{{end -}}
@@ -222,7 +221,7 @@ func (t *{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}) {{$ut
 {{end}}{{end -}}
 {{if $root.Footer}}
 
-// footer ----
+// footer. ----
 {{$root.Footer}}
 {{end}}
 {{end}}{{end}}{{end -}}
