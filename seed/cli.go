@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"strings"
 	"text/template"
 )
@@ -51,8 +52,9 @@ func NewCommand(args []string) *Command {
 	}
 
 	funcMap := template.FuncMap{
-		"toLower": strings.ToLower,
-		"toUpper": strings.ToUpper,
+		"toLower":   strings.ToLower,
+		"toUpper":   strings.ToUpper,
+		"lastIndex": func(vs any) int { return reflect.ValueOf(vs).Len() - 1 },
 	}
 	return &Command{Config: &config, Template: Template, FuncMap: funcMap, fs: fs}
 }
