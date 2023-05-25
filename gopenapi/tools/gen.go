@@ -96,17 +96,6 @@ func run() error {
 		b.Arg("Output", "*Output"),
 	).NeedBuilder().Underlying("action")
 
-	Input := b.Type("Input",
-		b.Field("Params", "[]*Param"),
-	).Constructor(
-		b.Arg("Params", "*Param").Variadic(),
-	).NeedBuilder().Underlying("input")
-	Output := b.Type("Output",
-		b.Field("Typ", "TypeBuilder"),
-	).Constructor(
-		b.Arg("Typ", "TypeBuilder"),
-	).NeedBuilder().Underlying("output")
-
 	Param := b.Type("Param",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`),
@@ -118,6 +107,36 @@ func run() error {
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
 		b.Arg("In", seed.Symbol("string")), // query,header,path,cookie,body
 	).NeedBuilder().Underlying("param")
+	Body := b.Type("Body",
+		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
+	).Constructor(
+		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+	)
+	paramOrBody := b.Union("paramOrBody", Param, Body)
+
+	Input := b.Type("Input",
+		b.Field("Params", "[]*Param"),
+		b.Field("Body", "*Body"),
+	).Constructor(
+		b.Arg("Params", paramOrBody.GetMetadata().Name).Variadic().BindFields("Params", "Body").Transform(func(s string) string {
+			return fmt.Sprintf(`func()(v1 []*Param, v2 *Body){
+				for _, a := range %s {
+					switch a := a.(type) {
+					case *Param:
+						v1 = append(v1, a)
+					case *Body:
+						v2 = a
+					}
+				}
+				return
+			}()`, s)
+		}),
+	).NeedBuilder().Underlying("input")
+	Output := b.Type("Output",
+		b.Field("Typ", "TypeBuilder"),
+	).Constructor(
+		b.Arg("Typ", "TypeBuilder"),
+	).NeedBuilder().Underlying("output")
 
 	fmt.Fprintln(os.Stderr, Type, Bool, Int, String, Array, Map, Field, Object)
 	fmt.Fprintln(os.Stderr, Action, Input, Output, Param)
