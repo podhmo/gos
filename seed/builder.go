@@ -239,7 +239,9 @@ func (b *typeBuilder[R]) Constructor(args ...*Arg) R {
 	}
 	b.metadata.Constructor = &Constructor{Args: metadata}
 	for _, a := range metadata {
-		b.metadata.Used[a.Name] = true
+		for _, name := range a.BindFields {
+			b.metadata.Used[name] = true
+		}
 	}
 	return b.ret
 }
