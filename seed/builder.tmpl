@@ -34,6 +34,7 @@ type Builder struct {
 	named{{$target}}s  []{{$target}}Builder
 	nameToIDMap map[string][]int
 {{- range $_, $f := $root.Fields}}
+	{{if (not (eq "" $f.Doc))}}{{$f.Doc}}{{end}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end}}
 {{end}}
 }
@@ -88,6 +89,7 @@ func (b *Builder) lookup{{$target}}(name string) {{$target}}Builder {
 }
 
 {{if $root.NeedReference}}
+
 func (b *Builder) ReferenceByName(name string) *{{$target}}Ref {
 	return &{{$target}}Ref{Name: name, rootbuilder: b}
 }
