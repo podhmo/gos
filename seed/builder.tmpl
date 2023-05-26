@@ -244,14 +244,18 @@ type {{$target}}Metadata struct {
 
 {{range $_, $t := $root.Types}}{{with $name := ($t.Name)}}
 {{if $t.NeedBuilder }}
+{{if (not (eq "" $t.Doc))}}{{$t.Doc}}{{end}}
 type {{$name}}Metadata struct {
 {{range $_, $f := $t.Fields}}
+	{{if (not (eq "" $f.Doc))}}{{$f.Doc}}{{end}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end -}}
 {{end}}
 }
 {{else}}
+{{if (not (eq "" $t.Doc))}}{{$t.Doc}}{{end}}
 type {{$name}} struct {
 {{range $_, $f := $t.Fields}}
+	{{if (not (eq "" $f.Doc))}}{{$f.Doc}}{{end}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end -}}
 {{end}}
 }

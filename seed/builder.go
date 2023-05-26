@@ -225,6 +225,12 @@ func (b *typeBuilder[R]) NeedBuilder() R {
 	return b.ret
 }
 
+// Doc is setter method for doc string.
+func (b *typeBuilder[R]) Doc(stmts ...string) R {
+	b.metadata.Doc = "// " + strings.TrimSpace(strings.Join(stmts, "\n// "))
+	return b.ret
+}
+
 // Underlying is setter method if you can set underlying type (default is same as TypeName)
 func (b *typeBuilder[R]) Underlying(v string) R {
 	b.metadata.Underlying = v
@@ -270,6 +276,13 @@ func (b *fieldBuilder[R]) Tag(v string) R {
 	b.metadata.Tag = v
 	return b.ret
 }
+
+// Doc is setter method for doc string.
+func (b *fieldBuilder[R]) Doc(stmts ...string) R {
+	b.metadata.Doc = "// " + strings.TrimSpace(strings.Join(stmts, "\n// "))
+	return b.ret
+}
+
 func (b *fieldBuilder[R]) Default(v string) R {
 	b.metadata.Default = v
 	return b.ret

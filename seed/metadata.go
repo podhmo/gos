@@ -24,7 +24,9 @@ type TypeMetadata struct {
 	Underlying string
 	TVars      TypeVarMetadataList
 
+	Doc         string
 	NeedBuilder bool
+
 	Constructor *Constructor
 	Fields      []*FieldMetadata // fields of Metadata
 	Setters     []*SetterDefinition
@@ -48,6 +50,7 @@ type FieldMetadata struct {
 	Type Symbol
 	Tag  string
 
+	Doc     string
 	Default string
 }
 

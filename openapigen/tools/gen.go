@@ -98,7 +98,7 @@ func run() error {
 
 	Param := b.Type("Param",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
-		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`).Default(`"query"`), // query,header,path,cookie,body
+		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`).Default(`"query"`).Doc("openapi's in parameter {query, header, path, cookie} (default is query)"),
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
 		b.Field("Description", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"required"`).Default("true"),
