@@ -101,7 +101,7 @@ var (
 	// Hello :: func(name string) string
 	Hello = b.Action("hello",
 		b.Input(
-			b.Path("name", b.String()),
+			b.Param("name", b.String()).AsPath(),
 		).Doc("input"),
 		b.Output(
 			b.String(),
@@ -110,14 +110,14 @@ var (
 
 	ListPerson = b.Action("ListPerson",
 		b.Input(
-			b.Query("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})),
+			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
 		b.Output(b.Array(PersonSummary)),
 	).Doc("list person")
 
 	CreatePerson = b.Action("CreatePerson",
 		b.Input(
-			b.Query("verbose", b.Bool()),
+			b.Param("verbose", b.Bool()).AsQuery(),
 			b.Body(b.Object(
 				append(Person.IgnoreFields("id", "father", "friends"),
 					b.Field("fatherId", b.String()),

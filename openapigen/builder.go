@@ -460,13 +460,13 @@ func (b *ActionBuilder[R]) Tags(value []string) R {
 // end setter of Action --------------------
 
 // Param builds Type for Param
-func (b *Builder) Param(name string, typ TypeBuilder, in string) *Param {
+func (b *Builder) Param(name string, typ TypeBuilder) *Param {
 	t := &Param{
 		ParamBuilder: &ParamBuilder[*Param]{
 			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param"}},
 			metadata: &ParamMetadata{
-				Name: name, Typ: typ, In: in,
-				Required: true,
+				Name: name, Typ: typ,
+				In: "query", Required: true,
 			},
 		},
 	}
@@ -488,6 +488,12 @@ type ParamBuilder[R TypeBuilder] struct {
 }
 
 // begin setter of Param --------------------
+
+// In set Metadata.In
+func (b *ParamBuilder[R]) In(value string) R {
+	b.metadata.In = value
+	return b.ret
+}
 
 // Description set Metadata.Description
 func (b *ParamBuilder[R]) Description(value string) R {
