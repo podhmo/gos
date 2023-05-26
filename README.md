@@ -5,6 +5,6 @@
 go schema (builder)
 
 - gos/seed -- builder package for builder. (meta-builder)
-- gos/genum -- builder package for enum definition
+- gos/enumgen -- builder package for enum definition
 - gos/gopenapi -- builder package for the subset of openapi3.0
- (:memo: gos/genum/tools is the example of how to use gos/seed )
+ (:memo: gos/enumgen/tools is the example of how to use gos/seed )

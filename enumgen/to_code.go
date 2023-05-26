@@ -1,4 +1,4 @@
-package genum
+package enumgen
 
 import (
 	"fmt"

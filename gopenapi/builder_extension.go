@@ -3,10 +3,10 @@ package gopenapi
 import (
 	"fmt"
 
-	"github.com/podhmo/gos/genum"
+	"github.com/podhmo/gos/enumgen"
 )
 
-func (b *Builder) StringFromEnum(enum *genum.String) *String {
+func (b *Builder) StringFromEnum(enum *enumgen.String) *String {
 	typ := b.String()
 
 	var docValues []string
@@ -33,7 +33,7 @@ func (b *Builder) StringFromEnum(enum *genum.String) *String {
 	return typ
 }
 
-func (b *Builder) IntFromEnum(enum *genum.Int) *Int {
+func (b *Builder) IntFromEnum(enum *enumgen.Int) *Int {
 	typ := b.Int()
 
 	var docValues []string

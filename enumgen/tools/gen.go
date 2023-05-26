@@ -20,7 +20,7 @@ func run(cmd *seed.Command) error {
 	b := seed.NewBuilder(options.PkgName,
 		seed.Root.Field("Config", seed.Symbol("*Config")),
 	)
-	b.GeneratedBy("github.com/podhmo/gos/genum/tools")
+	b.GeneratedBy("github.com/podhmo/gos/enumgen/tools")
 	b.Constructor(
 		b.Arg("Config", seed.Symbol("*Config")),
 	)

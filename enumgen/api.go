@@ -1,6 +1,6 @@
-//go:generate go run ./tools -write -builder -metadata -stringer -pkgname genum
+//go:generate go run ./tools -write -builder -metadata -stringer -pkgname enumgen
 //go:generate go fmt .
-package genum
+package enumgen
 
 type Config struct {
 	Padding string // default "\t"

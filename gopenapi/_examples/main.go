@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/iancoleman/orderedmap"
-	"github.com/podhmo/gos/genum"
+	"github.com/podhmo/gos/enumgen"
 	"github.com/podhmo/gos/gopenapi"
 )
 
@@ -84,9 +84,9 @@ var (
 
 func init() {
 	// enum, in production, import from other package
-	var orderingEnum *genum.String
+	var orderingEnum *enumgen.String
 	{
-		b := genum.NewEnumBuilder(genum.DefaultConfig())
+		b := enumgen.NewEnumBuilder(enumgen.DefaultConfig())
 		orderingEnum = b.String(
 			b.StringValue("desc").Doc("降順"),
 			b.StringValue("asc").Doc("昇順"),
