@@ -20,7 +20,7 @@ func run() error {
 
 	// define
 	b := seed.NewBuilder(options.PkgName)
-	b.GeneratedBy("github.com/podhmo/gos/gopenapi/tools")
+	b.GeneratedBy("github.com/podhmo/gos/openapigen/tools")
 	b.NeedReference()
 
 	b.Import("strings")

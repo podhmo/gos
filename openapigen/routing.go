@@ -1,4 +1,4 @@
-package gopenapi
+package openapigen
 
 import (
 	"github.com/iancoleman/orderedmap"

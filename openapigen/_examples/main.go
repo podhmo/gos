@@ -7,12 +7,12 @@ import (
 
 	"github.com/iancoleman/orderedmap"
 	"github.com/podhmo/gos/enumgen"
-	"github.com/podhmo/gos/gopenapi"
+	"github.com/podhmo/gos/openapigen"
 )
 
 func main() {
 
-	doc, err := gopenapi.ToSchema(b)
+	doc, err := openapigen.ToSchema(b)
 	if err != nil {
 		panic(err)
 	}
@@ -26,15 +26,15 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Fprintln(os.Stderr, "type  \t", gopenapi.ToString(Person))
-	fmt.Fprintln(os.Stderr, "type  \t", gopenapi.ToString(PersonSummary))
-	fmt.Fprintln(os.Stderr, "action\t", gopenapi.ToString(Hello))
-	fmt.Fprintln(os.Stderr, "input \t", gopenapi.ToString(Hello.GetMetadata().Input))
-	fmt.Fprintln(os.Stderr, "output\t", gopenapi.ToString(Hello.GetMetadata().Output))
+	fmt.Fprintln(os.Stderr, "type  \t", openapigen.ToString(Person))
+	fmt.Fprintln(os.Stderr, "type  \t", openapigen.ToString(PersonSummary))
+	fmt.Fprintln(os.Stderr, "action\t", openapigen.ToString(Hello))
+	fmt.Fprintln(os.Stderr, "input \t", openapigen.ToString(Hello.GetMetadata().Input))
+	fmt.Fprintln(os.Stderr, "output\t", openapigen.ToString(Hello.GetMetadata().Output))
 
 	// routing
 	{
-		r := gopenapi.NewRouter()
+		r := openapigen.NewRouter()
 		mount(r)
 		doc := orderedmap.New()
 		r.ToSchemaWith(b, doc)
@@ -44,7 +44,7 @@ func main() {
 	}
 }
 
-func mount(r *gopenapi.Router) {
+func mount(r *openapigen.Router) {
 	{
 		r := r.Tagged("greeting")
 		r.Post("/hello/{name}", Hello)
@@ -56,12 +56,12 @@ func mount(r *gopenapi.Router) {
 	}
 }
 
-var b = gopenapi.NewTypeBuilder()
+var b = openapigen.NewTypeBuilder()
 
 var (
-	Name = gopenapi.DefineType("Name", b.String().MinLength(1))
+	Name = openapigen.DefineType("Name", b.String().MinLength(1))
 
-	Person = gopenapi.DefineType("Person", b.Object(
+	Person = openapigen.DefineType("Person", b.Object(
 		b.Field("id", b.String()),
 		b.Field("name", b.String()).Doc("name of person"),
 		b.Field("age", b.Int().Format("int32")),
@@ -70,16 +70,16 @@ var (
 		b.Field("friends", b.Array(b.ReferenceByName("Person"))).Required(false),
 	)).Doc("person object")
 
-	PersonSummary = gopenapi.DefineType("PersonSummary", b.Object(
+	PersonSummary = openapigen.DefineType("PersonSummary", b.Object(
 		Person.OnlyFields("name", "nickname")...,
 	)).Doc("person objec summary")
 
-	TestScore = gopenapi.DefineType("TestScore", b.Object(
+	TestScore = openapigen.DefineType("TestScore", b.Object(
 		b.Field("title", b.String()),
 		b.Field("tests", b.Map(b.Int()).Pattern(`\-score$`).Doc("score (0~100)")),
 	))
 
-	Ordering *gopenapi.String
+	Ordering *openapigen.String
 )
 
 func init() {
@@ -93,7 +93,7 @@ func init() {
 		).Default("desc").Doc("順序")
 	}
 
-	Ordering = gopenapi.DefineType("Ordering", b.StringFromEnum(orderingEnum))
+	Ordering = openapigen.DefineType("Ordering", b.StringFromEnum(orderingEnum))
 }
 
 // actions

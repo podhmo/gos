@@ -1,4 +1,4 @@
-# gopenapi
+# openapigen
 
 generate the subset of openapi by builder
 
