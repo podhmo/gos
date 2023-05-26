@@ -98,14 +98,13 @@ func run() error {
 
 	Param := b.Type("Param",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
-		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`),
+		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`).Default(`"query"`), // query,header,path,cookie,body
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
 		b.Field("Description", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"required"`).Default("true"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
-		b.Arg("In", seed.Symbol("string")), // query,header,path,cookie,body
 	).NeedBuilder().Underlying("param")
 	Body := b.Type("Body",
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
