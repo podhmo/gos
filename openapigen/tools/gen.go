@@ -19,7 +19,14 @@ func run() error {
 	options := cmd.Config
 
 	// define
-	b := seed.NewBuilder(options.PkgName)
+	b := seed.NewBuilder(
+		options.PkgName,
+		seed.Root.Field("Config", seed.Symbol("*Config")),
+	)
+	b.Constructor(
+		b.Arg("Config", seed.Symbol("*Config")),
+	)
+
 	b.GeneratedBy("github.com/podhmo/gos/openapigen/tools")
 	b.NeedReference()
 
