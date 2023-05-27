@@ -56,7 +56,7 @@ func mount(r *openapigen.Router) {
 	}
 }
 
-var b = openapigen.NewTypeBuilder()
+var b = openapigen.NewTypeBuilder(openapigen.DefaultConfig())
 
 var (
 	Name = openapigen.DefineType("Name", b.String().MinLength(1))
