@@ -10,10 +10,12 @@ import (
 )
 
 type toSchemer interface {
-	toSchema(*Builder) *orderedmap.OrderedMap
+	toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap
 }
 
 func ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) (*orderedmap.OrderedMap, error) {
+	useRef := !b.Config.DisableRefLinks
+
 	components := orderedmap.New()
 	doc.Set("components", components)
 
@@ -23,7 +25,7 @@ func ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) (*orderedmap.OrderedMa
 	if err := b.EachTypes(func(t TypeBuilder) error {
 		name := t.GetTypeMetadata().Name
 		if t, ok := t.(toSchemer); ok {
-			schemas.Set(name, t.toSchema(b))
+			schemas.Set(name, t.toSchema(b, useRef))
 		} else {
 			schemas.Set(name, orderedmap.New())
 		}
@@ -38,8 +40,22 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 	return ToSchemaWith(b, doc)
 }
 
+func _toRefSchemaIfNamed[R TypeBuilder](b *Builder, t *_Type[R], useRef bool) *orderedmap.OrderedMap {
+	if !useRef {
+		return nil
+	}
+	if unnamed := t.metadata.id < 0; unnamed {
+		return nil
+	}
+
+	b.Config.defs = append(b.Config.defs, t.ret) // enqueue definitions
+
+	ref := &TypeRef{Name: t.metadata.Name, rootbuilder: b, _Type: t.ret}
+	return ref.toSchema(b, useRef)
+}
+
 // customization
-func (t *_Type[R]) toSchema(b *Builder) *orderedmap.OrderedMap {
+func (t *_Type[R]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	doc.Set("type", t.metadata.underlying)
 	doc, err := maplib.Merge(doc, t.metadata)
@@ -49,39 +65,55 @@ func (t *_Type[R]) toSchema(b *Builder) *orderedmap.OrderedMap {
 	return doc
 }
 
-func (t *String) toSchema(b *Builder) *orderedmap.OrderedMap {
-	doc := t._Type.toSchema(b)
+func (t *String) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+		return doc
+	}
+
+	doc := t._Type.toSchema(b, useRef)
 	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
-func (t *Int) toSchema(b *Builder) *orderedmap.OrderedMap {
-	doc := t._Type.toSchema(b)
+func (t *Int) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+		return doc
+	}
+
+	doc := t._Type.toSchema(b, useRef)
 	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
-func (t *Array[T]) toSchema(b *Builder) *orderedmap.OrderedMap {
-	doc := t._Type.toSchema(b)
-	doc.Set("items", t.items.toSchema(b))
+func (t *Array[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+		return doc
+	}
+
+	doc := t._Type.toSchema(b, useRef)
+	doc.Set("items", t.items.toSchema(b, useRef))
 	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
 	}
 	return doc
 }
-func (t *Map[T]) toSchema(b *Builder) *orderedmap.OrderedMap {
-	doc := t._Type.toSchema(b)
+func (t *Map[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+		return doc
+	}
+
+	doc := t._Type.toSchema(b, useRef)
 	doc.Set("type", "object")
 	if t.metadata.Pattern == "" {
-		doc.Set("additionalProperties", t.items.toSchema(b))
+		doc.Set("additionalProperties", t.items.toSchema(b, useRef))
 	} else {
 		props := orderedmap.New()
-		props.Set(t.metadata.Pattern, t.items.toSchema(b))
+		props.Set(t.metadata.Pattern, t.items.toSchema(b, useRef))
 		doc.Set("patternProperties", props)
 		doc.Set("additionalProperties", false)
 	}
@@ -93,8 +125,12 @@ func (t *Map[T]) toSchema(b *Builder) *orderedmap.OrderedMap {
 	return doc
 }
 
-func (t *Object) toSchema(b *Builder) *orderedmap.OrderedMap {
-	doc := t._Type.toSchema(b)
+func (t *Object) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+		return doc
+	}
+
+	doc := t._Type.toSchema(b, useRef)
 	required := make([]string, 0, len(t.metadata.Fields))
 	if len(t.metadata.Fields) > 0 {
 		properties := orderedmap.New()
@@ -104,7 +140,7 @@ func (t *Object) toSchema(b *Builder) *orderedmap.OrderedMap {
 				required = append(required, name)
 			}
 
-			def := v.metadata.Typ.toSchema(b)
+			def := v.metadata.Typ.toSchema(b, useRef)
 			def, err := maplib.Merge(def, v.metadata)
 			if err != nil {
 				panic(err)
@@ -125,7 +161,7 @@ func (t *Object) toSchema(b *Builder) *orderedmap.OrderedMap {
 	return doc
 }
 
-func (t TypeRef) toSchema(b *Builder) *orderedmap.OrderedMap {
+func (t TypeRef) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	typ := t.getType()
 	if typ == nil {
@@ -138,7 +174,7 @@ func (t TypeRef) toSchema(b *Builder) *orderedmap.OrderedMap {
 	return doc
 }
 
-func (t *Action) toSchema(b *Builder) *orderedmap.OrderedMap {
+func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	doc.Set("operationId", t.metadata.Name)
 
@@ -153,7 +189,7 @@ func (t *Action) toSchema(b *Builder) *orderedmap.OrderedMap {
 					doc.Set("description", p.metadata.Description)
 				}
 				doc.Set("required", p.metadata.Required)
-				doc.Set("schema", p.metadata.Typ.toSchema(b))
+				doc.Set("schema", p.metadata.Typ.toSchema(b, useRef))
 				parameters[i] = doc
 			}
 		}
@@ -165,7 +201,7 @@ func (t *Action) toSchema(b *Builder) *orderedmap.OrderedMap {
 			requestBody.Set("content", content)
 			appjson := orderedmap.New()
 			content.Set("application/json", appjson)
-			appjson.Set("schema", body.metadata.Typ.toSchema(b))
+			appjson.Set("schema", body.metadata.Typ.toSchema(b, useRef))
 		}
 	}
 
@@ -179,7 +215,7 @@ func (t *Action) toSchema(b *Builder) *orderedmap.OrderedMap {
 	appjson := orderedmap.New()
 	content.Set("applicatioin/json", appjson)
 	if t.metadata.Output != nil {
-		appjson.Set("schema", t.metadata.Output.metadata.Typ.toSchema(b))
+		appjson.Set("schema", t.metadata.Output.metadata.Typ.toSchema(b, useRef))
 	}
 	return doc
 }

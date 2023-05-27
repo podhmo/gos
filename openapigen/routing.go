@@ -55,8 +55,9 @@ func (r *Router) ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) error {
 		paths = v.(*orderedmap.OrderedMap)
 	}
 
+	useRef := !b.Config.DisableRefLinks
 	for _, action := range r.Actions {
-		op := action.toSchema(b)
+		op := action.toSchema(b, useRef)
 		var pathItem *orderedmap.OrderedMap
 		v, ok := paths.Get(action.metadata.Path)
 		if !ok {
