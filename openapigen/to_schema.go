@@ -192,6 +192,7 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 				doc.Set("schema", p.metadata.Typ.toSchema(b, useRef))
 				parameters[i] = doc
 			}
+			doc.Set("parameters", parameters)
 		}
 		if body := input.metadata.Body; body != nil {
 			requestBody := orderedmap.New()

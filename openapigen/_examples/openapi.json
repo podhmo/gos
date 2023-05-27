@@ -96,6 +96,16 @@
     "/hello/{name}": {
       "hello": {
         "operationId": "hello",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "200": {
           "description": "greeting hello",
           "content": {
@@ -111,6 +121,22 @@
     "/people": {
       "ListPerson": {
         "operationId": "ListPerson",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "-name",
+                "age",
+                "-age"
+              ]
+            }
+          }
+        ],
         "200": {
           "description": "list person",
           "content": {
@@ -127,6 +153,16 @@
       },
       "CreatePerson": {
         "operationId": "CreatePerson",
+        "parameters": [
+          {
+            "name": "verbose",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
