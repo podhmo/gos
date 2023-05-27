@@ -178,8 +178,8 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	doc.Set("operationId", t.metadata.Name)
 
-	if t.metadata.Input != nil {
-		if params := t.metadata.Input.metadata.Params; len(params) > 0 {
+	if input := t.metadata.Input; input != nil {
+		if params := input.metadata.Params; len(params) > 0 {
 			parameters := make([]*orderedmap.OrderedMap, len(params))
 			for i, p := range params {
 				doc := orderedmap.New()
@@ -193,7 +193,7 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 				parameters[i] = doc
 			}
 		}
-		if body := t.metadata.Input.metadata.Body; body != nil {
+		if body := input.metadata.Body; body != nil {
 			requestBody := orderedmap.New()
 			requestBody.Set("required", true)
 			doc.Set("requestBody", requestBody)
@@ -214,8 +214,8 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	res.Set("content", content)
 	appjson := orderedmap.New()
 	content.Set("applicatioin/json", appjson)
-	if t.metadata.Output != nil {
-		appjson.Set("schema", t.metadata.Output.metadata.Typ.toSchema(b, useRef))
+	if output := t.metadata.Output; output != nil {
+		appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
 	}
 	return doc
 }
