@@ -132,6 +132,7 @@ func (t *Object) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc := t._Type.toSchema(b, useRef)
 	required := make([]string, 0, len(t.metadata.Fields))
 	if len(t.metadata.Fields) > 0 {
+		useRef := true // treating sub schema as always the ref.
 		properties := orderedmap.New()
 		for _, v := range t.metadata.Fields {
 			name := v.metadata.Name

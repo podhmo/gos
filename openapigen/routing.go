@@ -67,5 +67,38 @@ func (r *Router) ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) error {
 		}
 		pathItem.Set(action.metadata.Name, op)
 	}
+
+	if useRef {
+		// currently supports components/schemas only
+
+		var components *orderedmap.OrderedMap // TODO: get or create
+		if v, ok := doc.Get("components"); ok {
+			components = v.(*orderedmap.OrderedMap)
+		} else {
+			components = orderedmap.New()
+			doc.Set("components", components)
+		}
+		var schemas *orderedmap.OrderedMap
+		if v, ok := components.Get("schemas"); ok {
+			schemas = v.(*orderedmap.OrderedMap)
+		} else {
+			schemas = orderedmap.New()
+			components.Set("schemas", schemas)
+		}
+
+		defs := b.Config.defs
+		seen := map[int]bool{}
+		toplevelDefinitionIsalwaysUseRef := false
+		for _, typ := range defs {
+			tm := typ.GetTypeMetadata()
+			id := tm.id
+			if _, ok := seen[id]; ok {
+				continue
+			}
+			seen[id] = true
+			s := typ.toSchema(b, toplevelDefinitionIsalwaysUseRef)
+			schemas.Set(tm.Name, s)
+		}
+	}
 	return nil
 }

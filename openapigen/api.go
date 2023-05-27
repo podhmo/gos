@@ -5,13 +5,11 @@ package openapigen
 type Config struct {
 	DisableRefLinks bool // if true, does not use $ref links
 
-	defs []toSchemer
-	seen map[toSchemer]bool // TODO: name conflict?
+	defs []TypeBuilder
 }
 
 func DefaultConfig() *Config {
 	return &Config{
 		DisableRefLinks: false,
-		seen:            map[toSchemer]bool{},
 	}
 }
