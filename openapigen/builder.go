@@ -28,11 +28,14 @@ type Builder struct {
 	mu          sync.Mutex
 	namedTypes  []TypeBuilder
 	nameToIDMap map[string][]int
+
+	Config *Config
 }
 
-func NewTypeBuilder() *Builder {
+func NewTypeBuilder(config *Config) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
+		Config:      config,
 	}
 }
 

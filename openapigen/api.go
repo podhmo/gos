@@ -3,8 +3,13 @@
 package openapigen
 
 type Config struct {
+	DisableRefLinks bool // if true, does not use $ref links
+
+	defs []TypeBuilder
 }
 
 func DefaultConfig() *Config {
-	return &Config{}
+	return &Config{
+		DisableRefLinks: false,
+	}
 }

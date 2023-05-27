@@ -1,0 +1,235 @@
+{
+  "components": {
+    "schemas": {
+      "Name": {
+        "type": "string",
+        "minlength": 1
+      },
+      "Person": {
+        "type": "object",
+        "description": "person object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "father": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "friends": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Person"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "age"
+        ],
+        "additionalProperties": false
+      },
+      "PersonSummary": {
+        "type": "object",
+        "description": "person objec summary",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "TestScore": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "tests": {
+            "type": "object",
+            "description": "score (0~100)",
+            "patternProperties": {
+              "\\-score$": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false,
+            "pattern": "\\-score$"
+          }
+        },
+        "required": [
+          "title",
+          "tests"
+        ],
+        "additionalProperties": false
+      },
+      "Ordering": {
+        "type": "string",
+        "description": "順序\n\n*  降順\n*  昇順",
+        "enum": [
+          "desc",
+          "asc"
+        ],
+        "default": "desc"
+      }
+    }
+  }
+}
+{
+  "paths": {
+    "/hello/{name}": {
+      "hello": {
+        "operationId": "hello",
+        "200": {
+          "description": "greeting hello",
+          "content": {
+            "applicatioin/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/people": {
+      "ListPerson": {
+        "operationId": "ListPerson",
+        "200": {
+          "description": "list person",
+          "content": {
+            "applicatioin/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PersonSummary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreatePerson": {
+        "operationId": "CreatePerson",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "nickname": {
+                    "$ref": "#/components/schemas/Name"
+                  },
+                  "fatherId": {
+                    "type": "string"
+                  },
+                  "friendIdList": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "age",
+                  "fatherId",
+                  "friendIdList"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "200": {
+          "description": "create person",
+          "content": {
+            "applicatioin/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Person"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PersonSummary": {
+        "type": "object",
+        "description": "person objec summary",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "Person": {
+        "type": "object",
+        "description": "person object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "father": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "friends": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Person"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "age"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}
