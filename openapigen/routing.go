@@ -44,7 +44,6 @@ func (r *Router) Delete(path string, action *Action) {
 	r.Method("delete", path, action)
 }
 
-// hmm
 func (r *Router) ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) error {
 	var paths *orderedmap.OrderedMap
 	v, ok := doc.Get("paths")

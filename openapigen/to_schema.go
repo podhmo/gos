@@ -13,9 +13,7 @@ type toSchemer interface {
 	toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap
 }
 
-func ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) (*orderedmap.OrderedMap, error) {
-	useRef := !b.Config.DisableRefLinks
-
+func ToSchemaWith(doc *orderedmap.OrderedMap, b *Builder, useRef bool) (*orderedmap.OrderedMap, error) {
 	components := orderedmap.New()
 	doc.Set("components", components)
 
@@ -37,7 +35,8 @@ func ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) (*orderedmap.OrderedMa
 }
 func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 	doc := orderedmap.New()
-	return ToSchemaWith(b, doc)
+	useRef := false
+	return ToSchemaWith(doc, b, useRef)
 }
 
 func _toRefSchemaIfNamed[R TypeBuilder](b *Builder, t *_Type[R], useRef bool) *orderedmap.OrderedMap {
