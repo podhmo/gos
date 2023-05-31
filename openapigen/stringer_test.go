@@ -7,7 +7,17 @@ import (
 )
 
 func TestToString(t *testing.T) {
-	b := openapigen.NewTypeBuilder()
+	b := openapigen.NewTypeBuilder(openapigen.DefaultConfig())
+
+	// Hello :: func(name string) string
+	Hello := b.Action("hello",
+		b.Input(
+			b.Param("name", b.String()).AsPath(),
+		).Doc("input"),
+		b.Output(
+			b.String(),
+		),
+	).Doc("greeting hello")
 
 	tests := []struct {
 		name string
@@ -27,6 +37,9 @@ func TestToString(t *testing.T) {
 			b.Field("name", b.String()),
 			b.Field("age", b.String()).Required(false),
 		)), "Person{name, age?}"},
+		{"action", Hello, "hello :: (string) => string"},
+		{"action input", Hello.GetMetadata().Input, "(string)"},
+		{"action output", Hello.GetMetadata().Output, " => string"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
