@@ -227,16 +227,32 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	}
 
 	responses := orderedmap.New()
-	responses.Set("responses", responses)
-	res := orderedmap.New()
-	doc.Set(strconv.Itoa(t.metadata.DefaultStatus), res)
-	res.Set("description", t._Type.metadata.Doc)
-	content := orderedmap.New()
-	res.Set("content", content)
-	appjson := orderedmap.New()
-	content.Set("applicatioin/json", appjson)
-	if output := t.metadata.Output; output != nil {
-		appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
+	doc.Set("responses", responses)
+	{
+		res := orderedmap.New()
+		k := strconv.Itoa(t.metadata.DefaultStatus)
+		responses.Set(k, res)
+		res.Set("description", t._Type.metadata.Doc)
+		content := orderedmap.New()
+		res.Set("content", content)
+		appjson := orderedmap.New()
+		content.Set("applicatioin/json", appjson)
+		if output := t.metadata.Output; output != nil {
+			appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
+		}
+	}
+	if t.metadata.DefaultError != nil {
+		res := orderedmap.New()
+		k := "default"
+		responses.Set(k, res)
+		res.Set("description", "")
+		content := orderedmap.New()
+		res.Set("content", content)
+		appjson := orderedmap.New()
+		content.Set("applicatioin/json", appjson)
+		if t.metadata.DefaultError != nil {
+			appjson.Set("schema", t.metadata.DefaultError.toSchema(b, useRef))
+		}
 	}
 	return doc
 }
