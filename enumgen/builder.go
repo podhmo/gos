@@ -27,12 +27,14 @@ type Builder struct {
 	mu          sync.Mutex
 	namedEnums  []EnumBuilder
 	nameToIDMap map[string][]int
-	Config      *Config
+
+	Config *Config
 }
 
 func NewEnumBuilder(config *Config) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
+		namedEnums:  []EnumBuilder{nil}, // nil is sentinel (id<=0 is unnamed)
 		Config:      config,
 	}
 }
@@ -40,6 +42,9 @@ func NewEnumBuilder(config *Config) *Builder {
 // EachEnum iterates named Enum.
 func (b *Builder) EachEnums(fn func(EnumBuilder) error) error {
 	for _, t := range b.namedEnums {
+		if t == nil {
+			continue
+		}
 		if err := fn(t); err != nil {
 			return fmt.Errorf("error on %v -- %w", t, err) // TODO: use ToString()
 		}

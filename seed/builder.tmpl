@@ -42,6 +42,7 @@ type Builder struct {
 func New{{$target}}Builder({{if (not (eq $root.Constructor nil))}}{{range $_,$a := $root.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
+		named{{$target}}s: []{{$target}}Builder{nil},  // nil is sentinel (id<=0 is unnamed)
 		{{if (not (eq $root.Constructor nil))}}{{range $_,$a := $root.Constructor.Args}}{{$a.Name}}: {{$a.Name | toLower}}, {{end}}{{end}}
 	}
 }
@@ -49,6 +50,9 @@ func New{{$target}}Builder({{if (not (eq $root.Constructor nil))}}{{range $_,$a 
 // Each{{$target}} iterates named {{$target}}.
 func (b *Builder) Each{{$target}}s(fn func({{$target}}Builder) error) error {
 	for _, t := range b.named{{$target}}s {
+		if t == nil {
+			continue
+		}
 		if err := fn(t); err != nil {
 			return fmt.Errorf("error on %v -- %w", t, err) // TODO: use ToString()
 		}

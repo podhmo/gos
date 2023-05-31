@@ -1,0 +1,68 @@
+{
+  "paths": {
+    "/tasks": {
+      "ListTask": {
+        "operationId": "ListTask",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "-createdAt"
+              ]
+            }
+          }
+        ],
+        "200": {
+          "description": "",
+          "content": {
+            "applicatioin/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Task": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "done": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/DateTime"
+          }
+        },
+        "required": [
+          "name",
+          "done",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "Name": {
+        "type": "string",
+        "description": "name of something"
+      },
+      "DateTime": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  }
+}
