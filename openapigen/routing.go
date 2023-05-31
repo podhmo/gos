@@ -2,6 +2,7 @@ package openapigen
 
 import (
 	"github.com/iancoleman/orderedmap"
+	"github.com/podhmo/gos/pkg/maplib"
 )
 
 type rootRouter struct {
@@ -45,46 +46,20 @@ func (r *Router) Delete(path string, action *Action) {
 }
 
 func (r *Router) ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) error {
-	var paths *orderedmap.OrderedMap
-	v, ok := doc.Get("paths")
-	if !ok {
-		paths = orderedmap.New()
-		doc.Set("paths", paths)
-	} else {
-		paths = v.(*orderedmap.OrderedMap)
-	}
+	paths, _ := maplib.GetOrCreate(doc, "paths")
 
 	useRef := !b.Config.DisableRefLinks
 	for _, action := range r.Actions {
+		pathItem, _ := maplib.GetOrCreate(paths, action.metadata.Path)
 		op := action.toSchema(b, useRef)
-		var pathItem *orderedmap.OrderedMap
-		v, ok := paths.Get(action.metadata.Path)
-		if !ok {
-			pathItem = orderedmap.New()
-			paths.Set(action.metadata.Path, pathItem)
-		} else {
-			pathItem = v.(*orderedmap.OrderedMap)
-		}
 		pathItem.Set(action.metadata.Method, op)
 	}
 
 	if useRef {
 		// currently supports components/schemas only
 
-		var components *orderedmap.OrderedMap // TODO: get or create
-		if v, ok := doc.Get("components"); ok {
-			components = v.(*orderedmap.OrderedMap)
-		} else {
-			components = orderedmap.New()
-			doc.Set("components", components)
-		}
-		var schemas *orderedmap.OrderedMap
-		if v, ok := components.Get("schemas"); ok {
-			schemas = v.(*orderedmap.OrderedMap)
-		} else {
-			schemas = orderedmap.New()
-			components.Set("schemas", schemas)
-		}
+		components, _ := maplib.GetOrCreate(doc, "components")
+		schemas, _ := maplib.GetOrCreate(components, "schemas")
 
 		defs := b.Config.defs
 		seen := map[int]bool{}
