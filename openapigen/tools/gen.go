@@ -95,10 +95,11 @@ func run() error {
 		b.Field("Name", seed.Symbol("string")),
 		b.Field("Input", "*Input"),
 		b.Field("Output", "*Output"),
-		b.Field("DefaultStatus", seed.Symbol("int")).Default("200"),
 		b.Field("Method", seed.Symbol("string")),
 		b.Field("Path", seed.Symbol("string")),
 		b.Field("Tags", seed.Symbol("[]string")),
+		b.Field("DefaultStatus", seed.Symbol("int")).Default("200"),
+		b.Field("DefaultError", seed.Symbol("TypeBuilder")),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Input", "*Input"),
