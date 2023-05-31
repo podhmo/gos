@@ -463,12 +463,6 @@ func (b *ActionBuilder[R]) DefaultStatus(value int) R {
 	return b.ret
 }
 
-// DefaultError set Metadata.DefaultError
-func (b *ActionBuilder[R]) DefaultError(value TypeBuilder) R {
-	b.metadata.DefaultError = value
-	return b.ret
-}
-
 // end setter of Action --------------------
 
 // Param builds Type for Param
@@ -620,6 +614,12 @@ type OutputBuilder[R TypeBuilder] struct {
 }
 
 // begin setter of Output --------------------
+
+// DefaultError set Metadata.DefaultError
+func (b *OutputBuilder[R]) DefaultError(value TypeBuilder) R {
+	b.metadata.DefaultError = value
+	return b.ret
+}
 
 // end setter of Output --------------------
 

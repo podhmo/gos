@@ -76,8 +76,6 @@ type ActionMetadata struct {
 	Tags []string
 
 	DefaultStatus int
-
-	DefaultError TypeBuilder
 }
 
 type ParamMetadata struct {
@@ -104,4 +102,6 @@ type InputMetadata struct {
 
 type OutputMetadata struct {
 	Typ TypeBuilder
+
+	DefaultError TypeBuilder
 }

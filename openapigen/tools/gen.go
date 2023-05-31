@@ -99,7 +99,6 @@ func run() error {
 		b.Field("Path", seed.Symbol("string")),
 		b.Field("Tags", seed.Symbol("[]string")),
 		b.Field("DefaultStatus", seed.Symbol("int")).Default("200"),
-		b.Field("DefaultError", seed.Symbol("TypeBuilder")),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Input", "*Input"),
@@ -146,6 +145,7 @@ func run() error {
 	).NeedBuilder().Underlying("input")
 	Output := b.Type("Output",
 		b.Field("Typ", "TypeBuilder"),
+		b.Field("DefaultError", seed.Symbol("TypeBuilder")),
 	).Constructor(
 		b.Arg("Typ", "TypeBuilder"),
 	).NeedBuilder().Underlying("output")
