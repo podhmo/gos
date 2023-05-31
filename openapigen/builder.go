@@ -439,12 +439,6 @@ type ActionBuilder[R TypeBuilder] struct {
 
 // begin setter of Action --------------------
 
-// DefaultStatus set Metadata.DefaultStatus
-func (b *ActionBuilder[R]) DefaultStatus(value int) R {
-	b.metadata.DefaultStatus = value
-	return b.ret
-}
-
 // Method set Metadata.Method
 func (b *ActionBuilder[R]) Method(value string) R {
 	b.metadata.Method = value
@@ -460,6 +454,18 @@ func (b *ActionBuilder[R]) Path(value string) R {
 // Tags set Metadata.Tags
 func (b *ActionBuilder[R]) Tags(value []string) R {
 	b.metadata.Tags = value
+	return b.ret
+}
+
+// DefaultStatus set Metadata.DefaultStatus
+func (b *ActionBuilder[R]) DefaultStatus(value int) R {
+	b.metadata.DefaultStatus = value
+	return b.ret
+}
+
+// DefaultError set Metadata.DefaultError
+func (b *ActionBuilder[R]) DefaultError(value TypeBuilder) R {
+	b.metadata.DefaultError = value
 	return b.ret
 }
 

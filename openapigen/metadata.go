@@ -69,13 +69,15 @@ type ActionMetadata struct {
 
 	Output *Output
 
-	DefaultStatus int
-
 	Method string
 
 	Path string
 
 	Tags []string
+
+	DefaultStatus int
+
+	DefaultError TypeBuilder
 }
 
 type ParamMetadata struct {
