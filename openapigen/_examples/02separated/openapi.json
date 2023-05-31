@@ -78,7 +78,8 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "name of person"
                   },
                   "age": {
                     "type": "integer",
@@ -128,7 +129,8 @@
         "description": "person objec summary",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "name of person"
           },
           "nickname": {
             "$ref": "#/components/schemas/Name"
@@ -151,7 +153,8 @@
             "type": "string"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "name of person"
           },
           "age": {
             "type": "integer",
