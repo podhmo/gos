@@ -205,12 +205,10 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 			parameters := make([]*orderedmap.OrderedMap, len(params))
 			for i, p := range params {
 				doc := orderedmap.New()
-				doc.Set("name", p.metadata.Name)
-				doc.Set("in", p.metadata.In)
-				if p.metadata.Description != "" {
-					doc.Set("description", p.metadata.Description)
+				doc, err := maplib.Merge(doc, p.metadata)
+				if err != nil {
+					panic(err)
 				}
-				doc.Set("required", p.metadata.Required)
 				doc.Set("schema", p.metadata.Typ.toSchema(b, useRef))
 				parameters[i] = doc
 			}
