@@ -1,100 +1,7 @@
 {
-  "components": {
-    "schemas": {
-      "Name": {
-        "type": "string",
-        "minlength": 1
-      },
-      "Person": {
-        "type": "object",
-        "description": "person object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "age": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "nickname": {
-            "$ref": "#/components/schemas/Name"
-          },
-          "father": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "friends": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Person"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "age"
-        ],
-        "additionalProperties": false
-      },
-      "PersonSummary": {
-        "type": "object",
-        "description": "person objec summary",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "nickname": {
-            "$ref": "#/components/schemas/Name"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "additionalProperties": false
-      },
-      "TestScore": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "tests": {
-            "type": "object",
-            "description": "score (0~100)",
-            "patternProperties": {
-              "\\-score$": {
-                "type": "integer"
-              }
-            },
-            "additionalProperties": false,
-            "pattern": "\\-score$"
-          }
-        },
-        "required": [
-          "title",
-          "tests"
-        ],
-        "additionalProperties": false
-      },
-      "Ordering": {
-        "type": "string",
-        "description": "順序\n\n*  降順\n*  昇順",
-        "enum": [
-          "desc",
-          "asc"
-        ],
-        "default": "desc"
-      }
-    }
-  }
-}
-{
   "paths": {
     "/hello/{name}": {
-      "hello": {
+      "post": {
         "operationId": "hello",
         "parameters": [
           {
@@ -119,7 +26,7 @@
       }
     },
     "/people": {
-      "ListPerson": {
+      "get": {
         "operationId": "ListPerson",
         "parameters": [
           {
@@ -151,7 +58,7 @@
           }
         }
       },
-      "CreatePerson": {
+      "post": {
         "operationId": "CreatePerson",
         "parameters": [
           {
@@ -216,6 +123,22 @@
   },
   "components": {
     "schemas": {
+      "PersonSummary": {
+        "type": "object",
+        "description": "person objec summary",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
       "Name": {
         "type": "string",
         "minlength": 1
@@ -251,22 +174,6 @@
           "id",
           "name",
           "age"
-        ],
-        "additionalProperties": false
-      },
-      "PersonSummary": {
-        "type": "object",
-        "description": "person objec summary",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "nickname": {
-            "$ref": "#/components/schemas/Name"
-          }
-        },
-        "required": [
-          "name"
         ],
         "additionalProperties": false
       }
