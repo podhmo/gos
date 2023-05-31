@@ -1,10 +1,10 @@
-run-example: router default
+run-example: _router _default
 
-default:
+_default:
 	go run ./_examples/ > ./_examples/openapi.json
 
 # simple router example
-router:
+_router:
 	go run ./_examples/router > ./_examples/router/openapi.json
 
-.PHONY: run-example router default
+.PHONY: run-example _router _default
