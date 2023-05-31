@@ -39,18 +39,23 @@ func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
 	return ToSchemaWith(doc, b, useRef)
 }
 
-func _toRefSchemaIfNamed[R TypeBuilder](b *Builder, t *_Type[R], useRef bool) *orderedmap.OrderedMap {
+func _toRefSchemaIfNamed[R TypeBuilder](b *Builder, t *_Type[R], useRef bool) (doc *orderedmap.OrderedMap, cached bool) {
 	if !useRef {
-		return nil
+		return nil, false
 	}
-	if named := t.metadata.id > 0; !named { // if named by DefineType(), id > 0
-		return nil
+	id := t.metadata.id
+	if named := id > 0; !named { // if named by DefineType(), id > 0
+		return nil, false
+	}
+
+	if ref, cached := b.Config.seen[id]; cached {
+		return ref.toSchemaInternal(b), true
 	}
 
 	b.Config.defs = append(b.Config.defs, t.ret) // enqueue definitions
-
 	ref := &TypeRef{Name: t.metadata.Name, rootbuilder: b, _Type: t.ret}
-	return ref.toSchema(b, useRef)
+	b.Config.seen[id] = ref
+	return ref.toSchemaInternal(b), false
 }
 
 // customization
@@ -65,7 +70,7 @@ func (t *_Type[R]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 }
 
 func (t *String) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
-	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+	if doc, _ := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
 		return doc
 	}
 
@@ -77,7 +82,7 @@ func (t *String) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	return doc
 }
 func (t *Int) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
-	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+	if doc, _ := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
 		return doc
 	}
 
@@ -89,11 +94,15 @@ func (t *Int) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	return doc
 }
 func (t *Array[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
-	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+	doc, cached := _toRefSchemaIfNamed(b, t._Type, useRef)
+	if doc != nil {
+		if !cached {
+			t.items.toSchema(b, true /* useRef */)
+		}
 		return doc
 	}
 
-	doc := t._Type.toSchema(b, useRef)
+	doc = t._Type.toSchema(b, useRef)
 	doc.Set("items", t.items.toSchema(b, useRef))
 	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
@@ -102,11 +111,15 @@ func (t *Array[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	return doc
 }
 func (t *Map[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
-	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+	doc, cached := _toRefSchemaIfNamed(b, t._Type, useRef)
+	if doc != nil {
+		if !cached {
+			t.items.toSchema(b, true /* useRef */)
+		}
 		return doc
 	}
 
-	doc := t._Type.toSchema(b, useRef)
+	doc = t._Type.toSchema(b, useRef)
 	doc.Set("type", "object")
 	if t.metadata.Pattern == "" {
 		doc.Set("additionalProperties", t.items.toSchema(b, useRef))
@@ -125,11 +138,17 @@ func (t *Map[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 }
 
 func (t *Object) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
-	if doc := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+	doc, cached := _toRefSchemaIfNamed(b, t._Type, useRef)
+	if doc != nil {
+		if !cached {
+			for _, v := range t.metadata.Fields {
+				v.metadata.Typ.toSchema(b, true /* true */)
+			}
+		}
 		return doc
 	}
 
-	doc := t._Type.toSchema(b, useRef)
+	doc = t._Type.toSchema(b, useRef)
 	required := make([]string, 0, len(t.metadata.Fields))
 	if len(t.metadata.Fields) > 0 {
 		useRef := true // treating sub schema as always the ref.
@@ -162,6 +181,9 @@ func (t *Object) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 }
 
 func (t TypeRef) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	return t.getType().toSchema(b, useRef)
+}
+func (t TypeRef) toSchemaInternal(b *Builder) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	typ := t.getType()
 	if typ == nil {
