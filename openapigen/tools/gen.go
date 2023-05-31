@@ -153,16 +153,7 @@ func run() error {
 	fmt.Fprintln(os.Stderr, Action, Input, Output, Param)
 
 	// for transform
-	b.Footer(`
-	// toSlice is list.map as you know.
-	func toSlice[S, D any](src []S, conv func(S) D) []D {
-		dst := make([]D, len(src))
-		for i, x := range src {
-			dst[i] = conv(x)
-		}
-		return dst
-	}	
-	`)
+	// b.Footer(``)
 
 	// emit
 	return cmd.Do(b)

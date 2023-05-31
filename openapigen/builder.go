@@ -657,13 +657,3 @@ type paramOrBody interface {
 func (t *Param) paramorbody() {}
 
 func (t *Body) paramorbody() {}
-
-// footer. ----
-// toSlice is list.map as you know.
-func toSlice[S, D any](src []S, conv func(S) D) []D {
-	dst := make([]D, len(src))
-	for i, x := range src {
-		dst[i] = conv(x)
-	}
-	return dst
-}
