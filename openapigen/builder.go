@@ -35,6 +35,7 @@ type Builder struct {
 func NewTypeBuilder(config *Config) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
+		namedTypes:  []TypeBuilder{nil}, // nil is sentinel (id<=0 is unnamed)
 		Config:      config,
 	}
 }
@@ -42,6 +43,9 @@ func NewTypeBuilder(config *Config) *Builder {
 // EachType iterates named Type.
 func (b *Builder) EachTypes(fn func(TypeBuilder) error) error {
 	for _, t := range b.namedTypes {
+		if t == nil {
+			continue
+		}
 		if err := fn(t); err != nil {
 			return fmt.Errorf("error on %v -- %w", t, err) // TODO: use ToString()
 		}
