@@ -72,12 +72,14 @@ func run() error {
 	Field := b.Type("Field",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
-		b.Field("Description", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
+		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"-"`).Default("true"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
-	).NeedBuilder().Underlying("field") //?
+	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
+		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
+	})).NeedBuilder().Underlying("field") //?
 
 	Object := b.Type("Object",
 		b.Field("Fields", seed.Symbol("[]*Field")).Tag(`json:"-"`),
@@ -104,15 +106,18 @@ func run() error {
 	).NeedBuilder().Underlying("action")
 
 	Param := b.Type("Param",
-		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("Name", seed.Symbol("string")).Tag(`json:"name"`),
 		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`).Default(`"query"`).Doc("openapi's in parameter {query, header, path, cookie} (default is query)"),
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
-		b.Field("Description", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
+		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"required"`).Default("true"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
-	).NeedBuilder().Underlying("param")
+	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
+		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
+	})).NeedBuilder().Underlying("param")
+
 	Body := b.Type("Body",
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
 	).Constructor(
