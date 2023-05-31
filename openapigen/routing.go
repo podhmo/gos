@@ -65,7 +65,7 @@ func (r *Router) ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) error {
 		} else {
 			pathItem = v.(*orderedmap.OrderedMap)
 		}
-		pathItem.Set(action.metadata.Name, op)
+		pathItem.Set(action.metadata.Method, op)
 	}
 
 	if useRef {
