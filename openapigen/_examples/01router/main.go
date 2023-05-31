@@ -25,7 +25,10 @@ func main() {
 		b.Output(b.Array(Task)),
 	)
 
-	r := openapigen.NewRouter()
+	Error := openapigen.DefineType("Error", b.Object(
+		b.Field("message", b.String()),
+	)).Doc("default error")
+	r := openapigen.NewRouter(Error)
 	{
 		r := r.Tagged("task")
 		r.Get("/tasks", ListTask)
