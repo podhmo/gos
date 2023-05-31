@@ -6,16 +6,20 @@ import (
 )
 
 type rootRouter struct {
-	Actions []*Action
+	Actions      []*Action
+	DefaultError TypeBuilder
 }
 
 type Router struct {
 	*rootRouter
+
 	tags []string
 }
 
-func NewRouter() *Router {
-	return &Router{rootRouter: &rootRouter{}}
+func NewRouter(defaultError TypeBuilder) *Router {
+	return &Router{rootRouter: &rootRouter{
+		DefaultError: defaultError,
+	}}
 }
 
 func (r *Router) Tagged(tags ...string) *Router {
@@ -50,6 +54,9 @@ func (r *Router) ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) error {
 
 	useRef := !b.Config.DisableRefLinks
 	for _, action := range r.Actions {
+		if action.metadata.DefaultError == nil {
+			action.DefaultError(r.DefaultError)
+		}
 		pathItem, _ := maplib.GetOrCreate(paths, action.metadata.Path)
 		op := action.toSchema(b, useRef)
 		pathItem.Set(action.metadata.Method, op)

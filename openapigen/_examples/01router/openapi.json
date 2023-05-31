@@ -17,14 +17,26 @@
             }
           }
         ],
-        "200": {
-          "description": "",
-          "content": {
-            "applicatioin/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Task"
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -62,6 +74,19 @@
       "DateTime": {
         "type": "string",
         "format": "date-time"
+      },
+      "Error": {
+        "type": "object",
+        "description": "default error",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false
       }
     }
   }

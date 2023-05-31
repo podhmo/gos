@@ -13,12 +13,24 @@
             }
           }
         ],
-        "200": {
-          "description": "greeting hello",
-          "content": {
-            "applicatioin/json": {
-              "schema": {
-                "type": "string"
+        "responses": {
+          "200": {
+            "description": "greeting hello",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -44,14 +56,26 @@
             }
           }
         ],
-        "200": {
-          "description": "list person",
-          "content": {
-            "applicatioin/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/PersonSummary"
+        "responses": {
+          "200": {
+            "description": "list person",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonSummary"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -109,12 +133,24 @@
             }
           }
         },
-        "200": {
-          "description": "create person",
-          "content": {
-            "applicatioin/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Person"
+        "responses": {
+          "200": {
+            "description": "create person",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "applicatioin/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -124,6 +160,18 @@
   },
   "components": {
     "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false
+      },
       "PersonSummary": {
         "type": "object",
         "description": "person objec summary",
