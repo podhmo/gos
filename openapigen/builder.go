@@ -358,15 +358,14 @@ type FieldBuilder[R TypeBuilder] struct {
 
 // begin setter of Field --------------------
 
-// Description set Metadata.Description
-func (b *FieldBuilder[R]) Description(value string) R {
-	b.metadata.Description = value
-	return b.ret
-}
-
 // Required set Metadata.Required
 func (b *FieldBuilder[R]) Required(value bool) R {
 	b.metadata.Required = value
+	return b.ret
+}
+
+func (b *FieldBuilder[R]) Doc(stmts ...string) R {
+	b.metadata.Doc = strings.Join(stmts, "\n")
 	return b.ret
 }
 
@@ -502,15 +501,14 @@ func (b *ParamBuilder[R]) In(value string) R {
 	return b.ret
 }
 
-// Description set Metadata.Description
-func (b *ParamBuilder[R]) Description(value string) R {
-	b.metadata.Description = value
-	return b.ret
-}
-
 // Required set Metadata.Required
 func (b *ParamBuilder[R]) Required(value bool) R {
 	b.metadata.Required = value
+	return b.ret
+}
+
+func (b *ParamBuilder[R]) Doc(stmts ...string) R {
+	b.metadata.Doc = strings.Join(stmts, "\n")
 	return b.ret
 }
 

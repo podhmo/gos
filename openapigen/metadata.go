@@ -51,7 +51,7 @@ type FieldMetadata struct {
 
 	Typ TypeBuilder `json:"-"`
 
-	Description string `json:"description,omitempty"`
+	Doc string `json:"description,omitempty"`
 
 	Required bool `json:"-"`
 }
@@ -79,13 +79,13 @@ type ActionMetadata struct {
 }
 
 type ParamMetadata struct {
-	Name string `json:"-"`
+	Name string `json:"name"`
 	// openapi's in parameter {query, header, path, cookie} (default is query)
 	In string `json:"in"`
 
 	Typ TypeBuilder `json:"-"`
 
-	Description string `json:"description,omitempty"`
+	Doc string `json:"description,omitempty"`
 
 	Required bool `json:"required"`
 }
