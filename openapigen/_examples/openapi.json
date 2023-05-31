@@ -216,21 +216,9 @@
   },
   "components": {
     "schemas": {
-      "PersonSummary": {
-        "type": "object",
-        "description": "person objec summary",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "nickname": {
-            "$ref": "#/components/schemas/Name"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "additionalProperties": false
+      "Name": {
+        "type": "string",
+        "minlength": 1
       },
       "Person": {
         "type": "object",
@@ -263,6 +251,22 @@
           "id",
           "name",
           "age"
+        ],
+        "additionalProperties": false
+      },
+      "PersonSummary": {
+        "type": "object",
+        "description": "person objec summary",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": [
+          "name"
         ],
         "additionalProperties": false
       }

@@ -54,6 +54,14 @@
           "createdAt"
         ],
         "additionalProperties": false
+      },
+      "Name": {
+        "type": "string",
+        "description": "name of something"
+      },
+      "DateTime": {
+        "type": "string",
+        "format": "date-time"
       }
     }
   }
