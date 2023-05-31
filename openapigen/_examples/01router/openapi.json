@@ -1,7 +1,7 @@
 {
   "paths": {
     "/tasks": {
-      "ListTask": {
+      "get": {
         "operationId": "ListTask",
         "parameters": [
           {

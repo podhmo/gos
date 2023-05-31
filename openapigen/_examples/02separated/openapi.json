@@ -1,7 +1,7 @@
 {
   "paths": {
     "/hello/{name}": {
-      "hello": {
+      "post": {
         "operationId": "hello",
         "parameters": [
           {
@@ -26,7 +26,7 @@
       }
     },
     "/people": {
-      "ListPerson": {
+      "get": {
         "operationId": "ListPerson",
         "parameters": [
           {
@@ -58,7 +58,7 @@
           }
         }
       },
-      "CreatePerson": {
+      "post": {
         "operationId": "CreatePerson",
         "parameters": [
           {
