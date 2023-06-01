@@ -134,6 +134,8 @@ func run() error {
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"required"`).Default("true"),
+		b.Field("Deprecated", seed.Symbol("bool")).Tag(`json:"deprecated,omitempty"`),
+		b.Field("AllowEmptyValue", seed.Symbol("bool")).Tag(`json:"allowEmptyValue,omitempty"`),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
