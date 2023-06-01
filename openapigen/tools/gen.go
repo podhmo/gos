@@ -53,6 +53,7 @@ func run() error {
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
 	).NeedBuilder().Underlying("integer")
+	Float := b.Type("Float").NeedBuilder().Underlying("number")
 	String := b.Type("String",
 		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
@@ -186,7 +187,7 @@ func run() error {
 		b.Field("Servers", Server.GetMetadata().Name.Slice()).Tag(`json:"servers"`),
 	)
 
-	fmt.Fprintln(os.Stderr, Type, Bool, Int, String, Array, Map, Field, Object)
+	fmt.Fprintln(os.Stderr, Type, Bool, Int, Float, String, Array, Map, Field, Object)
 	fmt.Fprintln(os.Stderr, Action, Input, Output, Param)
 	fmt.Fprintln(os.Stderr, Contact, License, Server, Info, OpenAPI)
 
