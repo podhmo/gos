@@ -93,6 +93,18 @@ func (t *Int) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	}
 	return doc
 }
+func (t *Float) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	if doc, _ := _toRefSchemaIfNamed(b, t._Type, useRef); doc != nil {
+		return doc
+	}
+
+	doc := t._Type.toSchema(b, useRef)
+	doc, err := maplib.Merge(doc, t.metadata)
+	if err != nil {
+		panic(err)
+	}
+	return doc
+}
 func (t *Array[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc, cached := _toRefSchemaIfNamed(b, t._Type, useRef)
 	if doc != nil {
