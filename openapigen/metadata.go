@@ -7,8 +7,10 @@ type TypeMetadata struct {
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
 
-	Format string `json:"format,omitempty"`
-	Doc    string `json:"description,omitempty"`
+	Doc     string `json:"description,omitempty"`
+	Title   string `json:"title,omitempty"`
+	Format  string `json:"format,omitempty"`
+	Example string `json:"example,omitempty"`
 }
 
 type BoolMetadata struct {
@@ -22,6 +24,24 @@ type IntMetadata struct {
 	Maximum int64 `json:"maximum,omitempty"`
 
 	Minimum int64 `json:"minimum,omitempty"`
+
+	ExclusiveMin bool `json:"exclusiveMin,omitempty"`
+
+	ExclusiveMax bool `json:"exclusiveMax,omitempty"`
+}
+
+type FloatMetadata struct {
+	Default string `json:"default,omitempty"`
+
+	Maximum float64 `json:"maximum,omitempty"`
+
+	Minimum float64 `json:"minimum,omitempty"`
+
+	MultipleOf float64 `json:"multipleOf,omitempty"`
+
+	ExclusiveMin bool `json:"exclusiveMin,omitempty"`
+
+	ExclusiveMax bool `json:"exclusiveMax,omitempty"`
 }
 
 type StringMetadata struct {
@@ -53,11 +73,25 @@ type FieldMetadata struct {
 
 	Doc string `json:"description,omitempty"`
 
+	Nullable bool `json:"nullable"`
+
 	Required bool `json:"-"`
+
+	ReadOnly bool `json:"readonly,omitempty"`
+
+	WriteOnly bool `json:"writeonly,omitempty"`
+
+	AllowEmptyValue bool `json:"allowEmptyValue,omitempty"`
+
+	Deprecated bool `json:"deprecated,omitempty"`
 }
 
 type ObjectMetadata struct {
 	Fields []*Field `json:"-"`
+
+	MaxProperties uint64 `json:"maxProeprties,omitempty"`
+
+	MinProperties uint64 `json:"minProeprties,omitempty"`
 
 	Strict bool `json:"-"`
 }
