@@ -33,8 +33,10 @@ func run() error {
 	b.Import("strings")
 
 	Type := b.BuildTarget("Type",
-		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
+		b.Field("Title", seed.Symbol("string")).Tag(`json:"title,omitempty"`),
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
+		b.Field("Example", seed.Symbol("string")).Tag(`json:"example,omitempty"`),
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	}))
@@ -46,13 +48,27 @@ func run() error {
 	// ----------------------------------------
 	// types
 	// ----------------------------------------
+	//
+	// - todo: oneOf, anyOf, allOf, not
+	// - see: https://github.com/getkin/kin-openapi/blob/master/openapi3/schema.go
+
 	Bool := b.Type("Bool").NeedBuilder().Underlying("boolean")
 	Int := b.Type("Int",
 		b.Field("Enum", seed.Symbol("[]int64")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("int64")).Tag(`json:"default,omitempty"`),
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
+		b.Field("ExclusiveMin", seed.Symbol("bool")).Tag(`json:"exclusiveMin,omitempty"`),
+		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
 	).NeedBuilder().Underlying("integer")
+	Float := b.Type("Float",
+		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
+		b.Field("Maximum", seed.Symbol("float64")).Tag(`json:"maximum,omitempty"`),
+		b.Field("Minimum", seed.Symbol("float64")).Tag(`json:"minimum,omitempty"`),
+		b.Field("MultipleOf", seed.Symbol("float64")).Tag(`json:"multipleOf,omitempty"`),
+		b.Field("ExclusiveMin", seed.Symbol("bool")).Tag(`json:"exclusiveMin,omitempty"`),
+		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
+	).NeedBuilder().Underlying("number")
 	String := b.Type("String",
 		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
@@ -60,8 +76,8 @@ func run() error {
 		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
 		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minlength,omitempty"`),
 	).NeedBuilder().Underlying("string")
-
 	Array := b.Type("Array", b.TypeVar("Items", seed.Symbol("TypeBuilder")),
+		// b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
 		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxitems,omitempty"`),
 		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minitems,omitempty"`),
 	).NeedBuilder().Underlying("array")
@@ -73,7 +89,12 @@ func run() error {
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
+		b.Field("Nullable", seed.Symbol("bool")).Tag(`json:"nullable,omitempty"`), // trim omitempty?
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"-"`).Default("true"),
+		b.Field("ReadOnly", seed.Symbol("bool")).Tag(`json:"readonly,omitempty"`),
+		b.Field("WriteOnly", seed.Symbol("bool")).Tag(`json:"writeonly,omitempty"`),
+		b.Field("AllowEmptyValue", seed.Symbol("bool")).Tag(`json:"allowEmptyValue,omitempty"`),
+		b.Field("Deprecated", seed.Symbol("bool")).Tag(`json:"deprecated,omitempty"`),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Typ", seed.Symbol("TypeBuilder")),
@@ -83,6 +104,8 @@ func run() error {
 
 	Object := b.Type("Object",
 		b.Field("Fields", seed.Symbol("[]*Field")).Tag(`json:"-"`),
+		b.Field("MaxProperties", seed.Symbol("uint64")).Tag(`json:"maxProeprties,omitempty"`),
+		b.Field("MinProperties", seed.Symbol("uint64")).Tag(`json:"minProeprties,omitempty"`),
 		b.Field("Strict", seed.Symbol("bool")).Tag(`json:"-"`).Default("true"),
 	).Constructor(
 		b.Arg("Fields", seed.Symbol("*Field")).Variadic(),
@@ -186,7 +209,7 @@ func run() error {
 		b.Field("Servers", Server.GetMetadata().Name.Slice()).Tag(`json:"servers"`),
 	)
 
-	fmt.Fprintln(os.Stderr, Type, Bool, Int, String, Array, Map, Field, Object)
+	fmt.Fprintln(os.Stderr, Type, Bool, Int, Float, String, Array, Map, Field, Object)
 	fmt.Fprintln(os.Stderr, Action, Input, Output, Param)
 	fmt.Fprintln(os.Stderr, Contact, License, Server, Info, OpenAPI)
 

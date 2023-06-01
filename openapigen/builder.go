@@ -187,7 +187,84 @@ func (b *IntBuilder[R]) Minimum(value int64) R {
 	return b.ret
 }
 
+// ExclusiveMin set Metadata.ExclusiveMin
+func (b *IntBuilder[R]) ExclusiveMin(value bool) R {
+	b.metadata.ExclusiveMin = value
+	return b.ret
+}
+
+// ExclusiveMax set Metadata.ExclusiveMax
+func (b *IntBuilder[R]) ExclusiveMax(value bool) R {
+	b.metadata.ExclusiveMax = value
+	return b.ret
+}
+
 // end setter of Int --------------------
+
+// Float builds Type for Float
+func (b *Builder) Float() *Float {
+	t := &Float{
+		FloatBuilder: &FloatBuilder[*Float]{
+			_Type:    &_Type[*Float]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "number"}},
+			metadata: &FloatMetadata{},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Float struct {
+	*FloatBuilder[*Float]
+}
+
+func (t *Float) GetMetadata() *FloatMetadata {
+	return t.metadata
+}
+
+type FloatBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *FloatMetadata
+}
+
+// begin setter of Float --------------------
+
+// Default set Metadata.Default
+func (b *FloatBuilder[R]) Default(value string) R {
+	b.metadata.Default = value
+	return b.ret
+}
+
+// Maximum set Metadata.Maximum
+func (b *FloatBuilder[R]) Maximum(value float64) R {
+	b.metadata.Maximum = value
+	return b.ret
+}
+
+// Minimum set Metadata.Minimum
+func (b *FloatBuilder[R]) Minimum(value float64) R {
+	b.metadata.Minimum = value
+	return b.ret
+}
+
+// MultipleOf set Metadata.MultipleOf
+func (b *FloatBuilder[R]) MultipleOf(value float64) R {
+	b.metadata.MultipleOf = value
+	return b.ret
+}
+
+// ExclusiveMin set Metadata.ExclusiveMin
+func (b *FloatBuilder[R]) ExclusiveMin(value bool) R {
+	b.metadata.ExclusiveMin = value
+	return b.ret
+}
+
+// ExclusiveMax set Metadata.ExclusiveMax
+func (b *FloatBuilder[R]) ExclusiveMax(value bool) R {
+	b.metadata.ExclusiveMax = value
+	return b.ret
+}
+
+// end setter of Float --------------------
 
 // String builds Type for String
 func (b *Builder) String() *String {
@@ -358,9 +435,39 @@ type FieldBuilder[R TypeBuilder] struct {
 
 // begin setter of Field --------------------
 
+// Nullable set Metadata.Nullable
+func (b *FieldBuilder[R]) Nullable(value bool) R {
+	b.metadata.Nullable = value
+	return b.ret
+}
+
 // Required set Metadata.Required
 func (b *FieldBuilder[R]) Required(value bool) R {
 	b.metadata.Required = value
+	return b.ret
+}
+
+// ReadOnly set Metadata.ReadOnly
+func (b *FieldBuilder[R]) ReadOnly(value bool) R {
+	b.metadata.ReadOnly = value
+	return b.ret
+}
+
+// WriteOnly set Metadata.WriteOnly
+func (b *FieldBuilder[R]) WriteOnly(value bool) R {
+	b.metadata.WriteOnly = value
+	return b.ret
+}
+
+// AllowEmptyValue set Metadata.AllowEmptyValue
+func (b *FieldBuilder[R]) AllowEmptyValue(value bool) R {
+	b.metadata.AllowEmptyValue = value
+	return b.ret
+}
+
+// Deprecated set Metadata.Deprecated
+func (b *FieldBuilder[R]) Deprecated(value bool) R {
+	b.metadata.Deprecated = value
 	return b.ret
 }
 
@@ -400,6 +507,18 @@ type ObjectBuilder[R TypeBuilder] struct {
 }
 
 // begin setter of Object --------------------
+
+// MaxProperties set Metadata.MaxProperties
+func (b *ObjectBuilder[R]) MaxProperties(value uint64) R {
+	b.metadata.MaxProperties = value
+	return b.ret
+}
+
+// MinProperties set Metadata.MinProperties
+func (b *ObjectBuilder[R]) MinProperties(value uint64) R {
+	b.metadata.MinProperties = value
+	return b.ret
+}
 
 // Strict set Metadata.Strict
 func (b *ObjectBuilder[R]) Strict(value bool) R {
@@ -638,9 +757,21 @@ func (t *_Type[R]) GetTypeMetadata() *TypeMetadata {
 
 // begin setter of Type --------------------
 
+// Title set Metadata.Title
+func (t _Type[R]) Title(value string) R {
+	t.metadata.Title = value
+	return t.ret
+}
+
 // Format set Metadata.Format
 func (t _Type[R]) Format(value string) R {
 	t.metadata.Format = value
+	return t.ret
+}
+
+// Example set Metadata.Example
+func (t _Type[R]) Example(value string) R {
+	t.metadata.Example = value
 	return t.ret
 }
 
