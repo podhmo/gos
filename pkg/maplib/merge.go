@@ -125,7 +125,7 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 		}
 		dst.Set(k, rv.String())
 	case reflect.Array, reflect.Slice:
-		if rv.IsNil() {
+		if omitempty && rv.IsNil() {
 			return nil
 		}
 		if rv.Len() == 0 {
@@ -181,6 +181,9 @@ func merge(dst *orderedmap.OrderedMap, k string, rt reflect.Type, rv reflect.Val
 			return nil
 		}
 	case reflect.Map:
+		if omitempty && rv.IsNil() {
+			return nil
+		}
 		m := dst
 		if k != "" {
 			if v, ok := m.Get(k); ok {
