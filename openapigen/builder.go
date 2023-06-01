@@ -626,6 +626,18 @@ func (b *ParamBuilder[R]) Required(value bool) R {
 	return b.ret
 }
 
+// Deprecated set Metadata.Deprecated
+func (b *ParamBuilder[R]) Deprecated(value bool) R {
+	b.metadata.Deprecated = value
+	return b.ret
+}
+
+// AllowEmptyValue set Metadata.AllowEmptyValue
+func (b *ParamBuilder[R]) AllowEmptyValue(value bool) R {
+	b.metadata.AllowEmptyValue = value
+	return b.ret
+}
+
 func (b *ParamBuilder[R]) Doc(stmts ...string) R {
 	b.metadata.Doc = strings.Join(stmts, "\n")
 	return b.ret

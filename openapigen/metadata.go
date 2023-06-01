@@ -122,6 +122,10 @@ type ParamMetadata struct {
 	Doc string `json:"description,omitempty"`
 
 	Required bool `json:"required"`
+
+	Deprecated bool `json:"deprecated,omitempty"`
+
+	AllowEmptyValue bool `json:"allowEmptyValue,omitempty"`
 }
 
 type BodyMetadata struct {
