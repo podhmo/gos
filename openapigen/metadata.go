@@ -73,7 +73,7 @@ type FieldMetadata struct {
 
 	Doc string `json:"description,omitempty"`
 
-	Nullable bool `json:"nullable"`
+	Nullable bool `json:"nullable,omitempty"`
 
 	Required bool `json:"-"`
 

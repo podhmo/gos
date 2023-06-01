@@ -89,7 +89,7 @@ func run() error {
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
-		b.Field("Nullable", seed.Symbol("bool")).Tag(`json:"nullable"`),
+		b.Field("Nullable", seed.Symbol("bool")).Tag(`json:"nullable,omitempty"`), // trim omitempty?
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"-"`).Default("true"),
 		b.Field("ReadOnly", seed.Symbol("bool")).Tag(`json:"readonly,omitempty"`),
 		b.Field("WriteOnly", seed.Symbol("bool")).Tag(`json:"writeonly,omitempty"`),
