@@ -150,8 +150,45 @@ func run() error {
 		b.Arg("Typ", "TypeBuilder"),
 	).NeedBuilder().Underlying("output")
 
+	// openapi root info: https://swagger.io/specification/
+	Contact := b.Type("Contact",
+		b.Field("Name", seed.Symbol("string")).Tag(`json:"name"`),
+		b.Field("URL", seed.Symbol("string")).Tag(`json:"url"`),
+		b.Field("Email", seed.Symbol("string")).Tag(`json:"email"`),
+	)
+	License := b.Type("License",
+		b.Field("Name", seed.Symbol("string")).Tag(`json:"name"`).Doc("required"),
+		b.Field("Identifier", seed.Symbol("string")).Tag(`json:"identifier"`),
+		b.Field("URL", seed.Symbol("string")).Tag(`json:"url"`),
+	)
+	Server := b.Type("Server",
+		b.Field("URL", seed.Symbol("string")).Tag(`json:"url"`).Doc("required"),
+		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description"`),
+		b.Field("Variables", seed.Symbol("map[string]any")).Tag(`json:"variables,omitempty"`).Doc("todo: typed"),
+	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
+		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
+	}))
+	Info := b.Type("Info",
+		b.Field("Title", seed.Symbol("string")).Tag(`json:"title"`).Doc("required"),
+		b.Field("Summary", seed.Symbol("string")).Tag(`json:"summary,omitempty"`),
+		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
+		b.Field("TermsOfService", seed.Symbol("string")).Tag(`json:"termOfService,omitempty"`),
+		b.Field("Contact", Contact.GetMetadata().Name.Pointer()).Tag(`json:"contact,omitempty"`),
+		b.Field("License", License.GetMetadata().Name.Pointer()).Tag(`json:"license,omitempty"`),
+		b.Field("Version", seed.Symbol("string")).Tag(`json:"version"`).Default(`"0.0.0"`).Doc("required"),
+	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
+		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
+	}))
+
+	OpenAPI := b.Type("OpenAPI",
+		b.Field("OpenAPI", seed.Symbol("string")).Tag(`json:"openapi"`).Default(`"3.0.3"`).Doc("required"),
+		b.Field("Info", Info.GetMetadata().Name).Tag(`json:"info"`).Doc("required"),
+		b.Field("Servers", Server.GetMetadata().Name.Slice()).Tag(`json:"servers"`),
+	)
+
 	fmt.Fprintln(os.Stderr, Type, Bool, Int, String, Array, Map, Field, Object)
 	fmt.Fprintln(os.Stderr, Action, Input, Output, Param)
+	fmt.Fprintln(os.Stderr, Contact, License, Server, Info, OpenAPI)
 
 	// for transform
 	// b.Footer(``)

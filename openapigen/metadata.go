@@ -105,3 +105,59 @@ type OutputMetadata struct {
 
 	DefaultError TypeBuilder
 }
+
+type Contact struct {
+	Name string `json:"name"`
+
+	URL string `json:"url"`
+
+	Email string `json:"email"`
+}
+
+type License struct {
+
+	// required
+	Name string `json:"name"`
+
+	Identifier string `json:"identifier"`
+
+	URL string `json:"url"`
+}
+
+type Server struct {
+
+	// required
+	URL string `json:"url"`
+
+	Doc string `json:"description"`
+	// todo: typed
+	Variables map[string]any `json:"variables,omitempty"`
+}
+
+type Info struct {
+
+	// required
+	Title string `json:"title"`
+
+	Summary string `json:"summary,omitempty"`
+
+	Doc string `json:"description,omitempty"`
+
+	TermsOfService string `json:"termOfService,omitempty"`
+
+	Contact *Contact `json:"contact,omitempty"`
+
+	License *License `json:"license,omitempty"`
+	// required
+	Version string `json:"version"`
+}
+
+type OpenAPI struct {
+
+	// required
+	OpenAPI string `json:"openapi"`
+	// required
+	Info Info `json:"info"`
+
+	Servers []Server `json:"servers"`
+}

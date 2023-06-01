@@ -6,11 +6,13 @@ import (
 
 	"github.com/iancoleman/orderedmap"
 	"github.com/podhmo/gos/openapigen"
+	"github.com/podhmo/gos/pkg/maplib"
 )
 
 func main() {
 	b := openapigen.NewTypeBuilder(openapigen.DefaultConfig())
 
+	// types
 	Name := openapigen.DefineType("Name", b.String()).Doc("name of something")
 	openapigen.DefineType("DateTime", b.String().Format("date-time")) // for ReferenceByName
 
@@ -25,6 +27,7 @@ func main() {
 		b.Output(b.Array(Task)),
 	)
 
+	// routing
 	Error := openapigen.DefineType("Error", b.Object(
 		b.Field("message", b.String()),
 	)).Doc("default error")
@@ -34,7 +37,27 @@ func main() {
 		r.Get("/tasks", ListTask)
 	}
 
+	// openapi data
+	openapi := &openapigen.OpenAPI{
+		OpenAPI: "3.0.3",
+		Info: openapigen.Info{
+			Title:   "task API",
+			Version: "0.0.0",
+			Doc:     "simple list tasks API",
+		},
+		Servers: []openapigen.Server{
+			{
+				URL: "http://localhost:8080",
+				Doc: "local development",
+			},
+		},
+	}
 	doc := orderedmap.New()
+	doc, err := maplib.Merge(doc, openapi)
+	if err != nil {
+		panic(err)
+	}
+
 	r.ToSchemaWith(b, doc)
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
