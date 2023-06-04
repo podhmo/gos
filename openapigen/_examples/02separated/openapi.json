@@ -18,7 +18,7 @@
           "200": {
             "description": "",
             "content": {
-              "applicatioin/json": {
+              "application/json": {
                 "schema": {
                   "type": "string"
                 }
@@ -28,7 +28,7 @@
           "default": {
             "description": "",
             "content": {
-              "applicatioin/json": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
@@ -65,7 +65,7 @@
           "200": {
             "description": "",
             "content": {
-              "applicatioin/json": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -78,7 +78,7 @@
           "default": {
             "description": "",
             "content": {
-              "applicatioin/json": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
@@ -146,7 +146,7 @@
           "200": {
             "description": "",
             "content": {
-              "applicatioin/json": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Person"
                 }
@@ -156,7 +156,7 @@
           "default": {
             "description": "",
             "content": {
-              "applicatioin/json": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }

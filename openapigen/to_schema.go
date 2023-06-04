@@ -249,7 +249,7 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 		content := orderedmap.New()
 		res.Set("content", content)
 		appjson := orderedmap.New()
-		content.Set("applicatioin/json", appjson)
+		content.Set("application/json", appjson)
 		if output := t.metadata.Output; output != nil && output.metadata.Typ != nil {
 			appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
 		}
@@ -263,7 +263,7 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 			content := orderedmap.New()
 			res.Set("content", content)
 			appjson := orderedmap.New()
-			content.Set("applicatioin/json", appjson)
+			content.Set("application/json", appjson)
 			if output.metadata.DefaultError != nil {
 				appjson.Set("schema", output.metadata.DefaultError.toSchema(b, useRef))
 			}
