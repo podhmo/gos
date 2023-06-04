@@ -114,7 +114,7 @@ func (t *TypeRef) GetTypeMetadata() *TypeMetadata {
 // Bool builds Type for Bool
 func (b *Builder) Bool() *Bool {
 	t := &Bool{
-		BoolBuilder: &BoolBuilder[*Bool]{
+		_BoolBuilder: &_BoolBuilder[*Bool]{
 			_Type:    &_Type[*Bool]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "boolean"}},
 			metadata: &BoolMetadata{},
 		},
@@ -124,14 +124,14 @@ func (b *Builder) Bool() *Bool {
 }
 
 type Bool struct {
-	*BoolBuilder[*Bool]
+	*_BoolBuilder[*Bool]
 }
 
 func (t *Bool) GetMetadata() *BoolMetadata {
 	return t.metadata
 }
 
-type BoolBuilder[R TypeBuilder] struct {
+type _BoolBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *BoolMetadata
 }
@@ -139,7 +139,7 @@ type BoolBuilder[R TypeBuilder] struct {
 // begin setter of Bool --------------------
 
 // Default set Metadata.Default
-func (b *BoolBuilder[R]) Default(value bool) R {
+func (b *_BoolBuilder[R]) Default(value bool) R {
 	b.metadata.Default = value
 	return b.ret
 }
@@ -149,7 +149,7 @@ func (b *BoolBuilder[R]) Default(value bool) R {
 // Int builds Type for Int
 func (b *Builder) Int() *Int {
 	t := &Int{
-		IntBuilder: &IntBuilder[*Int]{
+		_IntBuilder: &_IntBuilder[*Int]{
 			_Type:    &_Type[*Int]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "integer"}},
 			metadata: &IntMetadata{},
 		},
@@ -159,14 +159,14 @@ func (b *Builder) Int() *Int {
 }
 
 type Int struct {
-	*IntBuilder[*Int]
+	*_IntBuilder[*Int]
 }
 
 func (t *Int) GetMetadata() *IntMetadata {
 	return t.metadata
 }
 
-type IntBuilder[R TypeBuilder] struct {
+type _IntBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *IntMetadata
 }
@@ -174,37 +174,37 @@ type IntBuilder[R TypeBuilder] struct {
 // begin setter of Int --------------------
 
 // Enum set Metadata.Enum
-func (b *IntBuilder[R]) Enum(value []int64) R {
+func (b *_IntBuilder[R]) Enum(value []int64) R {
 	b.metadata.Enum = value
 	return b.ret
 }
 
 // Default set Metadata.Default
-func (b *IntBuilder[R]) Default(value int64) R {
+func (b *_IntBuilder[R]) Default(value int64) R {
 	b.metadata.Default = value
 	return b.ret
 }
 
 // Maximum set Metadata.Maximum
-func (b *IntBuilder[R]) Maximum(value int64) R {
+func (b *_IntBuilder[R]) Maximum(value int64) R {
 	b.metadata.Maximum = value
 	return b.ret
 }
 
 // Minimum set Metadata.Minimum
-func (b *IntBuilder[R]) Minimum(value int64) R {
+func (b *_IntBuilder[R]) Minimum(value int64) R {
 	b.metadata.Minimum = value
 	return b.ret
 }
 
 // ExclusiveMin set Metadata.ExclusiveMin
-func (b *IntBuilder[R]) ExclusiveMin(value bool) R {
+func (b *_IntBuilder[R]) ExclusiveMin(value bool) R {
 	b.metadata.ExclusiveMin = value
 	return b.ret
 }
 
 // ExclusiveMax set Metadata.ExclusiveMax
-func (b *IntBuilder[R]) ExclusiveMax(value bool) R {
+func (b *_IntBuilder[R]) ExclusiveMax(value bool) R {
 	b.metadata.ExclusiveMax = value
 	return b.ret
 }
@@ -214,7 +214,7 @@ func (b *IntBuilder[R]) ExclusiveMax(value bool) R {
 // Float builds Type for Float
 func (b *Builder) Float() *Float {
 	t := &Float{
-		FloatBuilder: &FloatBuilder[*Float]{
+		_FloatBuilder: &_FloatBuilder[*Float]{
 			_Type:    &_Type[*Float]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "number"}},
 			metadata: &FloatMetadata{},
 		},
@@ -224,14 +224,14 @@ func (b *Builder) Float() *Float {
 }
 
 type Float struct {
-	*FloatBuilder[*Float]
+	*_FloatBuilder[*Float]
 }
 
 func (t *Float) GetMetadata() *FloatMetadata {
 	return t.metadata
 }
 
-type FloatBuilder[R TypeBuilder] struct {
+type _FloatBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *FloatMetadata
 }
@@ -239,37 +239,37 @@ type FloatBuilder[R TypeBuilder] struct {
 // begin setter of Float --------------------
 
 // Default set Metadata.Default
-func (b *FloatBuilder[R]) Default(value string) R {
+func (b *_FloatBuilder[R]) Default(value string) R {
 	b.metadata.Default = value
 	return b.ret
 }
 
 // Maximum set Metadata.Maximum
-func (b *FloatBuilder[R]) Maximum(value float64) R {
+func (b *_FloatBuilder[R]) Maximum(value float64) R {
 	b.metadata.Maximum = value
 	return b.ret
 }
 
 // Minimum set Metadata.Minimum
-func (b *FloatBuilder[R]) Minimum(value float64) R {
+func (b *_FloatBuilder[R]) Minimum(value float64) R {
 	b.metadata.Minimum = value
 	return b.ret
 }
 
 // MultipleOf set Metadata.MultipleOf
-func (b *FloatBuilder[R]) MultipleOf(value float64) R {
+func (b *_FloatBuilder[R]) MultipleOf(value float64) R {
 	b.metadata.MultipleOf = value
 	return b.ret
 }
 
 // ExclusiveMin set Metadata.ExclusiveMin
-func (b *FloatBuilder[R]) ExclusiveMin(value bool) R {
+func (b *_FloatBuilder[R]) ExclusiveMin(value bool) R {
 	b.metadata.ExclusiveMin = value
 	return b.ret
 }
 
 // ExclusiveMax set Metadata.ExclusiveMax
-func (b *FloatBuilder[R]) ExclusiveMax(value bool) R {
+func (b *_FloatBuilder[R]) ExclusiveMax(value bool) R {
 	b.metadata.ExclusiveMax = value
 	return b.ret
 }
@@ -279,7 +279,7 @@ func (b *FloatBuilder[R]) ExclusiveMax(value bool) R {
 // String builds Type for String
 func (b *Builder) String() *String {
 	t := &String{
-		StringBuilder: &StringBuilder[*String]{
+		_StringBuilder: &_StringBuilder[*String]{
 			_Type:    &_Type[*String]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "string"}},
 			metadata: &StringMetadata{},
 		},
@@ -289,14 +289,14 @@ func (b *Builder) String() *String {
 }
 
 type String struct {
-	*StringBuilder[*String]
+	*_StringBuilder[*String]
 }
 
 func (t *String) GetMetadata() *StringMetadata {
 	return t.metadata
 }
 
-type StringBuilder[R TypeBuilder] struct {
+type _StringBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *StringMetadata
 }
@@ -304,31 +304,31 @@ type StringBuilder[R TypeBuilder] struct {
 // begin setter of String --------------------
 
 // Enum set Metadata.Enum
-func (b *StringBuilder[R]) Enum(value []string) R {
+func (b *_StringBuilder[R]) Enum(value []string) R {
 	b.metadata.Enum = value
 	return b.ret
 }
 
 // Default set Metadata.Default
-func (b *StringBuilder[R]) Default(value string) R {
+func (b *_StringBuilder[R]) Default(value string) R {
 	b.metadata.Default = value
 	return b.ret
 }
 
 // Pattern set Metadata.Pattern
-func (b *StringBuilder[R]) Pattern(value string) R {
+func (b *_StringBuilder[R]) Pattern(value string) R {
 	b.metadata.Pattern = value
 	return b.ret
 }
 
 // MaxLength set Metadata.MaxLength
-func (b *StringBuilder[R]) MaxLength(value int64) R {
+func (b *_StringBuilder[R]) MaxLength(value int64) R {
 	b.metadata.MaxLength = value
 	return b.ret
 }
 
 // MinLength set Metadata.MinLength
-func (b *StringBuilder[R]) MinLength(value int64) R {
+func (b *_StringBuilder[R]) MinLength(value int64) R {
 	b.metadata.MinLength = value
 	return b.ret
 }
@@ -338,7 +338,7 @@ func (b *StringBuilder[R]) MinLength(value int64) R {
 // Array builds Type for Array
 func (b *Builder) Array(items Type) *Array[Type] {
 	t := &Array[Type]{
-		ArrayBuilder: &ArrayBuilder[Type, *Array[Type]]{
+		_ArrayBuilder: &_ArrayBuilder[Type, *Array[Type]]{
 			_Type:    &_Type[*Array[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "array"}},
 			metadata: &ArrayMetadata{},
 			items:    items,
@@ -349,14 +349,14 @@ func (b *Builder) Array(items Type) *Array[Type] {
 }
 
 type Array[Items Type] struct {
-	*ArrayBuilder[Items, *Array[Items]]
+	*_ArrayBuilder[Items, *Array[Items]]
 }
 
 func (t *Array[Items]) GetMetadata() *ArrayMetadata {
 	return t.metadata
 }
 
-type ArrayBuilder[Items Type, R TypeBuilder] struct {
+type _ArrayBuilder[Items Type, R TypeBuilder] struct {
 	*_Type[R]
 	metadata *ArrayMetadata
 	items    Items
@@ -365,13 +365,13 @@ type ArrayBuilder[Items Type, R TypeBuilder] struct {
 // begin setter of Array --------------------
 
 // MaxItems set Metadata.MaxItems
-func (b *ArrayBuilder[Items, R]) MaxItems(value int64) R {
+func (b *_ArrayBuilder[Items, R]) MaxItems(value int64) R {
 	b.metadata.MaxItems = value
 	return b.ret
 }
 
 // MinItems set Metadata.MinItems
-func (b *ArrayBuilder[Items, R]) MinItems(value int64) R {
+func (b *_ArrayBuilder[Items, R]) MinItems(value int64) R {
 	b.metadata.MinItems = value
 	return b.ret
 }
@@ -381,7 +381,7 @@ func (b *ArrayBuilder[Items, R]) MinItems(value int64) R {
 // Map builds Type for Map
 func (b *Builder) Map(items Type) *Map[Type] {
 	t := &Map[Type]{
-		MapBuilder: &MapBuilder[Type, *Map[Type]]{
+		_MapBuilder: &_MapBuilder[Type, *Map[Type]]{
 			_Type:    &_Type[*Map[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "map"}},
 			metadata: &MapMetadata{},
 			items:    items,
@@ -392,14 +392,14 @@ func (b *Builder) Map(items Type) *Map[Type] {
 }
 
 type Map[Items Type] struct {
-	*MapBuilder[Items, *Map[Items]]
+	*_MapBuilder[Items, *Map[Items]]
 }
 
 func (t *Map[Items]) GetMetadata() *MapMetadata {
 	return t.metadata
 }
 
-type MapBuilder[Items Type, R TypeBuilder] struct {
+type _MapBuilder[Items Type, R TypeBuilder] struct {
 	*_Type[R]
 	metadata *MapMetadata
 	items    Items
@@ -408,7 +408,7 @@ type MapBuilder[Items Type, R TypeBuilder] struct {
 // begin setter of Map --------------------
 
 // Pattern set Metadata.Pattern
-func (b *MapBuilder[Items, R]) Pattern(value string) R {
+func (b *_MapBuilder[Items, R]) Pattern(value string) R {
 	b.metadata.Pattern = value
 	return b.ret
 }
@@ -418,7 +418,7 @@ func (b *MapBuilder[Items, R]) Pattern(value string) R {
 // Field builds Type for Field
 func (b *Builder) Field(name string, typ Type) *Field {
 	t := &Field{
-		FieldBuilder: &FieldBuilder[*Field]{
+		_FieldBuilder: &_FieldBuilder[*Field]{
 			_Type: &_Type[*Field]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "field"}},
 			metadata: &FieldMetadata{
 				Name: name, Typ: typ,
@@ -431,14 +431,14 @@ func (b *Builder) Field(name string, typ Type) *Field {
 }
 
 type Field struct {
-	*FieldBuilder[*Field]
+	*_FieldBuilder[*Field]
 }
 
 func (t *Field) GetMetadata() *FieldMetadata {
 	return t.metadata
 }
 
-type FieldBuilder[R TypeBuilder] struct {
+type _FieldBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *FieldMetadata
 }
@@ -446,42 +446,42 @@ type FieldBuilder[R TypeBuilder] struct {
 // begin setter of Field --------------------
 
 // Nullable set Metadata.Nullable
-func (b *FieldBuilder[R]) Nullable(value bool) R {
+func (b *_FieldBuilder[R]) Nullable(value bool) R {
 	b.metadata.Nullable = value
 	return b.ret
 }
 
 // Required set Metadata.Required
-func (b *FieldBuilder[R]) Required(value bool) R {
+func (b *_FieldBuilder[R]) Required(value bool) R {
 	b.metadata.Required = value
 	return b.ret
 }
 
 // ReadOnly set Metadata.ReadOnly
-func (b *FieldBuilder[R]) ReadOnly(value bool) R {
+func (b *_FieldBuilder[R]) ReadOnly(value bool) R {
 	b.metadata.ReadOnly = value
 	return b.ret
 }
 
 // WriteOnly set Metadata.WriteOnly
-func (b *FieldBuilder[R]) WriteOnly(value bool) R {
+func (b *_FieldBuilder[R]) WriteOnly(value bool) R {
 	b.metadata.WriteOnly = value
 	return b.ret
 }
 
 // AllowEmptyValue set Metadata.AllowEmptyValue
-func (b *FieldBuilder[R]) AllowEmptyValue(value bool) R {
+func (b *_FieldBuilder[R]) AllowEmptyValue(value bool) R {
 	b.metadata.AllowEmptyValue = value
 	return b.ret
 }
 
 // Deprecated set Metadata.Deprecated
-func (b *FieldBuilder[R]) Deprecated(value bool) R {
+func (b *_FieldBuilder[R]) Deprecated(value bool) R {
 	b.metadata.Deprecated = value
 	return b.ret
 }
 
-func (b *FieldBuilder[R]) Doc(stmts ...string) R {
+func (b *_FieldBuilder[R]) Doc(stmts ...string) R {
 	b.metadata.Doc = strings.Join(stmts, "\n")
 	return b.ret
 }
@@ -491,7 +491,7 @@ func (b *FieldBuilder[R]) Doc(stmts ...string) R {
 // Object builds Type for Object
 func (b *Builder) Object(fields ...*Field) *Object {
 	t := &Object{
-		ObjectBuilder: &ObjectBuilder[*Object]{
+		_ObjectBuilder: &_ObjectBuilder[*Object]{
 			_Type: &_Type[*Object]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "object"}},
 			metadata: &ObjectMetadata{
 				Fields: fields,
@@ -504,14 +504,14 @@ func (b *Builder) Object(fields ...*Field) *Object {
 }
 
 type Object struct {
-	*ObjectBuilder[*Object]
+	*_ObjectBuilder[*Object]
 }
 
 func (t *Object) GetMetadata() *ObjectMetadata {
 	return t.metadata
 }
 
-type ObjectBuilder[R TypeBuilder] struct {
+type _ObjectBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *ObjectMetadata
 }
@@ -519,19 +519,19 @@ type ObjectBuilder[R TypeBuilder] struct {
 // begin setter of Object --------------------
 
 // MaxProperties set Metadata.MaxProperties
-func (b *ObjectBuilder[R]) MaxProperties(value uint64) R {
+func (b *_ObjectBuilder[R]) MaxProperties(value uint64) R {
 	b.metadata.MaxProperties = value
 	return b.ret
 }
 
 // MinProperties set Metadata.MinProperties
-func (b *ObjectBuilder[R]) MinProperties(value uint64) R {
+func (b *_ObjectBuilder[R]) MinProperties(value uint64) R {
 	b.metadata.MinProperties = value
 	return b.ret
 }
 
 // Strict set Metadata.Strict
-func (b *ObjectBuilder[R]) Strict(value bool) R {
+func (b *_ObjectBuilder[R]) Strict(value bool) R {
 	b.metadata.Strict = value
 	return b.ret
 }
@@ -541,7 +541,7 @@ func (b *ObjectBuilder[R]) Strict(value bool) R {
 // Action builds Type for Action
 func (b *Builder) Action(name string, input *Input, output *Output) *Action {
 	t := &Action{
-		ActionBuilder: &ActionBuilder[*Action]{
+		_ActionBuilder: &_ActionBuilder[*Action]{
 			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}},
 			metadata: &ActionMetadata{
 				Name: name, Input: input, Output: output,
@@ -554,14 +554,14 @@ func (b *Builder) Action(name string, input *Input, output *Output) *Action {
 }
 
 type Action struct {
-	*ActionBuilder[*Action]
+	*_ActionBuilder[*Action]
 }
 
 func (t *Action) GetMetadata() *ActionMetadata {
 	return t.metadata
 }
 
-type ActionBuilder[R TypeBuilder] struct {
+type _ActionBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *ActionMetadata
 }
@@ -569,25 +569,25 @@ type ActionBuilder[R TypeBuilder] struct {
 // begin setter of Action --------------------
 
 // Method set Metadata.Method
-func (b *ActionBuilder[R]) Method(value string) R {
+func (b *_ActionBuilder[R]) Method(value string) R {
 	b.metadata.Method = value
 	return b.ret
 }
 
 // Path set Metadata.Path
-func (b *ActionBuilder[R]) Path(value string) R {
+func (b *_ActionBuilder[R]) Path(value string) R {
 	b.metadata.Path = value
 	return b.ret
 }
 
 // Tags set Metadata.Tags
-func (b *ActionBuilder[R]) Tags(value []string) R {
+func (b *_ActionBuilder[R]) Tags(value []string) R {
 	b.metadata.Tags = value
 	return b.ret
 }
 
 // DefaultStatus set Metadata.DefaultStatus
-func (b *ActionBuilder[R]) DefaultStatus(value int) R {
+func (b *_ActionBuilder[R]) DefaultStatus(value int) R {
 	b.metadata.DefaultStatus = value
 	return b.ret
 }
@@ -597,7 +597,7 @@ func (b *ActionBuilder[R]) DefaultStatus(value int) R {
 // Param builds Type for Param
 func (b *Builder) Param(name string, typ Type) *Param {
 	t := &Param{
-		ParamBuilder: &ParamBuilder[*Param]{
+		_ParamBuilder: &_ParamBuilder[*Param]{
 			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param"}},
 			metadata: &ParamMetadata{
 				Name: name, Typ: typ,
@@ -610,14 +610,14 @@ func (b *Builder) Param(name string, typ Type) *Param {
 }
 
 type Param struct {
-	*ParamBuilder[*Param]
+	*_ParamBuilder[*Param]
 }
 
 func (t *Param) GetMetadata() *ParamMetadata {
 	return t.metadata
 }
 
-type ParamBuilder[R TypeBuilder] struct {
+type _ParamBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *ParamMetadata
 }
@@ -625,30 +625,30 @@ type ParamBuilder[R TypeBuilder] struct {
 // begin setter of Param --------------------
 
 // In set Metadata.In
-func (b *ParamBuilder[R]) In(value string) R {
+func (b *_ParamBuilder[R]) In(value string) R {
 	b.metadata.In = value
 	return b.ret
 }
 
 // Required set Metadata.Required
-func (b *ParamBuilder[R]) Required(value bool) R {
+func (b *_ParamBuilder[R]) Required(value bool) R {
 	b.metadata.Required = value
 	return b.ret
 }
 
 // Deprecated set Metadata.Deprecated
-func (b *ParamBuilder[R]) Deprecated(value bool) R {
+func (b *_ParamBuilder[R]) Deprecated(value bool) R {
 	b.metadata.Deprecated = value
 	return b.ret
 }
 
 // AllowEmptyValue set Metadata.AllowEmptyValue
-func (b *ParamBuilder[R]) AllowEmptyValue(value bool) R {
+func (b *_ParamBuilder[R]) AllowEmptyValue(value bool) R {
 	b.metadata.AllowEmptyValue = value
 	return b.ret
 }
 
-func (b *ParamBuilder[R]) Doc(stmts ...string) R {
+func (b *_ParamBuilder[R]) Doc(stmts ...string) R {
 	b.metadata.Doc = strings.Join(stmts, "\n")
 	return b.ret
 }
@@ -658,7 +658,7 @@ func (b *ParamBuilder[R]) Doc(stmts ...string) R {
 // Body builds Type for Body
 func (b *Builder) Body(typ Type) *Body {
 	t := &Body{
-		BodyBuilder: &BodyBuilder[*Body]{
+		_BodyBuilder: &_BodyBuilder[*Body]{
 			_Type: &_Type[*Body]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "Body"}},
 			metadata: &BodyMetadata{
 				Typ: typ,
@@ -670,14 +670,14 @@ func (b *Builder) Body(typ Type) *Body {
 }
 
 type Body struct {
-	*BodyBuilder[*Body]
+	*_BodyBuilder[*Body]
 }
 
 func (t *Body) GetMetadata() *BodyMetadata {
 	return t.metadata
 }
 
-type BodyBuilder[R TypeBuilder] struct {
+type _BodyBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *BodyMetadata
 }
@@ -689,7 +689,7 @@ type BodyBuilder[R TypeBuilder] struct {
 // Input builds Type for Input
 func (b *Builder) Input(params ...paramOrBody) *Input {
 	t := &Input{
-		InputBuilder: &InputBuilder[*Input]{
+		_InputBuilder: &_InputBuilder[*Input]{
 			_Type:    &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}},
 			metadata: &InputMetadata{},
 		},
@@ -711,14 +711,14 @@ func (b *Builder) Input(params ...paramOrBody) *Input {
 }
 
 type Input struct {
-	*InputBuilder[*Input]
+	*_InputBuilder[*Input]
 }
 
 func (t *Input) GetMetadata() *InputMetadata {
 	return t.metadata
 }
 
-type InputBuilder[R TypeBuilder] struct {
+type _InputBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *InputMetadata
 }
@@ -730,7 +730,7 @@ type InputBuilder[R TypeBuilder] struct {
 // Output builds Type for Output
 func (b *Builder) Output(typ Type) *Output {
 	t := &Output{
-		OutputBuilder: &OutputBuilder[*Output]{
+		_OutputBuilder: &_OutputBuilder[*Output]{
 			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "output"}},
 			metadata: &OutputMetadata{
 				Typ: typ,
@@ -742,14 +742,14 @@ func (b *Builder) Output(typ Type) *Output {
 }
 
 type Output struct {
-	*OutputBuilder[*Output]
+	*_OutputBuilder[*Output]
 }
 
 func (t *Output) GetMetadata() *OutputMetadata {
 	return t.metadata
 }
 
-type OutputBuilder[R TypeBuilder] struct {
+type _OutputBuilder[R TypeBuilder] struct {
 	*_Type[R]
 	metadata *OutputMetadata
 }
@@ -757,7 +757,7 @@ type OutputBuilder[R TypeBuilder] struct {
 // begin setter of Output --------------------
 
 // DefaultError set Metadata.DefaultError
-func (b *OutputBuilder[R]) DefaultError(value Type) R {
+func (b *_OutputBuilder[R]) DefaultError(value Type) R {
 	b.metadata.DefaultError = value
 	return b.ret
 }
