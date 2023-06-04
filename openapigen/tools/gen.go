@@ -75,13 +75,13 @@ func run() error {
 		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
-		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
-		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minlength,omitempty"`),
+		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxLength,omitempty"`),
+		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minLength,omitempty"`),
 	).NeedBuilder().Underlying("string")
 	Array := b.Type("Array", b.TypeVar("Items", seed.Symbol("Type")),
 		// b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
-		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxitems,omitempty"`),
-		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minitems,omitempty"`),
+		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxItems,omitempty"`),
+		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minItems,omitempty"`),
 	).NeedBuilder().Underlying("array")
 	Map := b.Type("Map", b.TypeVar("Items", seed.Symbol("Type")),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),

@@ -236,7 +236,7 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 			appjson := orderedmap.New()
 			content.Set("application/json", appjson)
 			appjson.Set("schema", body.metadata.Typ.toSchema(b, useRef))
-			
+
 			description := body.GetTypeMetadata().Doc
 			if description == "" {
 				description = input.GetTypeMetadata().Doc

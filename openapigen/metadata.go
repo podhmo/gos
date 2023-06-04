@@ -52,15 +52,15 @@ type StringMetadata struct {
 
 	Pattern string `json:"pattern,omitempty"`
 
-	MaxLength int64 `json:"maxlength,omitempty"`
+	MaxLength int64 `json:"maxLength,omitempty"`
 
-	MinLength int64 `json:"minlength,omitempty"`
+	MinLength int64 `json:"minLength,omitempty"`
 }
 
 type ArrayMetadata struct {
-	MaxItems int64 `json:"maxitems,omitempty"`
+	MaxItems int64 `json:"maxItems,omitempty"`
 
-	MinItems int64 `json:"minitems,omitempty"`
+	MinItems int64 `json:"minItems,omitempty"`
 }
 
 type MapMetadata struct {
