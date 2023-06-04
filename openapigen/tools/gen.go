@@ -52,7 +52,9 @@ func run() error {
 	// - todo: oneOf, anyOf, allOf, not
 	// - see: https://github.com/getkin/kin-openapi/blob/master/openapi3/schema.go
 
-	Bool := b.Type("Bool").NeedBuilder().Underlying("boolean")
+	Bool := b.Type("Bool",
+		b.Field("Default", seed.Symbol("bool")).Tag(`json:"default,omitempty"`),
+	).NeedBuilder().Underlying("boolean")
 	Int := b.Type("Int",
 		b.Field("Enum", seed.Symbol("[]int64")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("int64")).Tag(`json:"default,omitempty"`),
@@ -115,13 +117,13 @@ func run() error {
 	// action
 	// ----------------------------------------
 	Action := b.Type("Action",
-		b.Field("Name", seed.Symbol("string")),
-		b.Field("Input", "*Input"),
-		b.Field("Output", "*Output"),
-		b.Field("Method", seed.Symbol("string")),
-		b.Field("Path", seed.Symbol("string")),
-		b.Field("Tags", seed.Symbol("[]string")),
-		b.Field("DefaultStatus", seed.Symbol("int")).Default("200"),
+		b.Field("Name", seed.Symbol("string")).Tag(`"json:"-"`),
+		b.Field("Input", "*Input").Tag(`"json:"-"`),
+		b.Field("Output", "*Output").Tag(`"json:"-"`),
+		b.Field("Method", seed.Symbol("string")).Tag(`"json:"-"`),
+		b.Field("Path", seed.Symbol("string")).Tag(`"json:"-"`),
+		b.Field("Tags", seed.Symbol("[]string")).Tag(`tag:"tags"`),
+		b.Field("DefaultStatus", seed.Symbol("int")).Tag(`"json:"-"`).Default("200"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Input", "*Input"),

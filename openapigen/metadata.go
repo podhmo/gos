@@ -14,6 +14,7 @@ type TypeMetadata struct {
 }
 
 type BoolMetadata struct {
+	Default bool `json:"default,omitempty"`
 }
 
 type IntMetadata struct {
@@ -97,19 +98,19 @@ type ObjectMetadata struct {
 }
 
 type ActionMetadata struct {
-	Name string
+	Name string `"json:"-"`
 
-	Input *Input
+	Input *Input `"json:"-"`
 
-	Output *Output
+	Output *Output `"json:"-"`
 
-	Method string
+	Method string `"json:"-"`
 
-	Path string
+	Path string `"json:"-"`
 
-	Tags []string
+	Tags []string `tag:"tags"`
 
-	DefaultStatus int
+	DefaultStatus int `"json:"-"`
 }
 
 type ParamMetadata struct {
