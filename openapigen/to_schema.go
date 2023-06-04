@@ -211,6 +211,7 @@ func (t TypeRef) toSchemaInternal(b *Builder) *orderedmap.OrderedMap {
 func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	doc.Set("operationId", t.metadata.Name)
+	doc.Set("description", t._Type.metadata.Doc)
 
 	if input := t.metadata.Input; input != nil {
 		if params := input.metadata.Params; len(params) > 0 {
@@ -244,12 +245,12 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 		res := orderedmap.New()
 		k := strconv.Itoa(t.metadata.DefaultStatus)
 		responses.Set(k, res)
-		res.Set("description", t._Type.metadata.Doc)
+		res.Set("description", "")
 		content := orderedmap.New()
 		res.Set("content", content)
 		appjson := orderedmap.New()
 		content.Set("applicatioin/json", appjson)
-		if output := t.metadata.Output; output != nil {
+		if output := t.metadata.Output; output != nil && output.metadata.Typ != nil {
 			appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
 		}
 	}
@@ -267,6 +268,10 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 				appjson.Set("schema", output.metadata.DefaultError.toSchema(b, useRef))
 			}
 		}
+	}
+	doc, err := maplib.Merge(doc, t.metadata)
+	if err != nil {
+		panic(err)
 	}
 	return doc
 }
