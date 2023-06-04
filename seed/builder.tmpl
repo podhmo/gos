@@ -220,6 +220,9 @@ func (t *_{{$target}}[R]) store{{$target}}(name string) {
 // {{$ut.Type.Name}} is the one of pseudo sum types (union).
 type {{$ut.Type.Name}} interface {
 	{{$ut.DistinguishID}}()
+{{range $_, $m := $ut.InterfaceMethods}}
+	{{$m -}}
+{{end}}
 }
 {{range $_, $t := $ut.Args}}{{with $name := ($t.Name)}}
 func (t *{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}) {{$ut.DistinguishID}}() {}

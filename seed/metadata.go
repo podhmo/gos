@@ -38,6 +38,8 @@ type UnionTypeMetadata struct {
 	Type          *TypeMetadata
 	Args          []*TypeMetadata // symbol?
 	DistinguishID string
+
+	InterfaceMethods []string
 }
 
 type TypeVarMetadata struct { // e.g. [T any]
