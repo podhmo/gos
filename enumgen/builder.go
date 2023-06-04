@@ -87,7 +87,7 @@ func (b *Builder) lookupEnum(name string) EnumBuilder {
 // Int builds Enum for Int
 func (b *Builder) Int(members ...*IntValue) *Int {
 	t := &Int{
-		IntBuilder: &IntBuilder[*Int]{
+		_IntBuilder: &_IntBuilder[*Int]{
 			_Enum: &_Enum[*Int]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
 			metadata: &IntMetadata{
 				Members: toSlice(members, func(x *IntValue) *IntValueMetadata { return x.metadata }),
@@ -99,14 +99,14 @@ func (b *Builder) Int(members ...*IntValue) *Int {
 }
 
 type Int struct {
-	*IntBuilder[*Int]
+	*_IntBuilder[*Int]
 }
 
 func (t *Int) GetMetadata() *IntMetadata {
 	return t.metadata
 }
 
-type IntBuilder[R EnumBuilder] struct {
+type _IntBuilder[R EnumBuilder] struct {
 	*_Enum[R]
 	metadata *IntMetadata
 }
@@ -114,7 +114,7 @@ type IntBuilder[R EnumBuilder] struct {
 // begin setter of Int --------------------
 
 // Default set Metadata.Default
-func (b *IntBuilder[R]) Default(value int) R {
+func (b *_IntBuilder[R]) Default(value int) R {
 	b.metadata.Default = value
 	return b.ret
 }
@@ -124,7 +124,7 @@ func (b *IntBuilder[R]) Default(value int) R {
 // IntValue builds Enum for IntValue
 func (b *Builder) IntValue(value int, name string) *IntValue {
 	t := &IntValue{
-		IntValueBuilder: &IntValueBuilder[*IntValue]{
+		_IntValueBuilder: &_IntValueBuilder[*IntValue]{
 			_Enum: &_Enum[*IntValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "IntValue"}},
 			metadata: &IntValueMetadata{
 				Value: value, Name: name,
@@ -136,14 +136,14 @@ func (b *Builder) IntValue(value int, name string) *IntValue {
 }
 
 type IntValue struct {
-	*IntValueBuilder[*IntValue]
+	*_IntValueBuilder[*IntValue]
 }
 
 func (t *IntValue) GetMetadata() *IntValueMetadata {
 	return t.metadata
 }
 
-type IntValueBuilder[R EnumBuilder] struct {
+type _IntValueBuilder[R EnumBuilder] struct {
 	*_Enum[R]
 	metadata *IntValueMetadata
 }
@@ -151,7 +151,7 @@ type IntValueBuilder[R EnumBuilder] struct {
 // begin setter of IntValue --------------------
 
 // Doc set Metadata.Doc
-func (b *IntValueBuilder[R]) Doc(value string) R {
+func (b *_IntValueBuilder[R]) Doc(value string) R {
 	b.metadata.Doc = value
 	return b.ret
 }
@@ -161,7 +161,7 @@ func (b *IntValueBuilder[R]) Doc(value string) R {
 // String builds Enum for String
 func (b *Builder) String(members ...*StringValue) *String {
 	t := &String{
-		StringBuilder: &StringBuilder[*String]{
+		_StringBuilder: &_StringBuilder[*String]{
 			_Enum: &_Enum[*String]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
 			metadata: &StringMetadata{
 				Members: toSlice(members, func(x *StringValue) *StringValueMetadata { return x.metadata }),
@@ -173,14 +173,14 @@ func (b *Builder) String(members ...*StringValue) *String {
 }
 
 type String struct {
-	*StringBuilder[*String]
+	*_StringBuilder[*String]
 }
 
 func (t *String) GetMetadata() *StringMetadata {
 	return t.metadata
 }
 
-type StringBuilder[R EnumBuilder] struct {
+type _StringBuilder[R EnumBuilder] struct {
 	*_Enum[R]
 	metadata *StringMetadata
 }
@@ -188,7 +188,7 @@ type StringBuilder[R EnumBuilder] struct {
 // begin setter of String --------------------
 
 // Default set Metadata.Default
-func (b *StringBuilder[R]) Default(value string) R {
+func (b *_StringBuilder[R]) Default(value string) R {
 	b.metadata.Default = value
 	return b.ret
 }
@@ -198,7 +198,7 @@ func (b *StringBuilder[R]) Default(value string) R {
 // StringValue builds Enum for StringValue
 func (b *Builder) StringValue(value string) *StringValue {
 	t := &StringValue{
-		StringValueBuilder: &StringValueBuilder[*StringValue]{
+		_StringValueBuilder: &_StringValueBuilder[*StringValue]{
 			_Enum: &_Enum[*StringValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "StringValue"}},
 			metadata: &StringValueMetadata{
 				Value: value,
@@ -210,14 +210,14 @@ func (b *Builder) StringValue(value string) *StringValue {
 }
 
 type StringValue struct {
-	*StringValueBuilder[*StringValue]
+	*_StringValueBuilder[*StringValue]
 }
 
 func (t *StringValue) GetMetadata() *StringValueMetadata {
 	return t.metadata
 }
 
-type StringValueBuilder[R EnumBuilder] struct {
+type _StringValueBuilder[R EnumBuilder] struct {
 	*_Enum[R]
 	metadata *StringValueMetadata
 }
@@ -225,13 +225,13 @@ type StringValueBuilder[R EnumBuilder] struct {
 // begin setter of StringValue --------------------
 
 // Name set Metadata.Name
-func (b *StringValueBuilder[R]) Name(value string) R {
+func (b *_StringValueBuilder[R]) Name(value string) R {
 	b.metadata.Name = value
 	return b.ret
 }
 
 // Doc set Metadata.Doc
-func (b *StringValueBuilder[R]) Doc(value string) R {
+func (b *_StringValueBuilder[R]) Doc(value string) R {
 	b.metadata.Doc = value
 	return b.ret
 }
