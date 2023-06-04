@@ -808,6 +808,27 @@ func (t *_Type[R]) storeType(name string) {
 	t.rootbuilder.storeType(t.ret)
 }
 
+// Type is the one of pseudo sum types (union).
+type Type interface {
+	typ()
+
+	TypeBuilder
+}
+
+func (t *Bool) typ() {}
+
+func (t *Int) typ() {}
+
+func (t *Float) typ() {}
+
+func (t *String) typ() {}
+
+func (t *Object) typ() {}
+
+func (t *Array[Items]) typ() {}
+
+func (t *Map[Items]) typ() {}
+
 // paramOrBody is the one of pseudo sum types (union).
 type paramOrBody interface {
 	paramorbody()

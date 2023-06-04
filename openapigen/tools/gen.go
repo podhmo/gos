@@ -113,6 +113,10 @@ func run() error {
 		b.Arg("Fields", seed.Symbol("*Field")).Variadic(),
 	).NeedBuilder().Underlying("object")
 
+	b.Union("Type", Bool, Int, Float, String, Object, Array, Map).
+		DistinguishID("typ").
+		InterfaceMethods("TypeBuilder")
+
 	// ----------------------------------------
 	// action
 	// ----------------------------------------
