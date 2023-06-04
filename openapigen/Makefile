@@ -15,4 +15,5 @@ run-example: 00schema 01router 02separated
 
 _validate:
 	go run github.com/getkin/kin-openapi/cmd/validate@latest ./_examples/01router/openapi.json
+	go run github.com/getkin/kin-openapi/cmd/validate@latest ./_examples/02separated/openapi.json
 .PHONY: _validate

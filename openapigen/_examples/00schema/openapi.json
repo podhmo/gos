@@ -3,7 +3,7 @@
     "schemas": {
       "Name": {
         "type": "string",
-        "minlength": 1
+        "minLength": 1
       },
       "Person": {
         "type": "object",

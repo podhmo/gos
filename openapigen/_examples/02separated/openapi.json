@@ -1,4 +1,16 @@
 {
+  "openapi": "3.0.3",
+  "info": {
+    "title": "task API",
+    "description": "simple list tasks API",
+    "version": "0.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "local development"
+    }
+  ],
   "paths": {
     "/hello/{name}": {
       "post": {
@@ -26,7 +38,7 @@
             }
           },
           "default": {
-            "description": "",
+            "description": "default error",
             "content": {
               "application/json": {
                 "schema": {
@@ -63,7 +75,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "list of person summary",
             "content": {
               "application/json": {
                 "schema": {
@@ -76,7 +88,7 @@
             }
           },
           "default": {
-            "description": "",
+            "description": "default error",
             "content": {
               "application/json": {
                 "schema": {
@@ -140,21 +152,18 @@
                 "additionalProperties": false
               }
             }
-          }
+          },
+          "description": "person but father and friends are id"
         },
         "responses": {
-          "200": {
+          "204": {
             "description": "",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Person"
-                }
-              }
+              "application/json": {}
             }
           },
           "default": {
-            "description": "",
+            "description": "default error",
             "content": {
               "application/json": {
                 "schema": {
@@ -203,42 +212,7 @@
       },
       "Name": {
         "type": "string",
-        "minlength": 1
-      },
-      "Person": {
-        "type": "object",
-        "description": "person object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string",
-            "description": "name of person"
-          },
-          "age": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "nickname": {
-            "$ref": "#/components/schemas/Name"
-          },
-          "father": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "friends": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Person"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "age"
-        ],
-        "additionalProperties": false
+        "minLength": 1
       }
     }
   }
