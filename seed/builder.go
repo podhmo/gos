@@ -297,10 +297,15 @@ func (t *UnionType) DistinguishID(name string) *UnionType {
 	t.metadata.DistinguishID = name
 	return t
 }
+
 // InterfaceMethods is setter method if your builder requires more interfaces
 // (e.g. "String() string", "fmt.Stringer", ...)
-func (t *UnionType) InterfaceMethods(methods ...string) *UnionType{
+func (t *UnionType) InterfaceMethods(methods ...string) *UnionType {
 	t.metadata.InterfaceMethods = append(t.metadata.InterfaceMethods, methods...)
+	return t
+}
+func (t *UnionType) NeedReference() *UnionType {
+	t.metadata.NeedReference = true
 	return t
 }
 

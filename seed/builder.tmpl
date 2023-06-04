@@ -228,6 +228,7 @@ type {{$ut.Type.Name}} interface {
 {{range $_, $t := $ut.Args}}{{with $name := ($t.Name)}}
 func (t *{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}) {{$ut.DistinguishID}}() {}
 {{end}}{{end}}
+{{if $ut.NeedReference}}func (t *{{$target}}Ref) {{$ut.DistinguishID}}() {}{{end}}
 {{end}}{{end -}}
 {{if $root.Footer}}
 

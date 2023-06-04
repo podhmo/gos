@@ -40,6 +40,7 @@ type UnionTypeMetadata struct {
 	DistinguishID string
 
 	InterfaceMethods []string
+	NeedReference    bool
 }
 
 type TypeVarMetadata struct { // e.g. [T any]
