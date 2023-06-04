@@ -243,21 +243,42 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc.Set("responses", responses)
 
 	for _, output := range t.metadata.Outputs {
-		res := orderedmap.New()
-		k := "default"
-		typ := t.metadata.DefaultError
-		if !output.metadata.IsDefault {
-			k = strconv.Itoa(output.metadata.Status)
-			typ = output.metadata.Typ
-		}
-		responses.Set(k, res)
-		res.Set("description", output.metadata.Typ.GetTypeMetadata().Doc)
-		content := orderedmap.New()
-		res.Set("content", content)
-		appjson := orderedmap.New()
-		content.Set("application/json", appjson)
-		if typ != nil {
-			appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
+		if output.metadata.IsDefault {
+			k := "default"
+			typ := t.metadata.DefaultError
+			doc := output.GetTypeMetadata().Doc
+			if doc == "" {
+				doc = "default error"
+			}
+			res := orderedmap.New()
+			responses.Set(k, res)
+			if typ != nil {
+				res.Set("description", doc)
+			}
+			content := orderedmap.New()
+			res.Set("content", content)
+			appjson := orderedmap.New()
+			content.Set("application/json", appjson)
+			if typ != nil {
+				appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
+			}
+		} else {
+			k := strconv.Itoa(output.metadata.Status)
+			typ := output.metadata.Typ
+			doc := output.GetTypeMetadata().Doc
+			if typ != nil && doc == "" {
+				doc = typ.GetTypeMetadata().Doc
+			}
+			res := orderedmap.New()
+			responses.Set(k, res)
+			res.Set("description", doc)
+			content := orderedmap.New()
+			res.Set("content", content)
+			appjson := orderedmap.New()
+			content.Set("application/json", appjson)
+			if typ != nil {
+				appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
+			}
 		}
 	}
 	doc, err := maplib.Merge(doc, t.metadata)
