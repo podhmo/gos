@@ -126,7 +126,7 @@ func run() error {
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Input", "*Input").Tag(`json:"-"`),
 		b.Field("Outputs", "[]*Output").Tag(`json:"-"`),
-		b.Field("DefaultError", seed.Symbol("Type")),
+		b.Field("DefaultError", seed.Symbol("Type")).Tag(`json:"-"`),
 		b.Field("Method", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Path", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Tags", seed.Symbol("[]string")).Tag(`json:"tags"`),
@@ -192,7 +192,7 @@ func run() error {
 		}),
 	).NeedBuilder().Underlying("input")
 	Output := b.Type("Output",
-		b.Field("Typ", "Type"),
+		b.Field("Typ", "Type").Tag(`json:"-"`),
 		b.Field("Status", seed.Symbol("int")).Tag(`json:"-"`).Default("200"),
 		b.Field("IsDefault", seed.Symbol("bool")).Tag(`json:"-"`),
 	).Constructor(

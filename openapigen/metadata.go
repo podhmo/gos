@@ -104,7 +104,7 @@ type ActionMetadata struct {
 
 	Outputs []*Output `json:"-"`
 
-	DefaultError Type
+	DefaultError Type `json:"-"`
 
 	Method string `json:"-"`
 
@@ -140,7 +140,7 @@ type InputMetadata struct {
 }
 
 type OutputMetadata struct {
-	Typ Type
+	Typ Type `json:"-"`
 
 	Status int `json:"-"`
 
