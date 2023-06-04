@@ -11,7 +11,7 @@ import (
 
 type EnumBuilder interface {
 	GetEnumMetadata() *EnumMetadata
-	writeEnum(io.Writer) error // see: ./to_string.go
+	writeEnum(io.Writer) error // see: ./stringer.go
 }
 
 // DefineEnum names Enum value.
