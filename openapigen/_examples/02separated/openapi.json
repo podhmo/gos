@@ -3,6 +3,7 @@
     "/hello/{name}": {
       "post": {
         "operationId": "hello",
+        "description": "greeting hello",
         "parameters": [
           {
             "name": "name",
@@ -15,7 +16,7 @@
         ],
         "responses": {
           "200": {
-            "description": "greeting hello",
+            "description": "",
             "content": {
               "applicatioin/json": {
                 "schema": {
@@ -34,12 +35,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "greeting"
+        ]
       }
     },
     "/people": {
       "get": {
         "operationId": "ListPerson",
+        "description": "list person",
         "parameters": [
           {
             "name": "sort",
@@ -58,7 +63,7 @@
         ],
         "responses": {
           "200": {
-            "description": "list person",
+            "description": "",
             "content": {
               "applicatioin/json": {
                 "schema": {
@@ -80,10 +85,14 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "people"
+        ]
       },
       "post": {
         "operationId": "CreatePerson",
+        "description": "create person",
         "parameters": [
           {
             "name": "verbose",
@@ -135,7 +144,7 @@
         },
         "responses": {
           "200": {
-            "description": "create person",
+            "description": "",
             "content": {
               "applicatioin/json": {
                 "schema": {
@@ -154,7 +163,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "people"
+        ]
       }
     }
   },

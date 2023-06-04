@@ -117,13 +117,13 @@ func run() error {
 	// action
 	// ----------------------------------------
 	Action := b.Type("Action",
-		b.Field("Name", seed.Symbol("string")).Tag(`"json:"-"`),
-		b.Field("Input", "*Input").Tag(`"json:"-"`),
-		b.Field("Output", "*Output").Tag(`"json:"-"`),
-		b.Field("Method", seed.Symbol("string")).Tag(`"json:"-"`),
-		b.Field("Path", seed.Symbol("string")).Tag(`"json:"-"`),
-		b.Field("Tags", seed.Symbol("[]string")).Tag(`tag:"tags"`),
-		b.Field("DefaultStatus", seed.Symbol("int")).Tag(`"json:"-"`).Default("200"),
+		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("Input", "*Input").Tag(`json:"-"`),
+		b.Field("Output", "*Output").Tag(`json:"-"`),
+		b.Field("Method", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("Path", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("Tags", seed.Symbol("[]string")).Tag(`json:"tags"`),
+		b.Field("DefaultStatus", seed.Symbol("int")).Tag(`json:"-"`).Default("200"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("Input", "*Input"),

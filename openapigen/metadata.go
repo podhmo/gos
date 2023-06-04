@@ -98,19 +98,19 @@ type ObjectMetadata struct {
 }
 
 type ActionMetadata struct {
-	Name string `"json:"-"`
+	Name string `json:"-"`
 
-	Input *Input `"json:"-"`
+	Input *Input `json:"-"`
 
-	Output *Output `"json:"-"`
+	Output *Output `json:"-"`
 
-	Method string `"json:"-"`
+	Method string `json:"-"`
 
-	Path string `"json:"-"`
+	Path string `json:"-"`
 
-	Tags []string `tag:"tags"`
+	Tags []string `json:"tags"`
 
-	DefaultStatus int `"json:"-"`
+	DefaultStatus int `json:"-"`
 }
 
 type ParamMetadata struct {
