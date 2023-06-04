@@ -236,6 +236,14 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 			appjson := orderedmap.New()
 			content.Set("application/json", appjson)
 			appjson.Set("schema", body.metadata.Typ.toSchema(b, useRef))
+			
+			description := body.GetTypeMetadata().Doc
+			if description == "" {
+				description = input.GetTypeMetadata().Doc
+			}
+			if description != "" {
+				requestBody.Set("description", description)
+			}
 		}
 	}
 
@@ -246,14 +254,14 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 		if output.metadata.IsDefault {
 			k := "default"
 			typ := t.metadata.DefaultError
-			doc := output.GetTypeMetadata().Doc
-			if doc == "" {
-				doc = "default error"
+			description := output.GetTypeMetadata().Doc
+			if description == "" {
+				description = "default error"
 			}
 			res := orderedmap.New()
 			responses.Set(k, res)
 			if typ != nil {
-				res.Set("description", doc)
+				res.Set("description", description)
 			}
 			content := orderedmap.New()
 			res.Set("content", content)
@@ -265,13 +273,13 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 		} else {
 			k := strconv.Itoa(output.metadata.Status)
 			typ := output.metadata.Typ
-			doc := output.GetTypeMetadata().Doc
-			if typ != nil && doc == "" {
-				doc = typ.GetTypeMetadata().Doc
+			description := output.GetTypeMetadata().Doc
+			if typ != nil && description == "" {
+				description = typ.GetTypeMetadata().Doc
 			}
 			res := orderedmap.New()
 			responses.Set(k, res)
-			res.Set("description", doc)
+			res.Set("description", description)
 			content := orderedmap.New()
 			res.Set("content", content)
 			appjson := orderedmap.New()
