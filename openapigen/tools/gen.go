@@ -78,18 +78,18 @@ func run() error {
 		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
 		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minlength,omitempty"`),
 	).NeedBuilder().Underlying("string")
-	Array := b.Type("Array", b.TypeVar("Items", seed.Symbol("TypeBuilder")),
+	Array := b.Type("Array", b.TypeVar("Items", seed.Symbol("Type")),
 		// b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
 		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxitems,omitempty"`),
 		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minitems,omitempty"`),
 	).NeedBuilder().Underlying("array")
-	Map := b.Type("Map", b.TypeVar("Items", seed.Symbol("TypeBuilder")),
+	Map := b.Type("Map", b.TypeVar("Items", seed.Symbol("Type")),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
 	).NeedBuilder().Underlying("map")
 
 	Field := b.Type("Field",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
-		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
+		b.Field("Typ", seed.Symbol("Type")).Tag(`json:"-"`),
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Nullable", seed.Symbol("bool")).Tag(`json:"nullable,omitempty"`), // trim omitempty?
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"-"`).Default("true"),
@@ -99,7 +99,7 @@ func run() error {
 		b.Field("Deprecated", seed.Symbol("bool")).Tag(`json:"deprecated,omitempty"`),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
-		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+		b.Arg("Typ", seed.Symbol("Type")),
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	})).NeedBuilder().Underlying("field") //?
@@ -112,6 +112,12 @@ func run() error {
 	).Constructor(
 		b.Arg("Fields", seed.Symbol("*Field")).Variadic(),
 	).NeedBuilder().Underlying("object")
+
+	b.Union("Type", Bool, Int, Float, String, Object, Array, Map).
+		DistinguishID("typ").
+		InterfaceMethods("TypeBuilder").
+		Doc("Type is union of bool | int | float | string | object | array[T] | map[T]").
+		NeedReference()
 
 	// ----------------------------------------
 	// action
@@ -133,22 +139,22 @@ func run() error {
 	Param := b.Type("Param",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"name"`),
 		b.Field("In", seed.Symbol("string")).Tag(`json:"in"`).Default(`"query"`).Doc("openapi's in parameter {query, header, path, cookie} (default is query)"),
-		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
+		b.Field("Typ", seed.Symbol("Type")).Tag(`json:"-"`),
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Required", seed.Symbol("bool")).Tag(`json:"required"`).Default("true"),
 		b.Field("Deprecated", seed.Symbol("bool")).Tag(`json:"deprecated,omitempty"`),
 		b.Field("AllowEmptyValue", seed.Symbol("bool")).Tag(`json:"allowEmptyValue,omitempty"`),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
-		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+		b.Arg("Typ", seed.Symbol("Type")),
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	})).NeedBuilder().Underlying("param")
 
 	Body := b.Type("Body",
-		b.Field("Typ", seed.Symbol("TypeBuilder")).Tag(`json:"-"`),
+		b.Field("Typ", seed.Symbol("Type")).Tag(`json:"-"`),
 	).Constructor(
-		b.Arg("Typ", seed.Symbol("TypeBuilder")),
+		b.Arg("Typ", seed.Symbol("Type")),
 	).NeedBuilder()
 	paramOrBody := b.Union("paramOrBody", Param, Body)
 
@@ -171,10 +177,10 @@ func run() error {
 		}),
 	).NeedBuilder().Underlying("input")
 	Output := b.Type("Output",
-		b.Field("Typ", "TypeBuilder"),
-		b.Field("DefaultError", seed.Symbol("TypeBuilder")),
+		b.Field("Typ", "Type"),
+		b.Field("DefaultError", seed.Symbol("Type")),
 	).Constructor(
-		b.Arg("Typ", "TypeBuilder"),
+		b.Arg("Typ", "Type"),
 	).NeedBuilder().Underlying("output")
 
 	// openapi root info: https://swagger.io/specification/

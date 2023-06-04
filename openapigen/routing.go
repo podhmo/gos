@@ -7,7 +7,7 @@ import (
 
 type rootRouter struct {
 	Actions      []*Action
-	DefaultError TypeBuilder
+	DefaultError Type
 }
 
 type Router struct {
@@ -16,7 +16,7 @@ type Router struct {
 	tags []string
 }
 
-func NewRouter(defaultError TypeBuilder) *Router {
+func NewRouter(defaultError Type) *Router {
 	return &Router{rootRouter: &rootRouter{
 		DefaultError: defaultError,
 	}}

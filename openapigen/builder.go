@@ -11,7 +11,7 @@ import (
 
 type TypeBuilder interface {
 	GetTypeMetadata() *TypeMetadata
-	writeType(io.Writer) error // see: ./to_string.go
+	writeType(io.Writer) error // see: ./stringer.go
 	toSchemer                  // see: ./to_schema.go
 }
 
@@ -336,10 +336,10 @@ func (b *StringBuilder[R]) MinLength(value int64) R {
 // end setter of String --------------------
 
 // Array builds Type for Array
-func (b *Builder) Array(items TypeBuilder) *Array[TypeBuilder] {
-	t := &Array[TypeBuilder]{
-		ArrayBuilder: &ArrayBuilder[TypeBuilder, *Array[TypeBuilder]]{
-			_Type:    &_Type[*Array[TypeBuilder]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "array"}},
+func (b *Builder) Array(items Type) *Array[Type] {
+	t := &Array[Type]{
+		ArrayBuilder: &ArrayBuilder[Type, *Array[Type]]{
+			_Type:    &_Type[*Array[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "array"}},
 			metadata: &ArrayMetadata{},
 			items:    items,
 		},
@@ -348,7 +348,7 @@ func (b *Builder) Array(items TypeBuilder) *Array[TypeBuilder] {
 	return t
 }
 
-type Array[Items TypeBuilder] struct {
+type Array[Items Type] struct {
 	*ArrayBuilder[Items, *Array[Items]]
 }
 
@@ -356,7 +356,7 @@ func (t *Array[Items]) GetMetadata() *ArrayMetadata {
 	return t.metadata
 }
 
-type ArrayBuilder[Items TypeBuilder, R TypeBuilder] struct {
+type ArrayBuilder[Items Type, R TypeBuilder] struct {
 	*_Type[R]
 	metadata *ArrayMetadata
 	items    Items
@@ -379,10 +379,10 @@ func (b *ArrayBuilder[Items, R]) MinItems(value int64) R {
 // end setter of Array --------------------
 
 // Map builds Type for Map
-func (b *Builder) Map(items TypeBuilder) *Map[TypeBuilder] {
-	t := &Map[TypeBuilder]{
-		MapBuilder: &MapBuilder[TypeBuilder, *Map[TypeBuilder]]{
-			_Type:    &_Type[*Map[TypeBuilder]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "map"}},
+func (b *Builder) Map(items Type) *Map[Type] {
+	t := &Map[Type]{
+		MapBuilder: &MapBuilder[Type, *Map[Type]]{
+			_Type:    &_Type[*Map[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "map"}},
 			metadata: &MapMetadata{},
 			items:    items,
 		},
@@ -391,7 +391,7 @@ func (b *Builder) Map(items TypeBuilder) *Map[TypeBuilder] {
 	return t
 }
 
-type Map[Items TypeBuilder] struct {
+type Map[Items Type] struct {
 	*MapBuilder[Items, *Map[Items]]
 }
 
@@ -399,7 +399,7 @@ func (t *Map[Items]) GetMetadata() *MapMetadata {
 	return t.metadata
 }
 
-type MapBuilder[Items TypeBuilder, R TypeBuilder] struct {
+type MapBuilder[Items Type, R TypeBuilder] struct {
 	*_Type[R]
 	metadata *MapMetadata
 	items    Items
@@ -416,7 +416,7 @@ func (b *MapBuilder[Items, R]) Pattern(value string) R {
 // end setter of Map --------------------
 
 // Field builds Type for Field
-func (b *Builder) Field(name string, typ TypeBuilder) *Field {
+func (b *Builder) Field(name string, typ Type) *Field {
 	t := &Field{
 		FieldBuilder: &FieldBuilder[*Field]{
 			_Type: &_Type[*Field]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "field"}},
@@ -595,7 +595,7 @@ func (b *ActionBuilder[R]) DefaultStatus(value int) R {
 // end setter of Action --------------------
 
 // Param builds Type for Param
-func (b *Builder) Param(name string, typ TypeBuilder) *Param {
+func (b *Builder) Param(name string, typ Type) *Param {
 	t := &Param{
 		ParamBuilder: &ParamBuilder[*Param]{
 			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param"}},
@@ -656,7 +656,7 @@ func (b *ParamBuilder[R]) Doc(stmts ...string) R {
 // end setter of Param --------------------
 
 // Body builds Type for Body
-func (b *Builder) Body(typ TypeBuilder) *Body {
+func (b *Builder) Body(typ Type) *Body {
 	t := &Body{
 		BodyBuilder: &BodyBuilder[*Body]{
 			_Type: &_Type[*Body]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "Body"}},
@@ -728,7 +728,7 @@ type InputBuilder[R TypeBuilder] struct {
 // end setter of Input --------------------
 
 // Output builds Type for Output
-func (b *Builder) Output(typ TypeBuilder) *Output {
+func (b *Builder) Output(typ Type) *Output {
 	t := &Output{
 		OutputBuilder: &OutputBuilder[*Output]{
 			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "output"}},
@@ -757,7 +757,7 @@ type OutputBuilder[R TypeBuilder] struct {
 // begin setter of Output --------------------
 
 // DefaultError set Metadata.DefaultError
-func (b *OutputBuilder[R]) DefaultError(value TypeBuilder) R {
+func (b *OutputBuilder[R]) DefaultError(value Type) R {
 	b.metadata.DefaultError = value
 	return b.ret
 }
@@ -808,7 +808,32 @@ func (t *_Type[R]) storeType(name string) {
 	t.rootbuilder.storeType(t.ret)
 }
 
+// Type is the one of pseudo sum types (union).
+// Type is union of bool | int | float | string | object | array[T] | map[T]
+type Type interface {
+	typ()
+
+	TypeBuilder
+}
+
+func (t *Bool) typ() {}
+
+func (t *Int) typ() {}
+
+func (t *Float) typ() {}
+
+func (t *String) typ() {}
+
+func (t *Object) typ() {}
+
+func (t *Array[Items]) typ() {}
+
+func (t *Map[Items]) typ() {}
+
+func (t *TypeRef) typ() {}
+
 // paramOrBody is the one of pseudo sum types (union).
+
 type paramOrBody interface {
 	paramorbody()
 }

@@ -70,7 +70,7 @@ type MapMetadata struct {
 type FieldMetadata struct {
 	Name string `json:"-"`
 
-	Typ TypeBuilder `json:"-"`
+	Typ Type `json:"-"`
 
 	Doc string `json:"description,omitempty"`
 
@@ -118,7 +118,7 @@ type ParamMetadata struct {
 	// openapi's in parameter {query, header, path, cookie} (default is query)
 	In string `json:"in"`
 
-	Typ TypeBuilder `json:"-"`
+	Typ Type `json:"-"`
 
 	Doc string `json:"description,omitempty"`
 
@@ -130,7 +130,7 @@ type ParamMetadata struct {
 }
 
 type BodyMetadata struct {
-	Typ TypeBuilder `json:"-"`
+	Typ Type `json:"-"`
 }
 
 type InputMetadata struct {
@@ -140,9 +140,9 @@ type InputMetadata struct {
 }
 
 type OutputMetadata struct {
-	Typ TypeBuilder
+	Typ Type
 
-	DefaultError TypeBuilder
+	DefaultError Type
 }
 
 type Contact struct {

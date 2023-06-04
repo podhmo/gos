@@ -14,7 +14,7 @@ import (
 
 type {{$target}}Builder interface {
 	Get{{$target}}Metadata() *{{$target}}Metadata
-{{if $root.NeedStringer}}	write{{$target}}(io.Writer) error  // see: ./to_string.go{{end -}}
+{{if $root.NeedStringer}}	write{{$target}}(io.Writer) error  // see: ./stringer.go{{end -}}
 {{range $_, $m := $root.InterfaceMethods}}
 	{{$m -}}
 {{end}}
@@ -218,12 +218,17 @@ func (t *_{{$target}}[R]) store{{$target}}(name string) {
 }
 {{if (lt 0 (len $root.UnionTypes))}}{{range $_, $ut := $root.UnionTypes}}
 // {{$ut.Type.Name}} is the one of pseudo sum types (union).
+{{if (not (eq "" $ut.Type.Doc))}}{{$ut.Type.Doc}}{{end}}
 type {{$ut.Type.Name}} interface {
 	{{$ut.DistinguishID}}()
+{{range $_, $m := $ut.InterfaceMethods}}
+	{{$m -}}
+{{end}}
 }
 {{range $_, $t := $ut.Args}}{{with $name := ($t.Name)}}
 func (t *{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}) {{$ut.DistinguishID}}() {}
 {{end}}{{end}}
+{{if $ut.NeedReference}}func (t *{{$target}}Ref) {{$ut.DistinguishID}}() {}{{end}}
 {{end}}{{end -}}
 {{if $root.Footer}}
 

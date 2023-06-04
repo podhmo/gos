@@ -38,6 +38,9 @@ type UnionTypeMetadata struct {
 	Type          *TypeMetadata
 	Args          []*TypeMetadata // symbol?
 	DistinguishID string
+
+	InterfaceMethods []string
+	NeedReference    bool
 }
 
 type TypeVarMetadata struct { // e.g. [T any]
