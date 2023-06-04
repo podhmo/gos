@@ -70,8 +70,10 @@ func (t *Action) writeType(w io.Writer) error {
 	if err := t.metadata.Input.writeType(w); err != nil {
 		return err
 	}
-	if err := t.metadata.Output.writeType(w); err != nil {
-		return err
+	if len(t.metadata.Outputs) > 0 {
+		if err := t.metadata.Outputs[0].writeType(w); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -241,32 +241,23 @@ func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 
 	responses := orderedmap.New()
 	doc.Set("responses", responses)
-	{
+
+	for _, output := range t.metadata.Outputs {
 		res := orderedmap.New()
-		k := strconv.Itoa(t.metadata.DefaultStatus)
+		k := "default"
+		typ := t.metadata.DefaultError
+		if !output.metadata.IsDefault {
+			k = strconv.Itoa(output.metadata.Status)
+			typ = output.metadata.Typ
+		}
 		responses.Set(k, res)
-		res.Set("description", "")
+		res.Set("description", output.metadata.Typ.GetTypeMetadata().Doc)
 		content := orderedmap.New()
 		res.Set("content", content)
 		appjson := orderedmap.New()
 		content.Set("application/json", appjson)
-		if output := t.metadata.Output; output != nil && output.metadata.Typ != nil {
+		if typ != nil {
 			appjson.Set("schema", output.metadata.Typ.toSchema(b, useRef))
-		}
-	}
-	if output := t.metadata.Output; output != nil {
-		if output.metadata.DefaultError != nil {
-			res := orderedmap.New()
-			k := "default"
-			responses.Set(k, res)
-			res.Set("description", "")
-			content := orderedmap.New()
-			res.Set("content", content)
-			appjson := orderedmap.New()
-			content.Set("application/json", appjson)
-			if output.metadata.DefaultError != nil {
-				appjson.Set("schema", output.metadata.DefaultError.toSchema(b, useRef))
-			}
 		}
 	}
 	doc, err := maplib.Merge(doc, t.metadata)
