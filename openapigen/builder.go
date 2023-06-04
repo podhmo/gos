@@ -830,6 +830,8 @@ func (t *Array[Items]) typ() {}
 
 func (t *Map[Items]) typ() {}
 
+func (t *TypeRef) typ() {}
+
 // paramOrBody is the one of pseudo sum types (union).
 
 type paramOrBody interface {
