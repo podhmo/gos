@@ -136,6 +136,16 @@ type BoolBuilder[R TypeBuilder] struct {
 	metadata *BoolMetadata
 }
 
+// begin setter of Bool --------------------
+
+// Default set Metadata.Default
+func (b *BoolBuilder[R]) Default(value bool) R {
+	b.metadata.Default = value
+	return b.ret
+}
+
+// end setter of Bool --------------------
+
 // Int builds Type for Int
 func (b *Builder) Int() *Int {
 	t := &Int{
