@@ -539,16 +539,30 @@ func (b *_ObjectBuilder[R]) Strict(value bool) R {
 // end setter of Object --------------------
 
 // Action builds Type for Action
-func (b *Builder) Action(name string, input *Input, output *Output) *Action {
+func (b *Builder) Action(name string, inputoroutput ...InputOrOutput) *Action {
 	t := &Action{
 		_ActionBuilder: &_ActionBuilder[*Action]{
 			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}},
 			metadata: &ActionMetadata{
-				Name: name, Input: input, Output: output,
+				Name:          name,
 				DefaultStatus: 200,
 			},
 		},
 	}
+
+	t.metadata.Input, t.metadata.Output = func() (v1 *Input, v2 *Output) {
+		for _, x := range inputoroutput {
+			switch x := x.(type) {
+			case *Input:
+				v1 = x
+			case *Output:
+				v2 = x
+			default:
+				panic(fmt.Sprintf("unexpected Type: %T", x))
+			}
+		}
+		return
+	}()
 	t.ret = t
 	return t
 }
@@ -702,6 +716,8 @@ func (b *Builder) Input(params ...paramOrBody) *Input {
 				v1 = append(v1, a)
 			case *Body:
 				v2 = a
+			default:
+				panic(fmt.Sprintf("unexpected Type: %T", a))
 			}
 		}
 		return
@@ -841,3 +857,13 @@ type paramOrBody interface {
 func (t *Param) paramorbody() {}
 
 func (t *Body) paramorbody() {}
+
+// InputOrOutput is the one of pseudo sum types (union).
+
+type InputOrOutput interface {
+	inputoroutput()
+}
+
+func (t *Input) inputoroutput() {}
+
+func (t *Output) inputoroutput() {}
