@@ -544,19 +544,18 @@ func (b *Builder) Action(name string, inputoroutput ...InputOrOutput) *Action {
 		_ActionBuilder: &_ActionBuilder[*Action]{
 			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}},
 			metadata: &ActionMetadata{
-				Name:          name,
-				DefaultStatus: 200,
+				Name: name,
 			},
 		},
 	}
 
-	t.metadata.Input, t.metadata.Output = func() (v1 *Input, v2 *Output) {
+	t.metadata.Input, t.metadata.Outputs = func() (v1 *Input, v2 []*Output) {
 		for _, x := range inputoroutput {
 			switch x := x.(type) {
 			case *Input:
 				v1 = x
 			case *Output:
-				v2 = x
+				v2 = append(v2, x) // TODO: status conflict check
 			default:
 				panic(fmt.Sprintf("unexpected Type: %T", x))
 			}
@@ -582,6 +581,12 @@ type _ActionBuilder[R TypeBuilder] struct {
 
 // begin setter of Action --------------------
 
+// DefaultError set Metadata.DefaultError
+func (b *_ActionBuilder[R]) DefaultError(value Type) R {
+	b.metadata.DefaultError = value
+	return b.ret
+}
+
 // Method set Metadata.Method
 func (b *_ActionBuilder[R]) Method(value string) R {
 	b.metadata.Method = value
@@ -597,12 +602,6 @@ func (b *_ActionBuilder[R]) Path(value string) R {
 // Tags set Metadata.Tags
 func (b *_ActionBuilder[R]) Tags(value []string) R {
 	b.metadata.Tags = value
-	return b.ret
-}
-
-// DefaultStatus set Metadata.DefaultStatus
-func (b *_ActionBuilder[R]) DefaultStatus(value int) R {
-	b.metadata.DefaultStatus = value
 	return b.ret
 }
 
@@ -749,7 +748,8 @@ func (b *Builder) Output(typ Type) *Output {
 		_OutputBuilder: &_OutputBuilder[*Output]{
 			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "output"}},
 			metadata: &OutputMetadata{
-				Typ: typ,
+				Typ:    typ,
+				Status: 200,
 			},
 		},
 	}
@@ -772,9 +772,15 @@ type _OutputBuilder[R TypeBuilder] struct {
 
 // begin setter of Output --------------------
 
-// DefaultError set Metadata.DefaultError
-func (b *_OutputBuilder[R]) DefaultError(value Type) R {
-	b.metadata.DefaultError = value
+// Status set Metadata.Status
+func (b *_OutputBuilder[R]) Status(value int) R {
+	b.metadata.Status = value
+	return b.ret
+}
+
+// IsDefault set Metadata.IsDefault
+func (b *_OutputBuilder[R]) IsDefault(value bool) R {
+	b.metadata.IsDefault = value
 	return b.ret
 }
 

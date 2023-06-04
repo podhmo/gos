@@ -102,15 +102,15 @@ type ActionMetadata struct {
 
 	Input *Input `json:"-"`
 
-	Output *Output `json:"-"`
+	Outputs []*Output `json:"-"`
+
+	DefaultError Type
 
 	Method string `json:"-"`
 
 	Path string `json:"-"`
 
 	Tags []string `json:"tags"`
-
-	DefaultStatus int `json:"-"`
 }
 
 type ParamMetadata struct {
@@ -142,7 +142,9 @@ type InputMetadata struct {
 type OutputMetadata struct {
 	Typ Type
 
-	DefaultError Type
+	Status int `json:"-"`
+
+	IsDefault bool `json:"-"`
 }
 
 type Contact struct {
