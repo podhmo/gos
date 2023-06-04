@@ -125,21 +125,21 @@ func run() error {
 	Action := b.Type("Action",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Input", "*Input").Tag(`json:"-"`),
-		b.Field("Output", "*Output").Tag(`json:"-"`),
+		b.Field("Outputs", "[]*Output").Tag(`json:"-"`),
+		b.Field("DefaultError", seed.Symbol("Type")),
 		b.Field("Method", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Path", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Tags", seed.Symbol("[]string")).Tag(`json:"tags"`),
-		b.Field("DefaultStatus", seed.Symbol("int")).Tag(`json:"-"`).Default("200"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
-		b.Arg("InputOrOutput", "InputOrOutput").Variadic().BindFields("Input", "Output").Transform(func(s string) string {
-			return fmt.Sprintf(`func()(v1 *Input, v2 *Output){
+		b.Arg("InputOrOutput", "InputOrOutput").Variadic().BindFields("Input", "Outputs").Transform(func(s string) string {
+			return fmt.Sprintf(`func()(v1 *Input, v2 []*Output){
 				for _, x := range %s {
 					switch x := x.(type) {
 					case *Input:
 						v1 = x
 					case *Output:
-						v2 = x
+						v2 = append(v2, x) // TODO: status conflict check
 					default:
 						panic(fmt.Sprintf("unexpected Type: %s", x))
 					}
@@ -193,7 +193,8 @@ func run() error {
 	).NeedBuilder().Underlying("input")
 	Output := b.Type("Output",
 		b.Field("Typ", "Type"),
-		b.Field("DefaultError", seed.Symbol("Type")),
+		b.Field("Status", seed.Symbol("int")).Tag(`json:"-"`).Default("200"),
+		b.Field("IsDefault", seed.Symbol("bool")).Tag(`json:"-"`),
 	).Constructor(
 		b.Arg("Typ", "Type"),
 	).NeedBuilder().Underlying("output")
