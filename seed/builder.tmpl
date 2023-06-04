@@ -126,7 +126,7 @@ func (t *{{$target}}Ref) Get{{$target}}Metadata() *{{$target}}Metadata {
 // {{$name}} builds {{$target}} for {{$name}}
 func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} {{$tv.Type}}, {{end}}{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}} {
 	t := &{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}{
-		{{$name}}Builder: &{{$name}}Builder[{{$t.TVars.Types}}*{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}]{
+		_{{$name}}Builder: &_{{$name}}Builder[{{$t.TVars.Types}}*{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}]{
 			_{{$target}}:    &_{{$target}}[*{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Types}}]{{end}}]{rootbuilder: b, metadata: &{{$target}}Metadata{Name: "", underlying: {{$t.Underlying | printf "%q"}}}},
 			metadata: &{{$name}}Metadata{
 				{{if (not (eq $t.Constructor nil))}}{{range $_,$a := $t.Constructor.Args}}{{if eq 1 (len $a.BindFields)}}{{$a.Name}}: {{if $a.Transform}}{{call $a.Transform (toLower $a.Name)}}{{else}}{{$a.Name | toLower}}{{end}}, {{end}}{{end}}{{end}}
@@ -143,14 +143,14 @@ func (b *Builder) {{$name}}({{range $_, $tv := $t.TVars}}{{$tv.Name | toLower}} 
 }
 
 type {{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.NameAndTypes}}]{{end}} struct {
-	*{{$name}}Builder[{{$t.TVars.Names}}*{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}]
+	*_{{$name}}Builder[{{$t.TVars.Names}}*{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}]
 }
 
 func (t *{{$name}}{{if (lt 0 (len $t.TVars))}}[{{$t.TVars.Names}}]{{end}}) GetMetadata() *{{$name}}Metadata {
 	return t.metadata
 }
 
-type {{$name}}Builder[{{$t.TVars.NameAndTypes}}R {{$target}}Builder] struct {
+type _{{$name}}Builder[{{$t.TVars.NameAndTypes}}R {{$target}}Builder] struct {
 	*_{{$target}}[R]
 	metadata *{{$name}}Metadata
 
@@ -163,13 +163,13 @@ type {{$name}}Builder[{{$t.TVars.NameAndTypes}}R {{$target}}Builder] struct {
 // begin setter of {{$name}} --------------------
 {{range $_, $f := $t.Fields}}{{if (not (index $t.Used $f.Name))}}
 // {{$f.Name}} set Metadata.{{$f.Name}}
-func (b *{{$name}}Builder[{{$t.TVars.Names}}R]) {{$f.Name}}(value {{$f.Type}}) R {
+func (b *_{{$name}}Builder[{{$t.TVars.Names}}R]) {{$f.Name}}(value {{$f.Type}}) R {
 	b.metadata.{{$f.Name}} = value
 	return b.ret
 }
 {{end}}{{end}}
 {{range $_, $s := $t.Setters}}{{with $a := $s.Arg}}
-func (b *{{$name}}Builder[{{$t.TVars.Names}}R]) {{$s.Name}}({{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}}) R {
+func (b *_{{$name}}Builder[{{$t.TVars.Names}}R]) {{$s.Name}}({{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}}) R {
 	b.metadata.{{$s.Name}} = {{if $a.Transform}}{{call $a.Transform (toLower $a.Name)}}{{else}}{{$a.Name | toLower}}{{end}}
 	return b.ret
 }
