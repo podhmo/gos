@@ -132,8 +132,21 @@ func run() error {
 		b.Field("DefaultStatus", seed.Symbol("int")).Tag(`json:"-"`).Default("200"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
-		b.Arg("Input", "*Input"),
-		b.Arg("Output", "*Output"),
+		b.Arg("InputOrOutput", "InputOrOutput").Variadic().BindFields("Input", "Output").Transform(func(s string) string {
+			return fmt.Sprintf(`func()(v1 *Input, v2 *Output){
+				for _, x := range %s {
+					switch x := x.(type) {
+					case *Input:
+						v1 = x
+					case *Output:
+						v2 = x
+					default:
+						panic(fmt.Sprintf("unexpected Type: %s", x))
+					}
+				}
+				return
+			}()`, s, "%T")
+		}),
 	).NeedBuilder().Underlying("action")
 
 	Param := b.Type("Param",
@@ -170,10 +183,12 @@ func run() error {
 						v1 = append(v1, a)
 					case *Body:
 						v2 = a
+					default:
+						panic(fmt.Sprintf("unexpected Type: %s", a))
 					}
 				}
 				return
-			}()`, s)
+			}()`, s, "%T")
 		}),
 	).NeedBuilder().Underlying("input")
 	Output := b.Type("Output",
@@ -182,6 +197,7 @@ func run() error {
 	).Constructor(
 		b.Arg("Typ", "Type"),
 	).NeedBuilder().Underlying("output")
+	b.Union("InputOrOutput", Input, Output)
 
 	// openapi root info: https://swagger.io/specification/
 	Contact := b.Type("Contact",
