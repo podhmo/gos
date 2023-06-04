@@ -809,6 +809,7 @@ func (t *_Type[R]) storeType(name string) {
 }
 
 // Type is the one of pseudo sum types (union).
+// Type is union of bool | int | float | string | object | array[T] | map[T]
 type Type interface {
 	typ()
 
@@ -830,6 +831,7 @@ func (t *Array[Items]) typ() {}
 func (t *Map[Items]) typ() {}
 
 // paramOrBody is the one of pseudo sum types (union).
+
 type paramOrBody interface {
 	paramorbody()
 }

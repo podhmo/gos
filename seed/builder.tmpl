@@ -218,6 +218,7 @@ func (t *_{{$target}}[R]) store{{$target}}(name string) {
 }
 {{if (lt 0 (len $root.UnionTypes))}}{{range $_, $ut := $root.UnionTypes}}
 // {{$ut.Type.Name}} is the one of pseudo sum types (union).
+{{if (not (eq "" $ut.Type.Doc))}}{{$ut.Type.Doc}}{{end}}
 type {{$ut.Type.Name}} interface {
 	{{$ut.DistinguishID}}()
 {{range $_, $m := $ut.InterfaceMethods}}

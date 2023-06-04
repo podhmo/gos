@@ -115,7 +115,8 @@ func run() error {
 
 	b.Union("Type", Bool, Int, Float, String, Object, Array, Map).
 		DistinguishID("typ").
-		InterfaceMethods("TypeBuilder")
+		InterfaceMethods("TypeBuilder").
+		Doc("Type is union of bool | int | float | string | object | array[T] | map[T]")
 
 	// ----------------------------------------
 	// action
