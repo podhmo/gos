@@ -7,12 +7,12 @@ import (
 	"github.com/iancoleman/orderedmap"
 	"github.com/podhmo/gos/openapigen"
 	design "github.com/podhmo/gos/openapigen/_examples/02separated/design"
-	action "github.com/podhmo/gos/openapigen/_examples/02separated/design/action"
 	"github.com/podhmo/gos/pkg/maplib"
 )
 
 func main() {
-	b := design.Builder
+	b := openapigen.NewBuilder(openapigen.DefaultConfig())
+	actions := design.NewActions(b)
 
 	// routing
 	Error := openapigen.Define("Error", b.Object(
@@ -21,12 +21,12 @@ func main() {
 	r := openapigen.NewRouter(Error)
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello/{name}", action.Hello)
+		r.Post("/hello/{name}", actions.Greeting.Hello)
 	}
 	{
 		r := r.Tagged("people")
-		r.Get("/people", action.ListPerson)
-		r.Post("/people", action.CreatePerson)
+		r.Get("/people", actions.People.ListPerson)
+		r.Post("/people", actions.People.CreatePerson)
 	}
 
 	// emit
