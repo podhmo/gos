@@ -8,6 +8,8 @@ import (
 	"io"
 	"strings"
 	"text/template"
+
+	"github.com/podhmo/gos/pkg/namelib"
 )
 
 type Config struct {
@@ -24,7 +26,7 @@ func DefaultConfig() *Config {
 			"toType": func(t EnumBuilder) string {
 				return t.GetEnumMetadata().underlying
 			},
-			"toTitle": toTitle,
+			"toTitle": namelib.ToTitle,
 		},
 	}
 	c.Template = template.Must(template.New("").Funcs(c.FuncMap).Parse(tmpl))
@@ -39,7 +41,7 @@ func (c *Config) ToGoCode(w io.Writer, tb EnumBuilder) error {
 	case *String:
 		for _, v := range tb.metadata.Members {
 			if v.metadata.Name == "" {
-				v.metadata.Name = toTitle(v.metadata.Value)
+				v.metadata.Name = namelib.ToTitle(v.metadata.Value)
 			}
 		}
 		if err := c.Template.ExecuteTemplate(w, "String", tb); err != nil {
@@ -59,13 +61,4 @@ func ToGocode(w io.Writer, b *Builder) error {
 	return b.EachEnums(func(tb EnumBuilder) error {
 		return b.Config.ToGoCode(w, tb)
 	})
-}
-
-// helpers
-
-func toTitle(s string) string {
-	if s == "" {
-		return s
-	}
-	return strings.ToUpper(s[:1]) + s[1:]
 }
