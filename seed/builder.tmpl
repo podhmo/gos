@@ -247,6 +247,7 @@ type {{$target}}Metadata struct {
 	id         int    // required by reference
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
+	goType string `json:"-"`
 
 {{ range $_, $f := $root.Target.Fields}}
 	{{$f.Name}} {{$f.Type}}{{if (not (eq $f.Tag ""))}}  `{{$f.Tag}}`{{end -}}

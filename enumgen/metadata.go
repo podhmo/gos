@@ -6,6 +6,7 @@ type EnumMetadata struct {
 	id         int    // required by reference
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
+	goType     string `json:"-"`
 
 	Doc string
 }
