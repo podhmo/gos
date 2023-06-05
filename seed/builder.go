@@ -158,6 +158,7 @@ func (b *Builder) Type(name string, typeVarOrFieldList ...typeAttr) *Type {
 	t := &Type{
 		typeBuilder: &typeBuilder[*Type]{metadata: &TypeMetadata{
 			Name:       Symbol(name),
+			GoType:     name,
 			Underlying: name,
 			TVars:      tvars,
 			Fields:     fields,
@@ -234,6 +235,12 @@ func (b *typeBuilder[R]) Doc(stmts ...string) R {
 // Underlying is setter method if you can set underlying type (default is same as TypeName)
 func (b *typeBuilder[R]) Underlying(v string) R {
 	b.metadata.Underlying = v
+	return b.ret
+}
+
+// GoType is setter method if you can set GoType type (default is same as TypeName)
+func (b *typeBuilder[R]) GoType(v string) R {
+	b.metadata.GoType = v
 	return b.ret
 }
 

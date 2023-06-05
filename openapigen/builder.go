@@ -115,7 +115,7 @@ func (t *TypeRef) GetTypeMetadata() *TypeMetadata {
 func (b *Builder) Bool() *Bool {
 	t := &Bool{
 		_BoolBuilder: &_BoolBuilder[*Bool]{
-			_Type:    &_Type[*Bool]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "boolean"}},
+			_Type:    &_Type[*Bool]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "boolean", goType: "Bool"}},
 			metadata: &BoolMetadata{},
 		},
 	}
@@ -150,7 +150,7 @@ func (b *_BoolBuilder[R]) Default(value bool) R {
 func (b *Builder) Int() *Int {
 	t := &Int{
 		_IntBuilder: &_IntBuilder[*Int]{
-			_Type:    &_Type[*Int]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "integer"}},
+			_Type:    &_Type[*Int]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "integer", goType: "Int"}},
 			metadata: &IntMetadata{},
 		},
 	}
@@ -215,7 +215,7 @@ func (b *_IntBuilder[R]) ExclusiveMax(value bool) R {
 func (b *Builder) Float() *Float {
 	t := &Float{
 		_FloatBuilder: &_FloatBuilder[*Float]{
-			_Type:    &_Type[*Float]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "number"}},
+			_Type:    &_Type[*Float]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "number", goType: "Float"}},
 			metadata: &FloatMetadata{},
 		},
 	}
@@ -280,7 +280,7 @@ func (b *_FloatBuilder[R]) ExclusiveMax(value bool) R {
 func (b *Builder) String() *String {
 	t := &String{
 		_StringBuilder: &_StringBuilder[*String]{
-			_Type:    &_Type[*String]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "string"}},
+			_Type:    &_Type[*String]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "string", goType: "String"}},
 			metadata: &StringMetadata{},
 		},
 	}
@@ -339,7 +339,7 @@ func (b *_StringBuilder[R]) MinLength(value int64) R {
 func (b *Builder) Array(items Type) *Array[Type] {
 	t := &Array[Type]{
 		_ArrayBuilder: &_ArrayBuilder[Type, *Array[Type]]{
-			_Type:    &_Type[*Array[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "array"}},
+			_Type:    &_Type[*Array[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "array", goType: "Array"}},
 			metadata: &ArrayMetadata{},
 			items:    items,
 		},
@@ -382,7 +382,7 @@ func (b *_ArrayBuilder[Items, R]) MinItems(value int64) R {
 func (b *Builder) Map(items Type) *Map[Type] {
 	t := &Map[Type]{
 		_MapBuilder: &_MapBuilder[Type, *Map[Type]]{
-			_Type:    &_Type[*Map[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "map"}},
+			_Type:    &_Type[*Map[Type]]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "map", goType: "Map"}},
 			metadata: &MapMetadata{},
 			items:    items,
 		},
@@ -419,7 +419,7 @@ func (b *_MapBuilder[Items, R]) Pattern(value string) R {
 func (b *Builder) Field(name string, typ Type) *Field {
 	t := &Field{
 		_FieldBuilder: &_FieldBuilder[*Field]{
-			_Type: &_Type[*Field]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "field"}},
+			_Type: &_Type[*Field]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "field", goType: "Field"}},
 			metadata: &FieldMetadata{
 				Name: name, Typ: typ,
 				Required: true,
@@ -492,7 +492,7 @@ func (b *_FieldBuilder[R]) Doc(stmts ...string) R {
 func (b *Builder) Object(fields ...*Field) *Object {
 	t := &Object{
 		_ObjectBuilder: &_ObjectBuilder[*Object]{
-			_Type: &_Type[*Object]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "object"}},
+			_Type: &_Type[*Object]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "object", goType: "Object"}},
 			metadata: &ObjectMetadata{
 				Fields: fields,
 				Strict: true,
@@ -542,7 +542,7 @@ func (b *_ObjectBuilder[R]) Strict(value bool) R {
 func (b *Builder) Action(name string, inputoroutput ...InputOrOutput) *Action {
 	t := &Action{
 		_ActionBuilder: &_ActionBuilder[*Action]{
-			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action"}},
+			_Type: &_Type[*Action]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "action", goType: "Action"}},
 			metadata: &ActionMetadata{
 				Name: name,
 			},
@@ -611,7 +611,7 @@ func (b *_ActionBuilder[R]) Tags(value []string) R {
 func (b *Builder) Param(name string, typ Type) *Param {
 	t := &Param{
 		_ParamBuilder: &_ParamBuilder[*Param]{
-			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param"}},
+			_Type: &_Type[*Param]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "param", goType: "Param"}},
 			metadata: &ParamMetadata{
 				Name: name, Typ: typ,
 				In: "query", Required: true,
@@ -672,7 +672,7 @@ func (b *_ParamBuilder[R]) Doc(stmts ...string) R {
 func (b *Builder) Body(typ Type) *Body {
 	t := &Body{
 		_BodyBuilder: &_BodyBuilder[*Body]{
-			_Type: &_Type[*Body]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "Body"}},
+			_Type: &_Type[*Body]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "Body", goType: "Body"}},
 			metadata: &BodyMetadata{
 				Typ: typ,
 			},
@@ -703,7 +703,7 @@ type _BodyBuilder[R TypeBuilder] struct {
 func (b *Builder) Input(params ...paramOrBody) *Input {
 	t := &Input{
 		_InputBuilder: &_InputBuilder[*Input]{
-			_Type:    &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input"}},
+			_Type:    &_Type[*Input]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "input", goType: "Input"}},
 			metadata: &InputMetadata{},
 		},
 	}
@@ -746,7 +746,7 @@ type _InputBuilder[R TypeBuilder] struct {
 func (b *Builder) Output(typ Type) *Output {
 	t := &Output{
 		_OutputBuilder: &_OutputBuilder[*Output]{
-			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "output"}},
+			_Type: &_Type[*Output]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "output", goType: "Output"}},
 			metadata: &OutputMetadata{
 				Typ:    typ,
 				Status: 200,
