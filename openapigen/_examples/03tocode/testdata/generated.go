@@ -12,6 +12,19 @@ type Friends []Person
 
 
 
+type Tag struct {
+
+    
+    // name of tag
+    Name Name `json:"name"`
+
+    
+    Doc string `json:"doc"`
+
+}
+
+
+
 // person object
 type Person struct {
 
@@ -30,5 +43,8 @@ type Person struct {
 
     
     Friends Friends `json:"friends"`
+
+    
+    Tags map[string]Tag `json:"tags"`
 
 }

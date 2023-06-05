@@ -15,7 +15,7 @@ run-example: 00schema 01router 02separated
 .PHONY: 02separated
 03tocode:
 	mkdir -p ./_examples/03tocode/testdata
-	go run ./_examples/03tocode > ./_examples/03tocode/testdata/generated.go
+	go run ./_examples/03tocode
 .PHONY: 03tocode
 
 _validate:

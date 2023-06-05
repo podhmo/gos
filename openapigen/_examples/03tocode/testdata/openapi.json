@@ -1,0 +1,113 @@
+{
+  "components": {
+    "schemas": {
+      "Name": {
+        "type": "string",
+        "description": "name of something"
+      },
+      "Friends": {
+        "type": "array",
+        "description": "Friends of something",
+        "items": {
+          "type": "object",
+          "description": "person object",
+          "properties": {
+            "name": {
+              "$ref": "#/components/schemas/Name",
+              "description": "name of person"
+            },
+            "age": {
+              "type": "integer"
+            },
+            "father": {
+              "$ref": "#/components/schemas/Person",
+              "nullable": true
+            },
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Person"
+              }
+            },
+            "friends": {
+              "$ref": "#/components/schemas/Friends"
+            },
+            "tags": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/components/schemas/Tag"
+              }
+            }
+          },
+          "required": [
+            "name",
+            "age",
+            "father",
+            "children",
+            "friends",
+            "tags"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Name",
+            "description": "name of tag"
+          },
+          "doc": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "doc"
+        ],
+        "additionalProperties": false
+      },
+      "Person": {
+        "type": "object",
+        "description": "person object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Name",
+            "description": "name of person"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "father": {
+            "$ref": "#/components/schemas/Person",
+            "nullable": true
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Person"
+            }
+          },
+          "friends": {
+            "$ref": "#/components/schemas/Friends"
+          },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "age",
+          "father",
+          "children",
+          "friends",
+          "tags"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}
