@@ -115,7 +115,7 @@ func (t *TypeRef) GetTypeMetadata() *TypeMetadata {
 func (b *Builder) Bool() *Bool {
 	t := &Bool{
 		_BoolBuilder: &_BoolBuilder[*Bool]{
-			_Type:    &_Type[*Bool]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "boolean", goType: "Bool"}},
+			_Type:    &_Type[*Bool]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "boolean", goType: "bool"}},
 			metadata: &BoolMetadata{},
 		},
 	}
@@ -150,7 +150,7 @@ func (b *_BoolBuilder[R]) Default(value bool) R {
 func (b *Builder) Int() *Int {
 	t := &Int{
 		_IntBuilder: &_IntBuilder[*Int]{
-			_Type:    &_Type[*Int]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "integer", goType: "Int"}},
+			_Type:    &_Type[*Int]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "integer", goType: "int64"}},
 			metadata: &IntMetadata{},
 		},
 	}
@@ -215,7 +215,7 @@ func (b *_IntBuilder[R]) ExclusiveMax(value bool) R {
 func (b *Builder) Float() *Float {
 	t := &Float{
 		_FloatBuilder: &_FloatBuilder[*Float]{
-			_Type:    &_Type[*Float]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "number", goType: "Float"}},
+			_Type:    &_Type[*Float]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "number", goType: "float64"}},
 			metadata: &FloatMetadata{},
 		},
 	}
@@ -280,7 +280,7 @@ func (b *_FloatBuilder[R]) ExclusiveMax(value bool) R {
 func (b *Builder) String() *String {
 	t := &String{
 		_StringBuilder: &_StringBuilder[*String]{
-			_Type:    &_Type[*String]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "string", goType: "String"}},
+			_Type:    &_Type[*String]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "string", goType: "string"}},
 			metadata: &StringMetadata{},
 		},
 	}

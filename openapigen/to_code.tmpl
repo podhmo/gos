@@ -1,0 +1,21 @@
+{{define "Object"}}{{with $root := .}}{{with $tm := $root.GetTypeMetadata}}{{with $m := $root.GetMetadata}}
+
+{{if (not (eq "" $tm.Doc))}}{{range $_, $line := (splitLines $tm.Doc) }}
+// {{$line}}{{end -}}{{end}}
+type {{$tm.Name}} struct {
+{{range $_, $field := $m.Fields}}{{with $fm := $field.GetMetadata}}
+    {{if (not (eq "" $fm.Doc))}}{{range $_, $line := (splitLines $fm.Doc)}}
+    // {{$line}}{{end}}{{end}}
+    {{$fm.Name | toTitle}} {{if $fm.Nullable}}*{{end}}{{$fm.Typ | toType}} `json:"{{$fm.Name}}"`
+{{end}}{{end}}
+}
+{{end}}{{end}}{{end}}{{end}}
+
+--------------------------------------------------------------------------------
+
+{{define "Type"}}{{with $root := .}}{{with $tm := $root.GetTypeMetadata}}{{with $m := $root.GetMetadata}}
+
+{{if (not (eq "" $tm.Doc))}}{{range $_, $line := (splitLines $tm.Doc) }}
+// {{$line}}{{end -}}{{end}}
+type {{$tm.Name}} {{$root | toTypeInternal}}
+{{end}}{{end}}{{end}}{{end}}

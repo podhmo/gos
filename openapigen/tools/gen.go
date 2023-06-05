@@ -54,7 +54,7 @@ func run() error {
 
 	Bool := b.Type("Bool",
 		b.Field("Default", seed.Symbol("bool")).Tag(`json:"default,omitempty"`),
-	).NeedBuilder().Underlying("boolean")
+	).NeedBuilder().Underlying("boolean").GoType("bool")
 	Int := b.Type("Int",
 		b.Field("Enum", seed.Symbol("[]int64")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("int64")).Tag(`json:"default,omitempty"`),
@@ -62,7 +62,7 @@ func run() error {
 		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
 		b.Field("ExclusiveMin", seed.Symbol("bool")).Tag(`json:"exclusiveMin,omitempty"`),
 		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
-	).NeedBuilder().Underlying("integer")
+	).NeedBuilder().Underlying("integer").GoType("int64")
 	Float := b.Type("Float",
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
 		b.Field("Maximum", seed.Symbol("float64")).Tag(`json:"maximum,omitempty"`),
@@ -70,14 +70,14 @@ func run() error {
 		b.Field("MultipleOf", seed.Symbol("float64")).Tag(`json:"multipleOf,omitempty"`),
 		b.Field("ExclusiveMin", seed.Symbol("bool")).Tag(`json:"exclusiveMin,omitempty"`),
 		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
-	).NeedBuilder().Underlying("number")
+	).NeedBuilder().Underlying("number").GoType("float64")
 	String := b.Type("String",
 		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
 		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxLength,omitempty"`),
 		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minLength,omitempty"`),
-	).NeedBuilder().Underlying("string")
+	).NeedBuilder().Underlying("string").GoType("string")
 	Array := b.Type("Array", b.TypeVar("Items", seed.Symbol("Type")),
 		// b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
 		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxItems,omitempty"`),
