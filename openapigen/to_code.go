@@ -22,6 +22,8 @@ func typeString(t Type, internal bool) string {
 	switch impl := t.(type) {
 	case *Array[Type]:
 		return fmt.Sprintf("[]%s", typeString(impl.items, false))
+	case *Map[Type]:
+		return fmt.Sprintf("map[string]%s", typeString(impl.items, false))
 	default:
 		return metadata.goType
 	}
