@@ -31,7 +31,7 @@ type Builder struct {
 	Config *Config
 }
 
-func NewEnumBuilder(config *Config) *Builder {
+func NewBuilder(config *Config) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
 		namedEnums:  []EnumBuilder{nil}, // nil is sentinel (id<=0 is unnamed)

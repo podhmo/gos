@@ -35,7 +35,7 @@ func main() {
 	// enum, in production, import from other package
 	var orderingEnum *enumgen.String
 	{
-		b := enumgen.NewEnumBuilder(enumgen.DefaultConfig())
+		b := enumgen.NewBuilder(enumgen.DefaultConfig())
 		orderingEnum = b.String(
 			b.StringValue("desc").Doc("降順"),
 			b.StringValue("asc").Doc("昇順"),

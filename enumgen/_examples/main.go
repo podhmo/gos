@@ -9,7 +9,7 @@ import (
 
 func main() {
 	w := os.Stdout
-	b := enumgen.NewEnumBuilder(enumgen.DefaultConfig())
+	b := enumgen.NewBuilder(enumgen.DefaultConfig())
 
 	enumgen.Define("Ordering", b.String(
 		b.StringValue("desc").Doc("降順"),
