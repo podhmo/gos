@@ -10,3 +10,12 @@ type {{$tm.Name}} struct {
 {{end}}{{end}}
 }
 {{end}}{{end}}{{end}}{{end}}
+
+--------------------------------------------------------------------------------
+
+{{define "Type"}}{{with $root := .}}{{with $tm := $root.GetTypeMetadata}}{{with $m := $root.GetMetadata}}
+
+{{if (not (eq "" $tm.Doc))}}{{range $_, $line := (splitLines $tm.Doc) }}
+// {{$line}}{{end -}}{{end}}
+type {{$tm.Name}} {{$root | toType}}
+{{end}}{{end}}{{end}}{{end}}

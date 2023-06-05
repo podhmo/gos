@@ -20,7 +20,11 @@ func ToGocode(w io.Writer, b *Builder) error {
 			return strings.ToUpper(s[:1]) + s[1:]
 		},
 		"toType": func(t Type) string {
-			return t.GetTypeMetadata().goType
+			metadata := t.GetTypeMetadata()
+			if named := metadata.id > 0; !named {
+				return metadata.goType
+			}
+			return metadata.Name
 		},
 		"splitLines": func(s string) []string {
 			return strings.Split(s, "\n")
@@ -35,6 +39,10 @@ func ToGocode(w io.Writer, b *Builder) error {
 		switch tb := tb.(type) {
 		case *Object:
 			if err := t.ExecuteTemplate(w, "Object", tb); err != nil {
+				return fmt.Errorf("execute template: %w", err)
+			}
+		default:
+			if err := t.ExecuteTemplate(w, "Type", tb); err != nil {
 				return fmt.Errorf("execute template: %w", err)
 			}
 		}
