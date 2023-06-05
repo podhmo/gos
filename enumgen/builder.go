@@ -88,7 +88,7 @@ func (b *Builder) lookupEnum(name string) EnumBuilder {
 func (b *Builder) Int(members ...*IntValue) *Int {
 	t := &Int{
 		_IntBuilder: &_IntBuilder[*Int]{
-			_Enum: &_Enum[*Int]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int"}},
+			_Enum: &_Enum[*Int]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int", goType: "Int"}},
 			metadata: &IntMetadata{
 				Members: toSlice(members, func(x *IntValue) *IntValueMetadata { return x.metadata }),
 			},
@@ -125,7 +125,7 @@ func (b *_IntBuilder[R]) Default(value int) R {
 func (b *Builder) IntValue(value int, name string) *IntValue {
 	t := &IntValue{
 		_IntValueBuilder: &_IntValueBuilder[*IntValue]{
-			_Enum: &_Enum[*IntValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "IntValue"}},
+			_Enum: &_Enum[*IntValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "IntValue", goType: "IntValue"}},
 			metadata: &IntValueMetadata{
 				Value: value, Name: name,
 			},
@@ -162,7 +162,7 @@ func (b *_IntValueBuilder[R]) Doc(value string) R {
 func (b *Builder) String(members ...*StringValue) *String {
 	t := &String{
 		_StringBuilder: &_StringBuilder[*String]{
-			_Enum: &_Enum[*String]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string"}},
+			_Enum: &_Enum[*String]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string", goType: "String"}},
 			metadata: &StringMetadata{
 				Members: toSlice(members, func(x *StringValue) *StringValueMetadata { return x.metadata }),
 			},
@@ -199,7 +199,7 @@ func (b *_StringBuilder[R]) Default(value string) R {
 func (b *Builder) StringValue(value string) *StringValue {
 	t := &StringValue{
 		_StringValueBuilder: &_StringValueBuilder[*StringValue]{
-			_Enum: &_Enum[*StringValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "StringValue"}},
+			_Enum: &_Enum[*StringValue]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "StringValue", goType: "StringValue"}},
 			metadata: &StringValueMetadata{
 				Value: value,
 			},
