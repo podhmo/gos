@@ -12,20 +12,20 @@ import (
 )
 
 func main() {
-	b := openapigen.NewTypeBuilder(openapigen.DefaultConfig())
+	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
-	Name := openapigen.DefineType("Name", b.String()).
+	Name := openapigen.Define("Name", b.String()).
 		Doc("name of something")
 
-	Friends := openapigen.DefineType("Friends", b.Array(b.ReferenceByName("Person"))).
+	Friends := openapigen.Define("Friends", b.Array(b.ReferenceByName("Person"))).
 		Doc("Friends of something")
 
-	Tag := openapigen.DefineType("Tag", b.Object(
+	Tag := openapigen.Define("Tag", b.Object(
 		b.Field("name", b.Reference(Name)).Doc("name of tag"),
 		b.Field("doc", b.String()),
 	))
 
-	openapigen.DefineType("Person", b.Object(
+	openapigen.Define("Person", b.Object(
 		b.Field("name", b.Reference(Name)).Doc("name of person"),
 		b.Field("age", b.Int()),
 		b.Field("father", b.ReferenceByName("Person")).Nullable(true),

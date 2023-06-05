@@ -10,13 +10,13 @@ import (
 )
 
 func main() {
-	b := openapigen.NewTypeBuilder(openapigen.DefaultConfig())
+	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
 	// types
-	Name := openapigen.DefineType("Name", b.String()).Doc("name of something")
-	openapigen.DefineType("DateTime", b.String().Format("date-time")) // for ReferenceByName
+	Name := openapigen.Define("Name", b.String()).Doc("name of something")
+	openapigen.Define("DateTime", b.String().Format("date-time")) // for ReferenceByName
 
-	Task := openapigen.DefineType("Task", b.Object(
+	Task := openapigen.Define("Task", b.Object(
 		b.Field("name", b.Reference(Name)),
 		b.Field("done", b.Bool()),
 		b.Field("createdAt", b.ReferenceByName("DateTime")),
@@ -28,7 +28,7 @@ func main() {
 	)
 
 	// routing
-	Error := openapigen.DefineType("Error", b.Object(
+	Error := openapigen.Define("Error", b.Object(
 		b.Field("message", b.String()),
 	)).Doc("default error")
 	r := openapigen.NewRouter(Error)

@@ -44,7 +44,7 @@ func _toRefSchemaIfNamed[R TypeBuilder](b *Builder, t *_Type[R], useRef bool) (d
 		return nil, false
 	}
 	id := t.metadata.id
-	if named := id > 0; !named { // if named by DefineType(), id > 0
+	if named := id > 0; !named { // if named by Define(), id > 0
 		return nil, false
 	}
 

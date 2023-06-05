@@ -10,11 +10,11 @@ import (
 )
 
 func main() {
-	b := openapigen.NewTypeBuilder(openapigen.DefaultConfig())
+	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
-	Name := openapigen.DefineType("Name", b.String().MinLength(1))
+	Name := openapigen.Define("Name", b.String().MinLength(1))
 
-	Person := openapigen.DefineType("Person", b.Object(
+	Person := openapigen.Define("Person", b.Object(
 		b.Field("id", b.String()),
 		b.Field("name", b.String()).Doc("name of person"),
 		b.Field("age", b.Int().Format("int32")),
@@ -23,11 +23,11 @@ func main() {
 		b.Field("friends", b.Array(b.ReferenceByName("Person"))).Required(false),
 	)).Doc("person object")
 
-	PersonSummary := openapigen.DefineType("PersonSummary", b.Object(
+	PersonSummary := openapigen.Define("PersonSummary", b.Object(
 		Person.OnlyFields("name", "nickname")...,
 	)).Doc("person objec summary")
 
-	TestScore := openapigen.DefineType("TestScore", b.Object(
+	TestScore := openapigen.Define("TestScore", b.Object(
 		b.Field("title", b.String()),
 		b.Field("tests", b.Map(b.Int()).Pattern(`\-score$`).Doc("score (0~100)")),
 	))
@@ -35,13 +35,13 @@ func main() {
 	// enum, in production, import from other package
 	var orderingEnum *enumgen.String
 	{
-		b := enumgen.NewEnumBuilder(enumgen.DefaultConfig())
+		b := enumgen.NewBuilder(enumgen.DefaultConfig())
 		orderingEnum = b.String(
 			b.StringValue("desc").Doc("降順"),
 			b.StringValue("asc").Doc("昇順"),
 		).Default("desc").Doc("順序")
 	}
-	Ordering := openapigen.DefineType("Ordering", b.StringFromEnum(orderingEnum))
+	Ordering := openapigen.Define("Ordering", b.StringFromEnum(orderingEnum))
 
 	doc, err := openapigen.ToSchema(b)
 	if err != nil {

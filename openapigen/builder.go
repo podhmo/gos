@@ -15,8 +15,8 @@ type TypeBuilder interface {
 	toSchemer                  // see: ./to_schema.go
 }
 
-// DefineType names Type value.
-func DefineType[T interface {
+// Define names Type value.
+func Define[T interface {
 	TypeBuilder
 	storeType(name string)
 }](name string, t T) T {
@@ -32,7 +32,7 @@ type Builder struct {
 	Config *Config
 }
 
-func NewTypeBuilder(config *Config) *Builder {
+func NewBuilder(config *Config) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
 		namedTypes:  []TypeBuilder{nil}, // nil is sentinel (id<=0 is unnamed)
