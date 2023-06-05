@@ -13,6 +13,8 @@ import (
 func main() {
 	b := design.Builder
 
+	actions := design.NewActions()
+
 	// routing
 	Error := openapigen.Define("Error", b.Object(
 		b.Field("message", b.String()),
@@ -20,12 +22,12 @@ func main() {
 	r := openapigen.NewRouter(Error)
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello/{name}", design.Actions.Hello)
+		r.Post("/hello/{name}", actions.Hello)
 	}
 	{
 		r := r.Tagged("people")
-		r.Get("/people", design.Actions.ListPerson)
-		r.Post("/people", design.Actions.CreatePerson)
+		r.Get("/people", actions.ListPerson)
+		r.Post("/people", actions.CreatePerson)
 	}
 
 	// emit

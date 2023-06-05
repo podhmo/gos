@@ -7,15 +7,14 @@ import (
 
 var b = openapigen.NewBuilder(openapigen.DefaultConfig())
 var Builder = b // export
-var Definitions struct {
+
+func NewDefinitions() (Definitions struct {
 	Name          *openapigen.String
 	Person        *openapigen.Object
 	PersonSummary *openapigen.Object
 	TestScore     *openapigen.Object
 	Ordering      *openapigen.String
-}
-
-func initSchemas() {
+}) {
 	Definitions.Name = openapigen.Define("Name", b.String().MinLength(1))
 
 	Definitions.Person = openapigen.Define("Person", b.Object(
@@ -47,4 +46,6 @@ func initSchemas() {
 	}
 
 	Definitions.Ordering = openapigen.Define("Ordering", b.StringFromEnum(orderingEnum))
+
+	return
 }

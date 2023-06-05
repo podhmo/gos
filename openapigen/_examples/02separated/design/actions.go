@@ -2,15 +2,13 @@ package design
 
 import "github.com/podhmo/gos/openapigen"
 
-var Actions struct {
+func NewActions() (Actions struct {
 	Hello *openapigen.Action
 
 	ListPerson   *openapigen.Action
 	CreatePerson *openapigen.Action
-}
-
-func init() {
-	initSchemas()
+}) {
+	Definitions := NewDefinitions()
 
 	// Hello :: func(name string) string
 	Actions.Hello = b.Action("hello",
@@ -43,4 +41,5 @@ func init() {
 		b.Output(nil).Status(204),
 	).Doc("create person")
 
+	return
 }
