@@ -11,6 +11,22 @@ import (
 //go:embed to_code.tmpl
 var tmpl string
 
+func typeString(t Type, internal bool) string {
+	metadata := t.GetTypeMetadata()
+	if !internal {
+		if named := metadata.id > 0; named {
+			return metadata.Name
+		}
+	}
+
+	switch impl := t.(type) {
+	case *Array[Type]:
+		return fmt.Sprintf("[]%s", typeString(impl.items, false))
+	default:
+		return metadata.goType
+	}
+}
+
 func ToGocode(w io.Writer, b *Builder) error {
 	funcMap := template.FuncMap{
 		"toTitle": func(s string) string { // TODO: goify
@@ -20,11 +36,10 @@ func ToGocode(w io.Writer, b *Builder) error {
 			return strings.ToUpper(s[:1]) + s[1:]
 		},
 		"toType": func(t Type) string {
-			metadata := t.GetTypeMetadata()
-			if named := metadata.id > 0; !named {
-				return metadata.goType
-			}
-			return metadata.Name
+			return typeString(t, false)
+		},
+		"toTypeInternal": func(t Type) string {
+			return typeString(t, true)
 		},
 		"splitLines": func(s string) []string {
 			return strings.Split(s, "\n")
