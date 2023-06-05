@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 	"text/template"
+
+	"github.com/podhmo/gos/pkg/namelib"
 )
 
 //go:embed to_code.tmpl
@@ -31,12 +33,7 @@ func typeString(t Type, internal bool) string {
 
 func ToGocode(w io.Writer, b *Builder) error {
 	funcMap := template.FuncMap{
-		"toTitle": func(s string) string { // TODO: goify
-			if s == "" {
-				return ""
-			}
-			return strings.ToUpper(s[:1]) + s[1:]
-		},
+		"toTitle": namelib.ToTitle,
 		"toType": func(t Type) string {
 			return typeString(t, false)
 		},

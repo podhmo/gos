@@ -1,0 +1,31 @@
+{{define "String"}}{{with $root := .}}{{with $tm := $root.GetEnumMetadata}}{{with $m := $root.GetMetadata}}
+
+{{if (not (eq "" $tm.Doc))}}{{range $_, $line := (splitLines $tm.Doc) }}
+// {{$line}}{{end -}}{{end}}
+type {{$tm.Name}} {{$root | toType}}
+
+const (
+{{- range $_, $v := $m.Members}}{{with $vm := $v.GetMetadata}}
+    {{if (not (eq "" $vm.Doc))}}{{range $_, $line := (splitLines $vm.Doc)}}
+    // {{$line}}{{end}}{{end}}
+    {{if true}}{{$tm.Name}}{{$vm.Name | toTitle}} {{$tm.Name}} = {{$vm.Value | printf "%q"}}{{if (eq $m.Default $vm.Value)}} // default{{end}}{{end -}}
+{{end}}{{end}}
+)
+{{end}}{{end}}{{end}}{{end}}
+
+--------------------------------------------------------------------------------
+
+{{define "Int"}}{{with $root := .}}{{with $tm := $root.GetEnumMetadata}}{{with $m := $root.GetMetadata}}
+
+{{if (not (eq "" $tm.Doc))}}{{range $_, $line := (splitLines $tm.Doc) }}
+// {{$line}}{{end -}}{{end}}
+type {{$tm.Name}} {{$root | toType}}
+
+const (
+{{- range $_, $v := $m.Members}}{{with $vm := $v.GetMetadata}}
+    {{if (not (eq "" $vm.Doc))}}{{range $_, $line := (splitLines $vm.Doc)}}
+    // {{$line}}{{end}}{{end}}
+    {{if true}}{{$tm.Name}}{{$vm.Name | toTitle}} {{$tm.Name}} = {{$vm.Value | printf "%v"}}{{if (eq $m.Default $vm.Value)}} // default{{end}}{{end -}}
+{{end}}{{end}}
+)
+{{end}}{{end}}{{end}}{{end}}
