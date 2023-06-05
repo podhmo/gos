@@ -14,8 +14,8 @@ type EnumBuilder interface {
 	writeEnum(io.Writer) error // see: ./stringer.go
 }
 
-// DefineEnum names Enum value.
-func DefineEnum[T interface {
+// Define names Enum value.
+func Define[T interface {
 	EnumBuilder
 	storeEnum(name string)
 }](name string, t T) T {

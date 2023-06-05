@@ -11,12 +11,12 @@ func main() {
 	w := os.Stdout
 	b := enumgen.NewEnumBuilder(enumgen.DefaultConfig())
 
-	enumgen.DefineEnum("Ordering", b.String(
+	enumgen.Define("Ordering", b.String(
 		b.StringValue("desc").Doc("降順"),
 		b.StringValue("asc").Doc("昇順"),
 	)).Default("desc").Doc("順序")
 
-	enumgen.DefineEnum("Season", b.Int(
+	enumgen.Define("Season", b.Int(
 		b.IntValue(0, "Spring"),
 		b.IntValue(1, "Summer"),
 		b.IntValue(2, "Autumn"),
