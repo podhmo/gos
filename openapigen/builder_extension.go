@@ -16,7 +16,8 @@ func (b *Builder) StringFromEnum(enum *enumgen.String) *String {
 
 	metadata := enum.GetMetadata()
 	values := make([]string, len(metadata.Members))
-	for i, v := range metadata.Members {
+	for i, m := range metadata.Members {
+		v := m.GetMetadata()
 		values[i] = v.Value
 		if v.Doc != "" {
 			docValues = append(docValues, fmt.Sprintf("* %s %s", v.Name, v.Doc))
@@ -43,7 +44,8 @@ func (b *Builder) IntFromEnum(enum *enumgen.Int) *Int {
 
 	metadata := enum.GetMetadata()
 	values := make([]int64, len(metadata.Members))
-	for i, v := range metadata.Members {
+	for i, m := range metadata.Members {
+		v := m.GetMetadata()
 		values[i] = int64(v.Value)
 		if v.Doc != "" {
 			docValues = append(docValues, fmt.Sprintf("* %s %s", v.Name, v.Doc))
