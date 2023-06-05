@@ -10,6 +10,6 @@ type Person struct {
     Name string `json:"name"`
 
     
-    Age integer `json:"age"`
+    Age int64 `json:"age"`
 
 }

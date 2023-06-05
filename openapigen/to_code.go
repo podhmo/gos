@@ -20,7 +20,7 @@ func ToGocode(w io.Writer, b *Builder) error {
 			return strings.ToUpper(s[:1]) + s[1:]
 		},
 		"toType": func(t Type) string {
-			return t.GetTypeMetadata().underlying
+			return t.GetTypeMetadata().goType
 		},
 		"splitLines": func(s string) []string {
 			return strings.Split(s, "\n")
