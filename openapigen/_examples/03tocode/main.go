@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/podhmo/gos/openapigen"
@@ -15,6 +16,7 @@ func main() {
 	)).Doc("person object")
 
 	w := os.Stdout
+	fmt.Fprintln(w, "package M")
 	if err := openapigen.ToGocode(w, b); err != nil {
 		panic(err)
 	}
