@@ -5,7 +5,7 @@ import (
 	"github.com/podhmo/gos/openapigen"
 )
 
-var b = openapigen.NewTypeBuilder(openapigen.DefaultConfig())
+var b = openapigen.NewBuilder(openapigen.DefaultConfig())
 var Builder = b // export
 
 var (

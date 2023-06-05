@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	b := openapigen.NewTypeBuilder(openapigen.DefaultConfig())
+	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
 	Name := openapigen.Define("Name", b.String().MinLength(1))
 

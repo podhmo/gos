@@ -7,7 +7,7 @@ import (
 )
 
 func TestToString(t *testing.T) {
-	b := openapigen.NewTypeBuilder(openapigen.DefaultConfig())
+	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
 	// Hello :: func(name string) string
 	Hello := b.Action("hello",

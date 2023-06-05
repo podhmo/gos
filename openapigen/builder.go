@@ -32,7 +32,7 @@ type Builder struct {
 	Config *Config
 }
 
-func NewTypeBuilder(config *Config) *Builder {
+func NewBuilder(config *Config) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
 		namedTypes:  []TypeBuilder{nil}, // nil is sentinel (id<=0 is unnamed)
