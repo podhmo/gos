@@ -39,7 +39,7 @@ type Builder struct {
 {{end}}
 }
 
-func New{{$target}}Builder({{if (not (eq $root.Constructor nil))}}{{range $_,$a := $root.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *Builder {
+func NewBuilder({{if (not (eq $root.Constructor nil))}}{{range $_,$a := $root.Constructor.Args}}{{$a.Name | toLower}} {{if $a.Variadic}}...{{end}}{{$a.Type}},{{end}}{{end}}) *Builder {
 	return &Builder{
 		nameToIDMap: map[string][]int{},
 		named{{$target}}s: []{{$target}}Builder{nil},  // nil is sentinel (id<=0 is unnamed)
