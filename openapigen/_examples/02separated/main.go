@@ -11,9 +11,8 @@ import (
 )
 
 func main() {
-	b := design.Builder
-
-	actions := design.NewActions()
+	b := openapigen.NewBuilder(openapigen.DefaultConfig())
+	actions := design.NewActions(b)
 
 	// routing
 	Error := openapigen.Define("Error", b.Object(

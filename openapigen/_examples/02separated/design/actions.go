@@ -2,13 +2,13 @@ package design
 
 import "github.com/podhmo/gos/openapigen"
 
-func NewActions() (Actions struct {
+func NewActions(b *openapigen.Builder) (Actions struct {
 	Hello *openapigen.Action
 
 	ListPerson   *openapigen.Action
 	CreatePerson *openapigen.Action
 }) {
-	Definitions := NewDefinitions()
+	Definitions := NewDefinitions(b)
 
 	// Hello :: func(name string) string
 	Actions.Hello = b.Action("hello",

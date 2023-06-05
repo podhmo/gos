@@ -5,10 +5,7 @@ import (
 	"github.com/podhmo/gos/openapigen"
 )
 
-var b = openapigen.NewBuilder(openapigen.DefaultConfig())
-var Builder = b // export
-
-func NewDefinitions() (Definitions struct {
+func NewDefinitions(b *openapigen.Builder) (Definitions struct {
 	Name          *openapigen.String
 	Person        *openapigen.Object
 	PersonSummary *openapigen.Object
