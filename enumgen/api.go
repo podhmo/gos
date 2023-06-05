@@ -3,10 +3,8 @@
 package enumgen
 
 type Config struct {
-	Padding string // default "\t"
-	Comment string // default "//"
 }
 
 func DefaultConfig() *Config {
-	return &Config{Padding: "\t", Comment: "//"}
+	return &Config{}
 }
