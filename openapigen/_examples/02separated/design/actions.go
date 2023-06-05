@@ -3,15 +3,21 @@ package design
 import "github.com/podhmo/gos/openapigen"
 
 func NewActions(b *openapigen.Builder) (Actions struct {
-	Hello *openapigen.Action
+	Greeting struct {
+		// Hello :: func(name string) string
+		Hello *openapigen.Action
+	}
 
-	ListPerson   *openapigen.Action
-	CreatePerson *openapigen.Action
+	People struct {
+		// ListPerson :: func(...) []PersonSummary
+		ListPerson *openapigen.Action
+		// CreatePerson :: func(...)
+		CreatePerson *openapigen.Action
+	}
 }) {
 	Definitions := NewDefinitions(b)
 
-	// Hello :: func(name string) string
-	Actions.Hello = b.Action("hello",
+	Actions.Greeting.Hello = b.Action("hello",
 		b.Input(
 			b.Param("name", b.String()).AsPath(),
 		).Doc("input"),
@@ -20,16 +26,14 @@ func NewActions(b *openapigen.Builder) (Actions struct {
 		),
 	).Doc("greeting hello")
 
-	// ListPerson :: func(...) []PersonSummary
-	Actions.ListPerson = b.Action("ListPerson",
+	Actions.People.ListPerson = b.Action("ListPerson",
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
 		b.Output(b.Array(Definitions.PersonSummary)).Doc("list of person summary"),
 	).Doc("list person")
 
-	// CreatePerson :: func(...)
-	Actions.CreatePerson = b.Action("CreatePerson",
+	Actions.People.CreatePerson = b.Action("CreatePerson",
 		b.Input(
 			b.Param("verbose", b.Bool()).AsQuery(),
 			b.Body(b.Object(

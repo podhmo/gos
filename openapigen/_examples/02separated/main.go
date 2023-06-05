@@ -21,12 +21,12 @@ func main() {
 	r := openapigen.NewRouter(Error)
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello/{name}", actions.Hello)
+		r.Post("/hello/{name}", actions.Greeting.Hello)
 	}
 	{
 		r := r.Tagged("people")
-		r.Get("/people", actions.ListPerson)
-		r.Post("/people", actions.CreatePerson)
+		r.Get("/people", actions.People.ListPerson)
+		r.Post("/people", actions.People.CreatePerson)
 	}
 
 	// emit
