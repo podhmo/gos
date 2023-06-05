@@ -37,6 +37,7 @@ func DefaultConfig() *Config {
 var tmpl string
 
 func (c *Config) ToGoCode(w io.Writer, tb EnumBuilder) error {
+	t := c.Template
 	switch tb := tb.(type) {
 	case *String:
 		for _, v := range tb.metadata.Members {
@@ -44,11 +45,11 @@ func (c *Config) ToGoCode(w io.Writer, tb EnumBuilder) error {
 				v.metadata.Name = namelib.ToTitle(v.metadata.Value)
 			}
 		}
-		if err := c.Template.ExecuteTemplate(w, "String", tb); err != nil {
+		if err := t.ExecuteTemplate(w, "String", tb); err != nil {
 			return fmt.Errorf("execute template: %w", err)
 		}
 	case *Int:
-		if err := c.Template.ExecuteTemplate(w, "Int", tb); err != nil {
+		if err := t.ExecuteTemplate(w, "Int", tb); err != nil {
 			return fmt.Errorf("execute template: %w", err)
 		}
 	default:
@@ -58,7 +59,8 @@ func (c *Config) ToGoCode(w io.Writer, tb EnumBuilder) error {
 }
 
 func ToGocode(w io.Writer, b *Builder) error {
+	c := b.Config
 	return b.EachEnums(func(tb EnumBuilder) error {
-		return b.Config.ToGoCode(w, tb)
+		return c.ToGoCode(w, tb)
 	})
 }
