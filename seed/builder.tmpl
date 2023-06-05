@@ -20,8 +20,8 @@ type {{$target}}Builder interface {
 {{end}}
 }
 
-// Define{{$target}} names {{$target}} value.
-func Define{{$target}}[T interface {
+// Define names {{$target}} value.
+func Define[T interface {
 	{{$target}}Builder
 	store{{$target}}(name string)
 }](name string, t T) T {
