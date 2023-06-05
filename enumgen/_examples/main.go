@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/podhmo/gos/enumgen"
@@ -22,7 +23,8 @@ func main() {
 		b.IntValue(3, "Winter"),
 	))
 
-	if err := enumgen.WriteCode(w, b); err != nil {
+	fmt.Fprintln(w, "package M")
+	if err := enumgen.ToGocode(w, b); err != nil {
 		panic(err)
 	}
 }
