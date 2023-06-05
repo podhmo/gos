@@ -8,7 +8,7 @@ type Ordering string
 const (
     
     // 降順
-    OrderingDesc Ordering = "desc"  // default
+    OrderingDesc Ordering = "desc" // default
     
     // 昇順
     OrderingAsc Ordering = "asc"
@@ -20,7 +20,7 @@ type Season int
 
 const (
     
-    SeasonSpring Season = 0  // default
+    SeasonSpring Season = 0 // default
     
     SeasonSummer Season = 1
     
