@@ -30,8 +30,8 @@ func ToGocode(w io.Writer, b *Builder) error {
 		switch tb := tb.(type) {
 		case *String:
 			for _, v := range tb.metadata.Members {
-				if v.Name == "" {
-					v.Name = toTitle(v.Value)
+				if v.metadata.Name == "" {
+					v.metadata.Name = toTitle(v.metadata.Value)
 				}
 			}
 			if err := t.ExecuteTemplate(w, "String", tb); err != nil {

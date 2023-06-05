@@ -5,11 +5,11 @@
 type {{$tm.Name}} {{$root | toType}}
 
 const (
-{{- range $_, $v := $m.Members}}
-    {{if (not (eq "" $v.Doc))}}{{range $_, $line := (splitLines $v.Doc)}}
+{{- range $_, $v := $m.Members}}{{with $vm := $v.GetMetadata}}
+    {{if (not (eq "" $vm.Doc))}}{{range $_, $line := (splitLines $vm.Doc)}}
     // {{$line}}{{end}}{{end}}
-    {{$tm.Name}}{{$v.Name | toTitle}} {{$tm.Name}} = {{$v.Value | printf "%q"}}{{if (eq $m.Default $v.Value)}}  // default{{end}}
-{{end -}}
+    {{$tm.Name}}{{$vm.Name | toTitle}} {{$tm.Name}} = {{$vm.Value | printf "%q"}}{{if (eq $m.Default $vm.Value)}}  // default{{end}}
+{{end}}{{end -}}
 )
 {{end}}{{end}}{{end}}{{end}}
 
@@ -22,10 +22,10 @@ const (
 type {{$tm.Name}} {{$root | toType}}
 
 const (
-{{- range $_, $v := $m.Members}}
-    {{if (not (eq "" $v.Doc))}}{{range $_, $line := (splitLines $v.Doc)}}
+{{- range $_, $v := $m.Members}}{{with $vm := $v.GetMetadata}}
+    {{if (not (eq "" $vm.Doc))}}{{range $_, $line := (splitLines $vm.Doc)}}
     // {{$line}}{{end}}{{end}}
-    {{$tm.Name}}{{$v.Name | toTitle}} {{$tm.Name}} = {{$v.Value | printf "%v"}}{{if (eq $m.Default $v.Value)}}  // default{{end}}
-{{end -}}
+    {{$tm.Name}}{{$vm.Name | toTitle}} {{$tm.Name}} = {{$vm.Value | printf "%v"}}{{if (eq $m.Default $vm.Value)}}  // default{{end}}
+{{end}}{{end -}}
 )
 {{end}}{{end}}{{end}}{{end}}
