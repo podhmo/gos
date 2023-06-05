@@ -3,7 +3,12 @@ package M
 
 
 // name of something
-type Name Name
+type Name string
+
+
+
+// Friends of something
+type Friends []Person
 
 
 
@@ -16,5 +21,14 @@ type Person struct {
 
     
     Age int64 `json:"age"`
+
+    
+    Father *Person `json:"father"`
+
+    
+    Children []Person `json:"children"`
+
+    
+    Friends Friends `json:"friends"`
 
 }
