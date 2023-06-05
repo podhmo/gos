@@ -1,14 +1,19 @@
-package action
+package design
 
-import (
-	design "github.com/podhmo/gos/openapigen/_examples/02separated/design"
-)
+import "github.com/podhmo/gos/openapigen"
 
-var b = design.Builder
+var Actions struct {
+	Hello *openapigen.Action
 
-var (
+	ListPerson   *openapigen.Action
+	CreatePerson *openapigen.Action
+}
+
+func init() {
+	initSchemas()
+
 	// Hello :: func(name string) string
-	Hello = b.Action("hello",
+	Actions.Hello = b.Action("hello",
 		b.Input(
 			b.Param("name", b.String()).AsPath(),
 		).Doc("input"),
@@ -18,23 +23,24 @@ var (
 	).Doc("greeting hello")
 
 	// ListPerson :: func(...) []PersonSummary
-	ListPerson = b.Action("ListPerson",
+	Actions.ListPerson = b.Action("ListPerson",
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
-		b.Output(b.Array(design.PersonSummary)).Doc("list of person summary"),
+		b.Output(b.Array(Definitions.PersonSummary)).Doc("list of person summary"),
 	).Doc("list person")
 
 	// CreatePerson :: func(...)
-	CreatePerson = b.Action("CreatePerson",
+	Actions.CreatePerson = b.Action("CreatePerson",
 		b.Input(
 			b.Param("verbose", b.Bool()).AsQuery(),
 			b.Body(b.Object(
-				append(design.Person.IgnoreFields("id", "father", "friends"),
+				append(Definitions.Person.IgnoreFields("id", "father", "friends"),
 					b.Field("fatherId", b.String()),
 					b.Field("friendIdList", b.Array(b.String())))...,
 			)).Doc("person but father and friends are id"),
 		),
 		b.Output(nil).Status(204),
 	).Doc("create person")
-)
+
+}
