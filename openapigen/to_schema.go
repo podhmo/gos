@@ -115,7 +115,7 @@ func (t *Array[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	}
 
 	doc = t._Type.toSchema(b, useRef)
-	doc.Set("items", t.items.toSchema(b, useRef))
+	doc.Set("items", t.items.toSchema(b, true)) // treating sub schema as always the ref.
 	doc, err := maplib.Merge(doc, t.metadata)
 	if err != nil {
 		panic(err)
@@ -134,10 +134,10 @@ func (t *Map[T]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc = t._Type.toSchema(b, useRef)
 	doc.Set("type", "object")
 	if t.metadata.Pattern == "" {
-		doc.Set("additionalProperties", t.items.toSchema(b, useRef))
+		doc.Set("additionalProperties", t.items.toSchema(b, true)) // treating sub schema as always the ref.
 	} else {
 		props := orderedmap.New()
-		props.Set(t.metadata.Pattern, t.items.toSchema(b, useRef))
+		props.Set(t.metadata.Pattern, t.items.toSchema(b, true)) // treating sub schema as always the ref.
 		doc.Set("patternProperties", props)
 		doc.Set("additionalProperties", false)
 	}
