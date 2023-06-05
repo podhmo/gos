@@ -3,11 +3,11 @@
 {{if (not (eq "" $tm.Doc))}}{{range $_, $line := (splitLines $tm.Doc) }}
 // {{$line}}{{end -}}{{end}}
 type {{$tm.Name}} struct {
-{{range $_, $field := $m.Fields}}{{with $fm := $field.GetMetadata}}
+{{- range $_, $field := $m.Fields}}{{with $fm := $field.GetMetadata -}}
     {{if (not (eq "" $fm.Doc))}}{{range $_, $line := (splitLines $fm.Doc)}}
     // {{$line}}{{end}}{{end}}
     {{$fm.Name | toTitle}} {{if $fm.Nullable}}*{{end}}{{$fm.Typ | toType}} `json:"{{$fm.Name}}"`
-{{end}}{{end}}
+{{end}}{{end -}}
 }
 {{end}}{{end}}{{end}}{{end}}
 
