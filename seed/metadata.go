@@ -22,6 +22,7 @@ type BuilderMetadata struct {
 type TypeMetadata struct {
 	Name       Symbol
 	Underlying string
+	GoType     string
 	TVars      TypeVarMetadataList
 
 	Doc         string
