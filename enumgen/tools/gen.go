@@ -37,12 +37,9 @@ func run(cmd *seed.Command) error {
 	{
 		b.Type("Int",
 			b.Field("Default", seed.Symbol("int")).Tag(`json:"default"`),
-			b.Field("Members", seed.Symbol("[]*IntValueMetadata")),
+			b.Field("Members", seed.Symbol("[]*IntValue")),
 		).Constructor(
-			// b.Members[i] = members[i].metadata
-			b.Arg("Members", seed.Symbol("*IntValue")).Variadic().Transform(func(v string) string {
-				return fmt.Sprintf("toSlice(%s, func(x *IntValue) *IntValueMetadata { return x.metadata})", v)
-			}),
+			b.Arg("Members", seed.Symbol("*IntValue")).Variadic(),
 		).NeedBuilder().Underlying("int") // generate Int, IntMetadata
 
 		b.Type("IntValue",
@@ -59,11 +56,9 @@ func run(cmd *seed.Command) error {
 	{
 		b.Type("String",
 			b.Field("Default", seed.Symbol("string")).Tag(`json:"default"`),
-			b.Field("Members", seed.Symbol("[]*StringValueMetadata")),
+			b.Field("Members", seed.Symbol("[]*StringValue")),
 		).Constructor(
-			b.Arg("Members", seed.Symbol("*StringValue")).Variadic().Transform(func(v string) string {
-				return fmt.Sprintf("toSlice(%s, func(x *StringValue) *StringValueMetadata { return x.metadata})", v)
-			}),
+			b.Arg("Members", seed.Symbol("*StringValue")).Variadic(),
 		).NeedBuilder().Underlying("string")
 		b.Type("StringValue",
 			b.Field("Name", seed.Symbol("string")),
@@ -75,16 +70,7 @@ func run(cmd *seed.Command) error {
 	}
 
 	// for transform
-	b.Footer(`
-	// toSlice is list.map as you know.
-	func toSlice[S, D any](src []S, conv func(S) D) []D {
-		dst := make([]D, len(src))
-		for i, x := range src {
-			dst[i] = conv(x)
-		}
-		return dst
-	}	
-	`)
+	// b.Footer(``)
 
 	// emit
 	if err := cmd.Do(b); err != nil {
