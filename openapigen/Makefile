@@ -1,4 +1,4 @@
-run-example: 00schema 01router 02separated
+run-example: 00schema 01router 02separated 03tocode
 .PHONY: run-example
 
 # simple schema only example
