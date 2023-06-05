@@ -90,7 +90,7 @@ func (b *Builder) Int(members ...*IntValue) *Int {
 		_IntBuilder: &_IntBuilder[*Int]{
 			_Enum: &_Enum[*Int]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "int", goType: "Int"}},
 			metadata: &IntMetadata{
-				Members: toSlice(members, func(x *IntValue) *IntValueMetadata { return x.metadata }),
+				Members: members,
 			},
 		},
 	}
@@ -164,7 +164,7 @@ func (b *Builder) String(members ...*StringValue) *String {
 		_StringBuilder: &_StringBuilder[*String]{
 			_Enum: &_Enum[*String]{rootbuilder: b, metadata: &EnumMetadata{Name: "", underlying: "string", goType: "String"}},
 			metadata: &StringMetadata{
-				Members: toSlice(members, func(x *StringValue) *StringValueMetadata { return x.metadata }),
+				Members: members,
 			},
 		},
 	}
@@ -262,14 +262,4 @@ func (t _Enum[R]) Doc(stmts ...string) R {
 func (t *_Enum[R]) storeEnum(name string) {
 	t.metadata.Name = name
 	t.rootbuilder.storeEnum(t.ret)
-}
-
-// footer. ----
-// toSlice is list.map as you know.
-func toSlice[S, D any](src []S, conv func(S) D) []D {
-	dst := make([]D, len(src))
-	for i, x := range src {
-		dst[i] = conv(x)
-	}
-	return dst
 }
