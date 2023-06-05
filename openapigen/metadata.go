@@ -52,15 +52,15 @@ type StringMetadata struct {
 
 	Pattern string `json:"pattern,omitempty"`
 
-	MaxLength int64 `json:"maxlength,omitempty"`
+	MaxLength int64 `json:"maxLength,omitempty"`
 
-	MinLength int64 `json:"minlength,omitempty"`
+	MinLength int64 `json:"minLength,omitempty"`
 }
 
 type ArrayMetadata struct {
-	MaxItems int64 `json:"maxitems,omitempty"`
+	MaxItems int64 `json:"maxItems,omitempty"`
 
-	MinItems int64 `json:"minitems,omitempty"`
+	MinItems int64 `json:"minItems,omitempty"`
 }
 
 type MapMetadata struct {
@@ -102,15 +102,15 @@ type ActionMetadata struct {
 
 	Input *Input `json:"-"`
 
-	Output *Output `json:"-"`
+	Outputs []*Output `json:"-"`
+
+	DefaultError Type `json:"-"`
 
 	Method string `json:"-"`
 
 	Path string `json:"-"`
 
 	Tags []string `json:"tags"`
-
-	DefaultStatus int `json:"-"`
 }
 
 type ParamMetadata struct {
@@ -140,9 +140,11 @@ type InputMetadata struct {
 }
 
 type OutputMetadata struct {
-	Typ Type
+	Typ Type `json:"-"`
 
-	DefaultError Type
+	Status int `json:"-"`
+
+	IsDefault bool `json:"-"`
 }
 
 type Contact struct {

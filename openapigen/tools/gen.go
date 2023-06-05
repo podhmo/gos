@@ -75,13 +75,13 @@ func run() error {
 		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
-		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxlength,omitempty"`),
-		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minlength,omitempty"`),
+		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxLength,omitempty"`),
+		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minLength,omitempty"`),
 	).NeedBuilder().Underlying("string")
 	Array := b.Type("Array", b.TypeVar("Items", seed.Symbol("Type")),
 		// b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
-		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxitems,omitempty"`),
-		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minitems,omitempty"`),
+		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxItems,omitempty"`),
+		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minItems,omitempty"`),
 	).NeedBuilder().Underlying("array")
 	Map := b.Type("Map", b.TypeVar("Items", seed.Symbol("Type")),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
@@ -125,15 +125,28 @@ func run() error {
 	Action := b.Type("Action",
 		b.Field("Name", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Input", "*Input").Tag(`json:"-"`),
-		b.Field("Output", "*Output").Tag(`json:"-"`),
+		b.Field("Outputs", "[]*Output").Tag(`json:"-"`),
+		b.Field("DefaultError", seed.Symbol("Type")).Tag(`json:"-"`),
 		b.Field("Method", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Path", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Tags", seed.Symbol("[]string")).Tag(`json:"tags"`),
-		b.Field("DefaultStatus", seed.Symbol("int")).Tag(`json:"-"`).Default("200"),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
-		b.Arg("Input", "*Input"),
-		b.Arg("Output", "*Output"),
+		b.Arg("InputOrOutput", "InputOrOutput").Variadic().BindFields("Input", "Outputs").Transform(func(s string) string {
+			return fmt.Sprintf(`func()(v1 *Input, v2 []*Output){
+				for _, x := range %s {
+					switch x := x.(type) {
+					case *Input:
+						v1 = x
+					case *Output:
+						v2 = append(v2, x) // TODO: status conflict check
+					default:
+						panic(fmt.Sprintf("unexpected Type: %s", x))
+					}
+				}
+				return
+			}()`, s, "%T")
+		}),
 	).NeedBuilder().Underlying("action")
 
 	Param := b.Type("Param",
@@ -170,18 +183,22 @@ func run() error {
 						v1 = append(v1, a)
 					case *Body:
 						v2 = a
+					default:
+						panic(fmt.Sprintf("unexpected Type: %s", a))
 					}
 				}
 				return
-			}()`, s)
+			}()`, s, "%T")
 		}),
 	).NeedBuilder().Underlying("input")
 	Output := b.Type("Output",
-		b.Field("Typ", "Type"),
-		b.Field("DefaultError", seed.Symbol("Type")),
+		b.Field("Typ", "Type").Tag(`json:"-"`),
+		b.Field("Status", seed.Symbol("int")).Tag(`json:"-"`).Default("200"),
+		b.Field("IsDefault", seed.Symbol("bool")).Tag(`json:"-"`),
 	).Constructor(
 		b.Arg("Typ", "Type"),
 	).NeedBuilder().Underlying("output")
+	b.Union("InputOrOutput", Input, Output)
 
 	// openapi root info: https://swagger.io/specification/
 	Contact := b.Type("Contact",

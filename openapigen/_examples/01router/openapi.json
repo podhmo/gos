@@ -45,7 +45,7 @@
             }
           },
           "default": {
-            "description": "",
+            "description": "default error",
             "content": {
               "application/json": {
                 "schema": {

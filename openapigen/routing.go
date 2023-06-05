@@ -54,10 +54,18 @@ func (r *Router) ToSchemaWith(b *Builder, doc *orderedmap.OrderedMap) error {
 
 	useRef := !b.Config.DisableRefLinks
 	for _, action := range r.Actions {
-		if output := action.metadata.Output; output != nil {
-			if output.metadata.DefaultError == nil {
-				output.DefaultError(r.DefaultError)
+		if action.metadata.DefaultError == nil {
+			action.DefaultError(r.DefaultError)
+		}
+		foundDefault := false
+		for _, output := range action.metadata.Outputs {
+			if output.metadata.IsDefault {
+				foundDefault = true
+				break
 			}
+		}
+		if !foundDefault {
+			action.metadata.Outputs = append(action.metadata.Outputs, b.Output(action.metadata.DefaultError).IsDefault(true).Doc("default error"))
 		}
 		pathItem, _ := maplib.GetOrCreate(paths, action.metadata.Path)
 		op := action.toSchema(b, useRef)

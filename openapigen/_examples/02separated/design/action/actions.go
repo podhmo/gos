@@ -22,10 +22,10 @@ var (
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
-		b.Output(b.Array(design.PersonSummary)),
+		b.Output(b.Array(design.PersonSummary)).Doc("list of person summary"),
 	).Doc("list person")
 
-	// CreatePerson :: func(...) Person
+	// CreatePerson :: func(...)
 	CreatePerson = b.Action("CreatePerson",
 		b.Input(
 			b.Param("verbose", b.Bool()).AsQuery(),
@@ -33,8 +33,8 @@ var (
 				append(design.Person.IgnoreFields("id", "father", "friends"),
 					b.Field("fatherId", b.String()),
 					b.Field("friendIdList", b.Array(b.String())))...,
-			)),
+			)).Doc("person but father and friends are id"),
 		),
-		b.Output(design.Person),
+		b.Output(nil).Status(204),
 	).Doc("create person")
 )

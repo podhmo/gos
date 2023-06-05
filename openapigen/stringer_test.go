@@ -39,7 +39,7 @@ func TestToString(t *testing.T) {
 		)), "Person{name, age?}"},
 		{"action", Hello, "hello :: (string) => string"},
 		{"action input", Hello.GetMetadata().Input, "(string)"},
-		{"action output", Hello.GetMetadata().Output, " => string"},
+		{"action output", Hello.GetMetadata().Outputs[0], " => string"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
