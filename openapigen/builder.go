@@ -15,8 +15,8 @@ type TypeBuilder interface {
 	toSchemer                  // see: ./to_schema.go
 }
 
-// DefineType names Type value.
-func DefineType[T interface {
+// Define names Type value.
+func Define[T interface {
 	TypeBuilder
 	storeType(name string)
 }](name string, t T) T {

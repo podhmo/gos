@@ -26,14 +26,14 @@ func TestToString(t *testing.T) {
 	}{
 		{"primitive-0", b.String(), "string"},
 		{"primitive-1", b.Int(), "integer"},
-		{"new-type-primitive", openapigen.DefineType("Name", b.String()), "Name"},
+		{"new-type-primitive", openapigen.Define("Name", b.String()), "Name"},
 		{"array-string", b.Array(b.String()), "array[string]"},
 		{"array-array-string", b.Array(b.Array(b.String())), "array[array[string]]"},
 		{"object", b.Object(
 			b.Field("name", b.String()),
 			b.Field("age", b.String()).Required(false),
 		), "object{name, age?}"},
-		{"new-type-object", openapigen.DefineType("Person", b.Object(
+		{"new-type-object", openapigen.Define("Person", b.Object(
 			b.Field("name", b.String()),
 			b.Field("age", b.String()).Required(false),
 		)), "Person{name, age?}"},

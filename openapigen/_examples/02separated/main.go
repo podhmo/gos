@@ -15,7 +15,7 @@ func main() {
 	b := design.Builder
 
 	// routing
-	Error := openapigen.DefineType("Error", b.Object(
+	Error := openapigen.Define("Error", b.Object(
 		b.Field("message", b.String()),
 	))
 	r := openapigen.NewRouter(Error)
