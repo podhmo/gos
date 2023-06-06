@@ -15,7 +15,7 @@ func ListPerson() *openapigen.Action {
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
 		b.Output(b.Array(PersonSummary)).Doc("list of person summary"),
-	).Doc(info.Doc)
+	).Doc(info.FuncDoc)
 }
 
 // create person
@@ -31,5 +31,5 @@ func CreatePerson() *openapigen.Action {
 			)).Doc("person but father and friends are id"),
 		),
 		b.Output(nil).Status(204),
-	).Doc(info.Doc)
+	).Doc(info.FuncDoc)
 }
