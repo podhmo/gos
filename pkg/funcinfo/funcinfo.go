@@ -26,7 +26,16 @@ type FuncInfo struct {
 	FuncName string
 	File     string
 	Lineno   int
-	Doc      string
+	FuncDoc  string
+}
+
+func (c *Collector) FuncName() string {
+	depth := c.Depth
+
+	pc, _, _, _ := runtime.Caller(depth)
+	rfunc := runtime.FuncForPC(pc)
+	parts := strings.Split(rfunc.Name(), ".")
+	return parts[len(parts)-1]
 }
 
 func (c *Collector) Info() FuncInfo {
@@ -64,6 +73,6 @@ func (c *Collector) Info() FuncInfo {
 		FuncName: parts[len(parts)-1],
 		File:     file,
 		Lineno:   lineno,
-		Doc:      doc,
+		FuncDoc:  doc,
 	}
 }

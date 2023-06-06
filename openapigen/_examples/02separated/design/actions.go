@@ -7,15 +7,13 @@ import (
 
 var collector = funcinfo.NewCollector(1)
 
-// list person
 func ListPerson() *openapigen.Action {
-	info := collector.Info()
-	return b.Action(info.FuncName,
+	return b.Action(collector.FuncName(),
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
 		b.Output(b.Array(PersonSummary)).Doc("list of person summary"),
-	).Doc(info.FuncDoc)
+	).Doc("list person")
 }
 
 // create person
