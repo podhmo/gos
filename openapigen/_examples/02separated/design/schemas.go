@@ -1,8 +1,8 @@
 package design
 
 import (
-	"github.com/podhmo/gos/enumgen"
 	"github.com/podhmo/gos/openapigen"
+	"github.com/podhmo/gos/openapigen/_examples/02separated/enum"
 )
 
 var Builder = openapigen.NewBuilder(openapigen.DefaultConfig()) // export
@@ -35,19 +35,6 @@ var (
 		b.Field("tests", b.Map(b.Int()).Pattern(`\-score$`).Doc("score (0~100)")),
 	))
 
-	Ordering *openapigen.String
+	// enumgen.String ->  openapigen.String
+	Ordering = openapigen.Define("Ordering", b.StringFromEnum(enum.Ordering))
 )
-
-func init() {
-	// enum, in production, import from other package
-	var orderingEnum *enumgen.String
-	{
-		b := enumgen.NewBuilder(enumgen.DefaultConfig())
-		orderingEnum = b.String(
-			b.StringValue("desc").Doc("降順"),
-			b.StringValue("asc").Doc("昇順"),
-		).Default("desc").Doc("順序")
-	}
-
-	Ordering = openapigen.Define("Ordering", b.StringFromEnum(orderingEnum))
-}
