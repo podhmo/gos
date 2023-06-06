@@ -1,4 +1,4 @@
-package funcinfo
+package callerinfo
 
 import (
 	"go/ast"
@@ -22,14 +22,14 @@ func NewCollector(depth int) *Collector {
 	}
 }
 
-type FuncInfo struct {
-	FuncName string
-	File     string
-	Lineno   int
-	FuncDoc  string
+type CallerInfo struct {
+	CallerName string
+	File       string
+	Lineno     int
+	CallerDoc  string
 }
 
-func (c *Collector) FuncName() string {
+func (c *Collector) CallerName() string {
 	depth := c.Depth
 
 	pc, _, _, _ := runtime.Caller(depth)
@@ -38,7 +38,7 @@ func (c *Collector) FuncName() string {
 	return parts[len(parts)-1]
 }
 
-func (c *Collector) Info() FuncInfo {
+func (c *Collector) Info() CallerInfo {
 	fset := c.Fset
 	astCache := c.astCache
 	depth := c.Depth
@@ -69,10 +69,10 @@ func (c *Collector) Info() FuncInfo {
 		}
 	}
 	parts := strings.Split(rfunc.Name(), ".")
-	return FuncInfo{
-		FuncName: parts[len(parts)-1],
-		File:     file,
-		Lineno:   lineno,
-		FuncDoc:  doc,
+	return CallerInfo{
+		CallerName: parts[len(parts)-1],
+		File:       file,
+		Lineno:     lineno,
+		CallerDoc:  doc,
 	}
 }
