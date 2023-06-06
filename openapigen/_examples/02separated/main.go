@@ -17,9 +17,20 @@ func main() {
 	r := openapigen.NewRouter(design.Error)
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello/{name}", design.Hello())
+
+		hello := b.Action("hello",
+			b.Input(
+				b.Param("name", b.String()).AsPath(),
+			).Doc("input"),
+			b.Output(
+				b.String(),
+			),
+		).Doc("greeting hello")
+		r.Post("/hello/{name}", hello)
 	}
+
 	{
+
 		r := r.Tagged("people")
 		r.Get("/people", design.ListPerson())
 		r.Post("/people", design.CreatePerson())

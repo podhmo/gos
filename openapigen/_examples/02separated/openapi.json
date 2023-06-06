@@ -14,7 +14,7 @@
   "paths": {
     "/hello/{name}": {
       "post": {
-        "operationId": "Hello",
+        "operationId": "hello",
         "description": "greeting hello",
         "parameters": [
           {

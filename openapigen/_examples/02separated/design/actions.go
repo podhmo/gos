@@ -7,19 +7,6 @@ import (
 
 var collector = funcinfo.NewCollector(1)
 
-// greeting hello
-func Hello() *openapigen.Action {
-	info := collector.Info()
-	return b.Action(info.Name,
-		b.Input(
-			b.Param("name", b.String()).AsPath(),
-		).Doc("input"),
-		b.Output(
-			b.String(),
-		),
-	).Doc(info.Doc)
-}
-
 // list person
 func ListPerson() *openapigen.Action {
 	info := collector.Info()
