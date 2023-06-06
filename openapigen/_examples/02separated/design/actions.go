@@ -5,18 +5,11 @@ import (
 	"github.com/podhmo/gos/pkg/funcinfo"
 )
 
-func NewHandler(b *openapigen.Builder) *Handler {
-	return &Handler{b: b, collector: funcinfo.NewCollector(1)}
-}
-
-type Handler struct {
-	b         *openapigen.Builder
-	collector *funcinfo.Collector
-}
+var collector = funcinfo.NewCollector(1)
 
 // greeting hello
-func (h *Handler) Hello() *openapigen.Action {
-	info := h.collector.Collect()
+func Hello() *openapigen.Action {
+	info := collector.Info()
 	return b.Action(info.Name,
 		b.Input(
 			b.Param("name", b.String()).AsPath(),
@@ -28,8 +21,8 @@ func (h *Handler) Hello() *openapigen.Action {
 }
 
 // list person
-func (h *Handler) ListPerson() *openapigen.Action {
-	info := h.collector.Collect()
+func ListPerson() *openapigen.Action {
+	info := collector.Info()
 	return b.Action(info.Name,
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
@@ -39,8 +32,8 @@ func (h *Handler) ListPerson() *openapigen.Action {
 }
 
 // create person
-func (h *Handler) CreatePerson() *openapigen.Action {
-	info := h.collector.Collect()
+func CreatePerson() *openapigen.Action {
+	info := collector.Info()
 	return b.Action(info.Name,
 		b.Input(
 			b.Param("verbose", b.Bool()).AsQuery(),

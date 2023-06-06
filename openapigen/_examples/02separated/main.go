@@ -12,18 +12,17 @@ import (
 
 func main() {
 	b := design.Builder
-	actions := design.NewHandler(b)
 
 	// routing
 	r := openapigen.NewRouter(design.Error)
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello/{name}", actions.Hello())
+		r.Post("/hello/{name}", design.Hello())
 	}
 	{
 		r := r.Tagged("people")
-		r.Get("/people", actions.ListPerson())
-		r.Post("/people", actions.CreatePerson())
+		r.Get("/people", design.ListPerson())
+		r.Post("/people", design.CreatePerson())
 	}
 
 	// emit

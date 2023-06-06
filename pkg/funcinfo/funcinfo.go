@@ -29,7 +29,7 @@ type FuncInfo struct {
 	Doc    string
 }
 
-func (c *Collector) Collect() FuncInfo {
+func (c *Collector) Info() FuncInfo {
 	fset := c.Fset
 	astCache := c.astCache
 	depth := c.Depth
