@@ -1,6 +1,11 @@
 package design
 
-import "github.com/podhmo/gos/openapigen"
+import (
+	"runtime"
+	"strings"
+
+	"github.com/podhmo/gos/openapigen"
+)
 
 func NewHandler(b *openapigen.Builder) *Handler {
 	return &Handler{b: b}
@@ -10,9 +15,16 @@ type Handler struct {
 	b *openapigen.Builder
 }
 
+func callerName() string {
+	pc, _, _, _ := runtime.Caller(1)
+	rfunc := runtime.FuncForPC(pc)
+	parts := strings.Split(rfunc.Name(), ".")
+	return parts[len(parts)-1]
+}
+
 // Hello :: func(name string) string
 func (h *Handler) Hello() *openapigen.Action {
-	return b.Action("hello",
+	return b.Action(callerName(),
 		b.Input(
 			b.Param("name", b.String()).AsPath(),
 		).Doc("input"),
@@ -24,7 +36,7 @@ func (h *Handler) Hello() *openapigen.Action {
 
 // ListPerson :: func(...) []PersonSummary
 func (h *Handler) ListPerson() *openapigen.Action {
-	return b.Action("ListPerson",
+	return b.Action(callerName(),
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
@@ -34,7 +46,7 @@ func (h *Handler) ListPerson() *openapigen.Action {
 
 // CreatePerson :: func(...) ()
 func (h *Handler) CreatePerson() *openapigen.Action {
-	return b.Action("CreatePerson",
+	return b.Action(callerName(),
 		b.Input(
 			b.Param("verbose", b.Bool()).AsQuery(),
 			b.Body(b.Object(
