@@ -23,10 +23,10 @@ func NewCollector(depth int) *Collector {
 }
 
 type FuncInfo struct {
-	Name   string
-	File   string
-	Lineno int
-	Doc    string
+	FuncName string
+	File     string
+	Lineno   int
+	Doc      string
 }
 
 func (c *Collector) Info() FuncInfo {
@@ -61,9 +61,9 @@ func (c *Collector) Info() FuncInfo {
 	}
 	parts := strings.Split(rfunc.Name(), ".")
 	return FuncInfo{
-		Name:   parts[len(parts)-1],
-		File:   file,
-		Lineno: lineno,
-		Doc:    doc,
+		FuncName: parts[len(parts)-1],
+		File:     file,
+		Lineno:   lineno,
+		Doc:      doc,
 	}
 }

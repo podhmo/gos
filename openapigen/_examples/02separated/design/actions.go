@@ -10,7 +10,7 @@ var collector = funcinfo.NewCollector(1)
 // list person
 func ListPerson() *openapigen.Action {
 	info := collector.Info()
-	return b.Action(info.Name,
+	return b.Action(info.FuncName,
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
@@ -21,7 +21,7 @@ func ListPerson() *openapigen.Action {
 // create person
 func CreatePerson() *openapigen.Action {
 	info := collector.Info()
-	return b.Action(info.Name,
+	return b.Action(info.FuncName,
 		b.Input(
 			b.Param("verbose", b.Bool()).AsQuery(),
 			b.Body(b.Object(
