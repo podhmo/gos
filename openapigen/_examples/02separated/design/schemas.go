@@ -9,6 +9,12 @@ var Builder = openapigen.NewBuilder(openapigen.DefaultConfig()) // export
 var b = Builder
 
 var (
+	Error = openapigen.Define("Error", b.Object(
+		b.Field("message", b.String()),
+	))
+)
+
+var (
 	Name = openapigen.Define("Name", b.String().MinLength(1))
 
 	Person = openapigen.Define("Person", b.Object(

@@ -15,10 +15,7 @@ func main() {
 	actions := design.NewHandler(b)
 
 	// routing
-	Error := openapigen.Define("Error", b.Object(
-		b.Field("message", b.String()),
-	))
-	r := openapigen.NewRouter(Error)
+	r := openapigen.NewRouter(design.Error)
 	{
 		r := r.Tagged("greeting")
 		r.Post("/hello/{name}", actions.Hello())
