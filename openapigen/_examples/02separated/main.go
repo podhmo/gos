@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	b := openapigen.NewBuilder(openapigen.DefaultConfig())
-	actions := design.NewActions(b)
+	b := design.Builder
+	actions := design.NewHandler(b)
 
 	// routing
 	Error := openapigen.Define("Error", b.Object(
@@ -21,12 +21,12 @@ func main() {
 	r := openapigen.NewRouter(Error)
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello/{name}", actions.Greeting.Hello)
+		r.Post("/hello/{name}", actions.Hello())
 	}
 	{
 		r := r.Tagged("people")
-		r.Get("/people", actions.People.ListPerson)
-		r.Post("/people", actions.People.CreatePerson)
+		r.Get("/people", actions.ListPerson())
+		r.Post("/people", actions.CreatePerson())
 	}
 
 	// emit
