@@ -1,49 +1,33 @@
 package design
 
-import "github.com/podhmo/gos/openapigen"
+import (
+	"github.com/podhmo/gos/openapigen"
+	"github.com/podhmo/gos/pkg/callerinfo"
+)
 
-func NewActions(b *openapigen.Builder) (Actions struct {
-	Greeting struct {
-		// Hello :: func(name string) string
-		Hello *openapigen.Action
-	}
+var collector = callerinfo.NewCollector(1 /* depth */)
 
-	People struct {
-		// ListPerson :: func(...) []PersonSummary
-		ListPerson *openapigen.Action
-		// CreatePerson :: func(...)
-		CreatePerson *openapigen.Action
-	}
-}) {
-	Definitions := NewDefinitions(b)
-
-	Actions.Greeting.Hello = b.Action("hello",
-		b.Input(
-			b.Param("name", b.String()).AsPath(),
-		).Doc("input"),
-		b.Output(
-			b.String(),
-		),
-	).Doc("greeting hello")
-
-	Actions.People.ListPerson = b.Action("ListPerson",
+func ListPerson() *openapigen.Action {
+	return b.Action(collector.CallerName(), // extract function name
 		b.Input(
 			b.Param("sort", b.String().Enum([]string{"name", "-name", "age", "-age"})).AsQuery(),
 		),
-		b.Output(b.Array(Definitions.PersonSummary)).Doc("list of person summary"),
+		b.Output(b.Array(PersonSummary)).Doc("list of person summary"),
 	).Doc("list person")
+}
 
-	Actions.People.CreatePerson = b.Action("CreatePerson",
+// create person
+func CreatePerson() *openapigen.Action {
+	info := collector.Info()
+	return b.Action(info.CallerName,
 		b.Input(
 			b.Param("verbose", b.Bool()).AsQuery(),
 			b.Body(b.Object(
-				append(Definitions.Person.IgnoreFields("id", "father", "friends"),
+				append(Person.IgnoreFields("id", "father", "friends"),
 					b.Field("fatherId", b.String()),
 					b.Field("friendIdList", b.Array(b.String())))...,
 			)).Doc("person but father and friends are id"),
 		),
 		b.Output(nil).Status(204),
-	).Doc("create person")
-
-	return
+	).Doc(info.CallerDoc) // extract doc from doc string of this function
 }

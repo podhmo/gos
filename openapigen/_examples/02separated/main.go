@@ -11,22 +11,29 @@ import (
 )
 
 func main() {
-	b := openapigen.NewBuilder(openapigen.DefaultConfig())
-	actions := design.NewActions(b)
+	b := design.Builder
 
 	// routing
-	Error := openapigen.Define("Error", b.Object(
-		b.Field("message", b.String()),
-	))
-	r := openapigen.NewRouter(Error)
+	r := openapigen.NewRouter(design.Error)
 	{
 		r := r.Tagged("greeting")
-		r.Post("/hello/{name}", actions.Greeting.Hello)
+
+		hello := b.Action("hello",
+			b.Input(
+				b.Param("name", b.String()).AsPath(),
+			).Doc("input"),
+			b.Output(
+				b.String(),
+			),
+		).Doc("greeting hello")
+		r.Post("/hello/{name}", hello)
 	}
+
 	{
+
 		r := r.Tagged("people")
-		r.Get("/people", actions.People.ListPerson)
-		r.Post("/people", actions.People.CreatePerson)
+		r.Get("/people", design.ListPerson())
+		r.Post("/people", design.CreatePerson())
 	}
 
 	// emit
