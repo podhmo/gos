@@ -23,7 +23,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["dictknife"]
+dependencies = ["dictknife[load]"]
 
 [project.urls]
 Documentation = "https://github.com/unknown/simplify#readme"
