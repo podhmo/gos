@@ -237,6 +237,15 @@ func (t *_Container) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 		types[i] = typ.toSchema(b, useRef)
 	}
 	doc.Set(t.metadata.Op, types)
+	if discriminator := t.metadata.Discriminator; discriminator != "" {
+		v := orderedmap.New()
+		v.Set("propertyName", discriminator)
+		doc.Set("discriminator", v)
+	}
+	doc, err := maplib.Merge(doc, t.metadata)
+	if err != nil {
+		panic(err)
+	}
 	return doc
 }
 
