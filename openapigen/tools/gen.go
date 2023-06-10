@@ -50,7 +50,11 @@ func run() error {
 		data := orderedmap.New()
 		for _, ext := range %s {
 			m := ext.metadata
-			data.Set("x-"+m.Name, m.Value)
+			name := m.Name
+			if !strings.HasPrefix(name, "x-") {
+				name = "x-" + name
+			}
+			data.Set(name, m.Value)
 		}
 		return data
 		}()`, extensions, extensions)

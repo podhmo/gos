@@ -865,7 +865,11 @@ func (t _Type[R]) Extensions(extensions ...*Extension) R {
 		data := orderedmap.New()
 		for _, ext := range extensions {
 			m := ext.metadata
-			data.Set("x-"+m.Name, m.Value)
+			name := m.Name
+			if !strings.HasPrefix(name, "x-") {
+				name = "x-" + name
+			}
+			data.Set(name, m.Value)
 		}
 		return data
 	}()
