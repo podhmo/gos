@@ -146,6 +146,7 @@ func run() error {
 	_Container := b.Type("_Container",
 		b.Field("Op", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Types", seed.Symbol("[]Type")).Tag(`json:"-"`),
+		b.Field("Discriminator", seed.Symbol("string")).Tag(`json:"-"`),
 	).
 		Doc("the container for allOf, anyOf, oneOf").
 		NeedBuilder().Underlying("container")

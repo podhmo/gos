@@ -634,6 +634,12 @@ func (b *__ContainerBuilder[R]) Types(value []Type) R {
 	return b.ret
 }
 
+// Discriminator set Metadata.Discriminator
+func (b *__ContainerBuilder[R]) Discriminator(value string) R {
+	b.metadata.Discriminator = value
+	return b.ret
+}
+
 // end setter of _Container --------------------
 
 // Action builds Type for Action

@@ -122,6 +122,8 @@ type _ContainerMetadata struct {
 	Op string `json:"-"`
 
 	Types []Type `json:"-"`
+
+	Discriminator string `json:"-"`
 }
 
 type ActionMetadata struct {
