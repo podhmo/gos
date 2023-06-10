@@ -24,17 +24,6 @@ func Pagination(b *openapigen.Builder, typ openapigen.Type) *openapigen.Object {
 		)
 }
 
-func Pagination2(b *openapigen.Builder, typ openapigen.Type) *openapigen.Object {
-	return b.Object(
-		b.Field("_meta", b.Object(
-			b.Field("totalCount", b.Int()),
-			b.Field("hasMore", b.Bool()),
-			b.Field("cursor", b.String()),
-		)),
-		b.Field("data", typ).Doc("response data of api"),
-	)
-}
-
 func main() {
 	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
@@ -53,11 +42,6 @@ func main() {
 		b.Output(Pagination(b, b.Array(Task))),
 	).Doc("paginated list task")
 
-	ListTask2 := b.Action("ListTask2",
-		b.Input(b.Param("sort", b.String().Enum([]string{"createdAt", "-createdAt"})).AsQuery()),
-		b.Output(Pagination2(b, b.Array(Task))),
-	).Doc("paginated list task version 2")
-
 	// routing
 	Error := openapigen.Define("Error", b.Object(
 		b.Field("message", b.String()),
@@ -66,7 +50,6 @@ func main() {
 	{
 		r := r.Tagged("task")
 		r.Get("/tasks", ListTask)
-		r.Get("/tasks2", ListTask2)
 	}
 
 	// openapi data
