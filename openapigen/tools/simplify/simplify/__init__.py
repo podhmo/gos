@@ -5,7 +5,9 @@
 simplify openapi doc
 """
 import typing as t
+from collections import defaultdict
 from dictknife import loading
+from dictknife import DictWalker
 
 
 def simplify(src: t.Optional[str], *, format: t.Literal["yaml", "json"], output: t.Optional[str]) -> None:
@@ -17,7 +19,26 @@ def simplify(src: t.Optional[str], *, format: t.Literal["yaml", "json"], output:
 class Transformer:
     def transform(self, doc: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
         self._omit_toplevel_parameters(doc)
+        self._dref_parameters(doc)
         return doc
+
+    def _dref_parameters(self, doc: t.Dict[str, t.Any]) -> None:
+        ref_used = defaultdict(list)
+        for path, sd in DictWalker(["$ref"]).walk(doc):
+            ref = sd["$ref"]
+            if "#/components/schemas" in ref:
+                continue
+            ref_used[ref].append(sd)
+
+        components = doc.get("components") or {}
+        parameters = components.get("parameters")
+        if parameters is not None:
+            for name, definition in parameters.items():
+                ref_key = f"#/components/parameters/{name}"
+                for sd in ref_used.get(ref_key) or []:
+                    sd.pop("$ref")
+                    sd.update(definition)
+            components.pop("parameters")
 
     def _omit_toplevel_parameters(self, doc: t.Dict[str, t.Any]) -> None:
         for path, path_item in (doc.get("paths") or {}).items():
