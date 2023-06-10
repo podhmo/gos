@@ -143,18 +143,18 @@ func run() error {
 		b.Arg("Fields", seed.Symbol("*Field")).Variadic(),
 	).NeedBuilder().Underlying("object")
 
-	b.Union("Type", Bool, Int, Float, String, Object, Array, Map).
+	_Container := b.Type("_Container",
+		b.Field("Op", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("Types", seed.Symbol("[]Type")).Tag(`json:"-"`),
+	).
+		Doc("the container for allOf, anyOf, oneOf").
+		NeedBuilder().Underlying("container")
+
+	b.Union("Type", Bool, Int, Float, String, Object, Array, Map, _Container).
 		DistinguishID("typ").
 		InterfaceMethods("TypeBuilder").
 		Doc("Type is union of bool | int | float | string | object | array[T] | map[T]").
 		NeedReference()
-
-	b.Type("_Container",
-		b.Field("Op", seed.Symbol("string")).Tag(`json:"-"`),
-		b.Field("Types", seed.Symbol("[]Type")).Tag(`json:"-"`),
-	).
-	Doc("the container for allOf, anyOf, oneOf").
-	NeedBuilder().Underlying("container")
 
 	// ----------------------------------------
 	// action
