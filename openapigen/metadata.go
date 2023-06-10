@@ -2,16 +2,21 @@
 
 package openapigen
 
+import (
+	"github.com/iancoleman/orderedmap"
+)
+
 type TypeMetadata struct {
 	id         int    // required by reference
 	Name       string `json:"-"` // required by reference (and toString)
 	underlying string `json:"-"` // required by toString
 	goType     string `json:"-"`
 
-	Doc     string `json:"description,omitempty"`
-	Title   string `json:"title,omitempty"`
-	Format  string `json:"format,omitempty"`
-	Example string `json:"example,omitempty"`
+	Doc        string                 `json:"description,omitempty"`
+	Title      string                 `json:"title,omitempty"`
+	Format     string                 `json:"format,omitempty"`
+	Example    string                 `json:"example,omitempty"`
+	Extensions *orderedmap.OrderedMap `json:"-"`
 }
 
 type BoolMetadata struct {
@@ -86,6 +91,13 @@ type FieldMetadata struct {
 	AllowEmptyValue bool `json:"allowEmptyValue,omitempty"`
 
 	Deprecated bool `json:"deprecated,omitempty"`
+}
+
+// for x-<extension-name>
+type ExtensionMetadata struct {
+	Name string
+
+	Value any
 }
 
 type ObjectMetadata struct {

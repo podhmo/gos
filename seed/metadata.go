@@ -8,10 +8,11 @@ type BuilderMetadata struct {
 	NeedReference bool
 	NeedStringer  bool
 
-	Imports          []Import
-	InterfaceMethods []string
-	Constructor      *Constructor
-	Fields           []*FieldMetadata // fields of builder
+	Imports           []Import
+	ImportsInMetadata []Import
+	InterfaceMethods  []string
+	Constructor       *Constructor
+	Fields            []*FieldMetadata // fields of builder
 
 	SysArgs     []string // runtime os.Args[1:]
 	PkgName     string   // package {{.PkgName}}}

@@ -7,6 +7,8 @@ import (
 	"io"
 	"strings"
 	"sync"
+
+	"github.com/iancoleman/orderedmap"
 )
 
 type TypeBuilder interface {
@@ -488,6 +490,37 @@ func (b *_FieldBuilder[R]) Doc(stmts ...string) R {
 
 // end setter of Field --------------------
 
+// Extension builds Type for Extension
+func (b *Builder) Extension(name string, value any) *Extension {
+	t := &Extension{
+		_ExtensionBuilder: &_ExtensionBuilder[*Extension]{
+			_Type: &_Type[*Extension]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "extension", goType: "Extension"}},
+			metadata: &ExtensionMetadata{
+				Name: name, Value: value,
+			},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type Extension struct {
+	*_ExtensionBuilder[*Extension]
+}
+
+func (t *Extension) GetMetadata() *ExtensionMetadata {
+	return t.metadata
+}
+
+type _ExtensionBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *ExtensionMetadata
+}
+
+// begin setter of Extension --------------------
+
+// end setter of Extension --------------------
+
 // Object builds Type for Object
 func (b *Builder) Object(fields ...*Field) *Object {
 	t := &Object{
@@ -821,6 +854,25 @@ func (t _Type[R]) Example(value string) R {
 
 func (t _Type[R]) Doc(stmts ...string) R {
 	t.metadata.Doc = strings.Join(stmts, "\n")
+	return t.ret
+}
+
+func (t _Type[R]) Extensions(extensions ...*Extension) R {
+	t.metadata.Extensions = func() *orderedmap.OrderedMap {
+		if extensions == nil {
+			return nil
+		}
+		data := orderedmap.New()
+		for _, ext := range extensions {
+			m := ext.metadata
+			name := m.Name
+			if !strings.HasPrefix(name, "x-") {
+				name = "x-" + name
+			}
+			data.Set(name, m.Value)
+		}
+		return data
+	}()
 	return t.ret
 }
 
