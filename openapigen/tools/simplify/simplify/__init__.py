@@ -10,23 +10,27 @@ from dictknife import loading
 
 def simplify(src: t.Optional[str], *, format: t.Literal["yaml", "json"], output: t.Optional[str]) -> None:
     src = loading.loadfile(src)
-    dst = _simplify_transform(src)
+    dst = Transformer().transform(src)
     loading.dumpfile(dst, output)
 
 
-def _simplify_transform(doc: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
-    for path, path_item in (doc.get("paths") or {}).items():
-        toplevel_parameters = path_item.pop("parameters", None)
-        if toplevel_parameters is None:
-            continue
-        for method, op in path_item.items():
-            if method.upper() not in ("GET", "PUT", "POST", "DELETE", "OPTIONS", "HEAD", "PATCH", "TRACE"):
+class Transformer:
+    def transform(self, doc: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+        self._omit_toplevel_parameters(doc)
+        return doc
+
+    def _omit_toplevel_parameters(self, doc: t.Dict[str, t.Any]) -> None:
+        for path, path_item in (doc.get("paths") or {}).items():
+            toplevel_parameters = path_item.pop("parameters", None)
+            if toplevel_parameters is None:
                 continue
-            if "parameters" not in op:
-                op["parameters"] = toplevel_parameters[:]
-            else:
-                op["parameters"].extend(toplevel_parameters[:])
-    return doc
+            for method, op in path_item.items():
+                if method.upper() not in ("GET", "PUT", "POST", "DELETE", "OPTIONS", "HEAD", "PATCH", "TRACE"):
+                    continue
+                if "parameters" not in op:
+                    op["parameters"] = toplevel_parameters[:]
+                else:
+                    op["parameters"].extend(toplevel_parameters[:])
 
 
 def main(argv: t.Optional[t.List[str]] = None) -> t.Any:
