@@ -16,7 +16,12 @@ func Pagination(b *openapigen.Builder, typ openapigen.Type) *openapigen.Object {
 		b.Field("hasMore", b.Bool()),
 		b.Field("cursor", b.String()),
 		b.Field("data", typ).Doc("response data of api"),
-	).Doc("totalCount, hasMore, cursor fields are metadata for pagination")
+	).
+		Doc("totalCount, hasMore, cursor fields are metadata for pagination").
+		Extensions(
+			b.Extension("x-go-template", "Pagination[T]"),
+			b.Extension("x-go-template-args", []string{"data"}),
+		)
 }
 
 func Pagination2(b *openapigen.Builder, typ openapigen.Type) *openapigen.Object {

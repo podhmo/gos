@@ -38,6 +38,10 @@
                 "schema": {
                   "type": "object",
                   "description": "totalCount, hasMore, cursor fields are metadata for pagination",
+                  "x-go-template": "Pagination[T]",
+                  "x-go-template-args": [
+                    "data"
+                  ],
                   "properties": {
                     "totalCount": {
                       "type": "integer"
