@@ -2,7 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 """
-simplify openapi doc
+# how to use
+
+```shell
+python simplify.py openapi.yaml --format yaml
+```
 """
 import typing as t
 from collections import defaultdict
@@ -11,9 +15,10 @@ from dictknife import DictWalker
 
 
 def simplify(src: t.Optional[str], *, format: t.Literal["yaml", "json"], output: t.Optional[str]) -> None:
+    """simplify openapi doc"""
     src = loading.loadfile(src)
     dst = Transformer().transform(src)
-    loading.dumpfile(dst, output)
+    loading.dumpfile(dst, output, format=format)
 
 
 class Transformer:
@@ -64,7 +69,6 @@ class Transformer:
         components.pop(part)
 
 
-
 def main(argv: t.Optional[t.List[str]] = None) -> t.Any:
     import argparse
     import os
@@ -80,7 +84,7 @@ def main(argv: t.Optional[t.List[str]] = None) -> t.Any:
     )
     parser.print_usage = parser.print_help  # type: ignore
     parser.add_argument('src', help='source file')
-    parser.add_argument("--format", choices=["yaml", "json"], default="json")
+    parser.add_argument("--format", choices=["yaml", "json"])
     parser.add_argument(
         "-o",
         "--output",
