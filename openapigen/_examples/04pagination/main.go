@@ -15,7 +15,7 @@ func Pagination(b *openapigen.Builder, typ openapigen.Type) *openapigen.Object {
 		b.Field("totalCount", b.Int()),
 		b.Field("hasMore", b.Bool()),
 		b.Field("cursor", b.String()),
-		b.Field("data", typ).Doc("response data of api"),
+		b.Field("data", typ).Doc("response data of api").Extensions(b.Extension("x-go-template-value", "T")),
 	).
 		Doc("totalCount, hasMore, cursor fields are metadata for pagination").
 		Extensions(
