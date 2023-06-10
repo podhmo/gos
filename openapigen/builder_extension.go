@@ -61,13 +61,13 @@ func (b *Builder) IntFromEnum(enum *enumgen.Int) *Int {
 	return typ
 }
 
-func (b *Builder) OneOf(types []Type) TypeBuilder {
+func (b *Builder) OneOf(types ...Type) Type {
 	return b._Container().Op("oneOf").Types(types)
 }
-func (b *Builder) AllOf(types []Type) TypeBuilder {
+func (b *Builder) AllOf(types ...Type) Type {
 	return b._Container().Op("allOf").Types(types)
 }
-func (b *Builder) AnyOf(types []Type) TypeBuilder {
+func (b *Builder) AnyOf(types ...Type) Type {
 	return b._Container().Op("anyOf").Types(types)
 }
 
