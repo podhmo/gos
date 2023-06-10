@@ -37,7 +37,6 @@ func run() error {
 	Type := b.BuildTarget("Type",
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Title", seed.Symbol("string")).Tag(`json:"title,omitempty"`),
-		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Example", seed.Symbol("string")).Tag(`json:"example,omitempty"`),
 		b.Field("Extensions", seed.Symbol("*orderedmap.OrderedMap")).Tag(`json:"-"`),
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
@@ -72,9 +71,11 @@ func run() error {
 	// - see: https://github.com/getkin/kin-openapi/blob/master/openapi3/schema.go
 
 	Bool := b.Type("Bool",
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Default", seed.Symbol("bool")).Tag(`json:"default,omitempty"`),
 	).NeedBuilder().Underlying("boolean").GoType("bool")
 	Int := b.Type("Int",
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Enum", seed.Symbol("[]int64")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("int64")).Tag(`json:"default,omitempty"`),
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
@@ -83,6 +84,7 @@ func run() error {
 		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
 	).NeedBuilder().Underlying("integer").GoType("int64")
 	Float := b.Type("Float",
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
 		b.Field("Maximum", seed.Symbol("float64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("float64")).Tag(`json:"minimum,omitempty"`),
@@ -91,6 +93,7 @@ func run() error {
 		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
 	).NeedBuilder().Underlying("number").GoType("float64")
 	String := b.Type("String",
+		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
