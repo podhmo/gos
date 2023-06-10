@@ -81,10 +81,17 @@ func (b *Builder) Import(path string) Symbol {
 	return Symbol(parts[len(parts)-1])
 }
 
-// Import is setter method adding import path with name in generated code.
+// NamedImport is setter method adding import path with name in generated code.
 func (b *Builder) NamedImport(name string, path string) Symbol {
 	b.metadata.Imports = append(b.metadata.Imports, Import{Name: name, Path: path})
 	return Symbol(name)
+}
+
+// ImportInMetadata is setter method adding import path in generated code.
+func (b *Builder) ImportInMetadata(path string) Symbol {
+	b.metadata.ImportsInMetadata = append(b.metadata.ImportsInMetadata, Import{Path: path})
+	parts := strings.Split(path, "/")
+	return Symbol(parts[len(parts)-1])
 }
 
 // TypeVar is factory method for TypeVar builder.
