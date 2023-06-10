@@ -140,6 +140,12 @@ type _BoolBuilder[R TypeBuilder] struct {
 
 // begin setter of Bool --------------------
 
+// Format set Metadata.Format
+func (b *_BoolBuilder[R]) Format(value string) R {
+	b.metadata.Format = value
+	return b.ret
+}
+
 // Default set Metadata.Default
 func (b *_BoolBuilder[R]) Default(value bool) R {
 	b.metadata.Default = value
@@ -174,6 +180,12 @@ type _IntBuilder[R TypeBuilder] struct {
 }
 
 // begin setter of Int --------------------
+
+// Format set Metadata.Format
+func (b *_IntBuilder[R]) Format(value string) R {
+	b.metadata.Format = value
+	return b.ret
+}
 
 // Enum set Metadata.Enum
 func (b *_IntBuilder[R]) Enum(value []int64) R {
@@ -240,6 +252,12 @@ type _FloatBuilder[R TypeBuilder] struct {
 
 // begin setter of Float --------------------
 
+// Format set Metadata.Format
+func (b *_FloatBuilder[R]) Format(value string) R {
+	b.metadata.Format = value
+	return b.ret
+}
+
 // Default set Metadata.Default
 func (b *_FloatBuilder[R]) Default(value string) R {
 	b.metadata.Default = value
@@ -304,6 +322,12 @@ type _StringBuilder[R TypeBuilder] struct {
 }
 
 // begin setter of String --------------------
+
+// Format set Metadata.Format
+func (b *_StringBuilder[R]) Format(value string) R {
+	b.metadata.Format = value
+	return b.ret
+}
 
 // Enum set Metadata.Enum
 func (b *_StringBuilder[R]) Enum(value []string) R {
@@ -837,12 +861,6 @@ func (t *_Type[R]) GetTypeMetadata() *TypeMetadata {
 // Title set Metadata.Title
 func (t _Type[R]) Title(value string) R {
 	t.metadata.Title = value
-	return t.ret
-}
-
-// Format set Metadata.Format
-func (t _Type[R]) Format(value string) R {
-	t.metadata.Format = value
 	return t.ret
 }
 

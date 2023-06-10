@@ -14,16 +14,19 @@ type TypeMetadata struct {
 
 	Doc        string                 `json:"description,omitempty"`
 	Title      string                 `json:"title,omitempty"`
-	Format     string                 `json:"format,omitempty"`
 	Example    string                 `json:"example,omitempty"`
 	Extensions *orderedmap.OrderedMap `json:"-"`
 }
 
 type BoolMetadata struct {
+	Format string `json:"format,omitempty"`
+
 	Default bool `json:"default,omitempty"`
 }
 
 type IntMetadata struct {
+	Format string `json:"format,omitempty"`
+
 	Enum []int64 `json:"enum,omitempty"`
 
 	Default int64 `json:"default,omitempty"`
@@ -38,6 +41,8 @@ type IntMetadata struct {
 }
 
 type FloatMetadata struct {
+	Format string `json:"format,omitempty"`
+
 	Default string `json:"default,omitempty"`
 
 	Maximum float64 `json:"maximum,omitempty"`
@@ -52,6 +57,8 @@ type FloatMetadata struct {
 }
 
 type StringMetadata struct {
+	Format string `json:"format,omitempty"`
+
 	Enum []string `json:"enum,omitempty"`
 
 	Default string `json:"default,omitempty"`
