@@ -24,7 +24,7 @@ func main() {
 	))
 
 	UpdatePet := b.Action("UpdatePet",
-		b.Input(b.Body(b.OneOf(Cat, Dog))),
+		b.Input(b.Body(b.OneOf(Cat, Dog).Discriminator("pet_store"))),
 		b.Output(nil).Doc("Updated"),
 	)
 
