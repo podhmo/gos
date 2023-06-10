@@ -19,26 +19,16 @@ def simplify(src: t.Optional[str], *, format: t.Literal["yaml", "json"], output:
 class Transformer:
     def transform(self, doc: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
         self._omit_toplevel_parameters(doc)
-        self._dref_parameters(doc)
+        self._omit_use_ref(doc, part="responses")
+        self._omit_use_ref(doc, part="parameters")
+        self._omit_use_ref(doc, part="examples")
+        self._omit_use_ref(doc, part="requestBodies")
+        self._omit_use_ref(doc, part="headers")
+        self._omit_use_ref(doc, part="securitySchemes")
+        self._omit_use_ref(doc, part="links")
+        self._omit_use_ref(doc, part="callbacks")
+        self._omit_use_ref(doc, part="pathItems")
         return doc
-
-    def _dref_parameters(self, doc: t.Dict[str, t.Any]) -> None:
-        ref_used = defaultdict(list)
-        for path, sd in DictWalker(["$ref"]).walk(doc):
-            ref = sd["$ref"]
-            if "#/components/schemas" in ref:
-                continue
-            ref_used[ref].append(sd)
-
-        components = doc.get("components") or {}
-        parameters = components.get("parameters")
-        if parameters is not None:
-            for name, definition in parameters.items():
-                ref_key = f"#/components/parameters/{name}"
-                for sd in ref_used.get(ref_key) or []:
-                    sd.pop("$ref")
-                    sd.update(definition)
-            components.pop("parameters")
 
     def _omit_toplevel_parameters(self, doc: t.Dict[str, t.Any]) -> None:
         for path, path_item in (doc.get("paths") or {}).items():
@@ -52,6 +42,27 @@ class Transformer:
                     op["parameters"] = toplevel_parameters[:]
                 else:
                     op["parameters"].extend(toplevel_parameters[:])
+
+    def _omit_use_ref(self, doc: t.Dict[str, t.Any], *, part: str) -> None:
+        components = doc.get("components") or {}
+        definitions = components.get(part)
+        if definitions is None:
+            return
+
+        ref_used = defaultdict(list)
+        for path, sd in DictWalker(["$ref"]).walk(doc):
+            ref = sd["$ref"]
+            if "#/components/schemas" in ref:
+                continue
+            ref_used[ref].append(sd)
+
+        for name, definition in definitions.items():
+            ref_key = f"#/components/{part}/{name}"
+            for sd in ref_used.get(ref_key) or []:
+                sd.pop("$ref")
+                sd.update(definition)
+        components.pop(part)
+
 
 
 def main(argv: t.Optional[t.List[str]] = None) -> t.Any:
