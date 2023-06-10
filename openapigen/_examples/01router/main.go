@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// openapi data
-	openapi := &openapigen.OpenAPI{
+	doc, err := maplib.Merge(orderedmap.New(), &openapigen.OpenAPI{
 		OpenAPI: "3.0.3",
 		Info: openapigen.Info{
 			Title:   "task API",
@@ -51,9 +51,7 @@ func main() {
 				Doc: "local development",
 			},
 		},
-	}
-	doc := orderedmap.New()
-	doc, err := maplib.Merge(doc, openapi)
+	})
 	if err != nil {
 		panic(err)
 	}
