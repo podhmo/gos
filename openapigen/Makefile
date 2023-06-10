@@ -7,6 +7,7 @@ run-example: 00 01 02 03 04
 .PHONY: 00
 # simple router example
 01:
+	go run ./cmd/init > ./_examples/01router/main.go
 	go run ./_examples/01router > ./_examples/01router/openapi.json
 .PHONY: 01
 # separated files example
