@@ -149,6 +149,13 @@ func run() error {
 		Doc("Type is union of bool | int | float | string | object | array[T] | map[T]").
 		NeedReference()
 
+	b.Type("_Container",
+		b.Field("Op", seed.Symbol("string")).Tag(`json:"-"`),
+		b.Field("Types", seed.Symbol("[]Type")).Tag(`json:"-"`),
+	).
+	Doc("the container for allOf, anyOf, oneOf").
+	NeedBuilder().Underlying("container")
+
 	// ----------------------------------------
 	// action
 	// ----------------------------------------
@@ -259,7 +266,6 @@ func run() error {
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	}))
-
 	OpenAPI := b.Type("OpenAPI",
 		b.Field("OpenAPI", seed.Symbol("string")).Tag(`json:"openapi"`).Default(`"3.0.3"`).Doc("required"),
 		b.Field("Info", Info.GetMetadata().Name).Tag(`json:"info"`).Doc("required"),
