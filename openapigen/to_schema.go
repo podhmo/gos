@@ -66,6 +66,12 @@ func (t *_Type[R]) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	if err != nil {
 		panic(err)
 	}
+	if extensions := t.metadata.Extensions; extensions != nil {
+		doc, err = maplib.Merge(doc, extensions)
+		if err != nil {
+			panic(err)
+		}
+	}
 	return doc
 }
 
