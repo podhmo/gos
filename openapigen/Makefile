@@ -1,4 +1,4 @@
-run-example: 00 01 02 03 04
+run-example: 00 01 02 03 04 05
 .PHONY: run-example
 
 # simple schema only example

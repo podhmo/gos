@@ -167,7 +167,7 @@ func run() error {
 		b.Field("DefaultError", seed.Symbol("Type")).Tag(`json:"-"`),
 		b.Field("Method", seed.Symbol("string")).Tag(`json:"-"`),
 		b.Field("Path", seed.Symbol("string")).Tag(`json:"-"`),
-		b.Field("Tags", seed.Symbol("[]string")).Tag(`json:"tags"`),
+		b.Field("Tags", seed.Symbol("[]string")).Tag(`json:"tags,omitempty"`),
 	).Constructor(
 		b.Arg("Name", seed.Symbol("string")),
 		b.Arg("InputOrOutput", "InputOrOutput").Variadic().BindFields("Input", "Outputs").Transform(func(s string) string {

@@ -139,7 +139,7 @@ type ActionMetadata struct {
 
 	Path string `json:"-"`
 
-	Tags []string `json:"tags"`
+	Tags []string `json:"tags,omitempty"`
 }
 
 type ParamMetadata struct {
