@@ -182,6 +182,12 @@ func (t *Object) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 			if err != nil {
 				panic(err)
 			}
+			if extensions := v._Type.metadata.Extensions; extensions != nil { // v._Type is field, this is bad name, but...
+				def, err = maplib.Merge(def, extensions)
+				if err != nil {
+					panic(err)
+				}
+			}
 			properties.Set(name, def)
 		}
 		doc.Set("properties", properties)
