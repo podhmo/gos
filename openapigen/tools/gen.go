@@ -31,14 +31,29 @@ func run() error {
 	b.NeedReference()
 
 	b.Import("strings")
+	b.Import("github.com/iancoleman/orderedmap")
+	b.ImportInMetadata("github.com/iancoleman/orderedmap") // use goimports?
 
 	Type := b.BuildTarget("Type",
 		b.Field("Doc", seed.Symbol("string")).Tag(`json:"description,omitempty"`),
 		b.Field("Title", seed.Symbol("string")).Tag(`json:"title,omitempty"`),
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Example", seed.Symbol("string")).Tag(`json:"example,omitempty"`),
+		b.Field("Extensions", seed.Symbol("*orderedmap.OrderedMap")).Tag(`json:"-"`),
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
+	})).Setter("Extensions", b.Arg("extensions", seed.Symbol("*Extension")).Variadic().Transform(func(extensions string) string {
+		return fmt.Sprintf(`func() *orderedmap.OrderedMap {
+		if %s == nil {
+			return nil
+		}
+		data := orderedmap.New()
+		for _, ext := range %s {
+			m := ext.metadata
+			data.Set("x-"+m.Name, m.Value)
+		}
+		return data
+		}()`, extensions, extensions)
 	}))
 
 	b.InterfaceMethods(
@@ -103,6 +118,14 @@ func run() error {
 	).Setter("Doc", b.Arg("stmts", seed.Symbol("string")).Variadic().Transform(func(stmts string) string {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	})).NeedBuilder().Underlying("field") //?
+
+	b.Type("Extension",
+		b.Field("Name", seed.Symbol("string")),
+		b.Field("Value", seed.Symbol("any")),
+	).Constructor(
+		b.Arg("Name", seed.Symbol("string")),
+		b.Arg("Value", seed.Symbol("any")),
+	).NeedBuilder().Underlying("extension").Doc("for x-<extension-name>")
 
 	Object := b.Type("Object",
 		b.Field("Fields", seed.Symbol("[]*Field")).Tag(`json:"-"`),
