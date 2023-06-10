@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: pet api
+  version: 0.0.0
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+      - pet_type
+      properties:
+        pet_type:
+          type: string
+      discriminator:
+        propertyName: pet_type
+
+    Dog:     # "Dog" is a value for the pet_type property (the discriminator value)
+      type: object
+      required:
+      - pet_type
+      - breed
+      properties:
+        pet_type:
+          type: string
+        bark:
+          type: boolean
+        breed:
+          type: string
+          enum: [Dingo, Husky, Retriever, Shepherd]
+      discriminator:
+        propertyName: pet_type
+
+    Cat:     # "Cat" is a value for the pet_type property (the discriminator value)
+      type: object
+      required:
+      - pet_type
+      properties:
+        pet_type:
+          type: string
+        hunts:
+          type: boolean
+        age:
+          type: integer
+      discriminator:
+        propertyName: pet_type
+
+paths:
+  /cats:
+    get:
+      operationId: listCat
+      description: ""
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cat"
+  /dogs:
+    get:
+      operationId: listDog
+      description: ""
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dog"

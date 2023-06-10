@@ -12,6 +12,7 @@ import typing as t
 from collections import defaultdict
 from dictknife import loading
 from dictknife import DictWalker
+from dictknife.deepmerge import deepmerge
 
 
 def simplify(src: t.Optional[str], *, format: t.Literal["yaml", "json"], output: t.Optional[str]) -> None:
@@ -24,6 +25,7 @@ def simplify(src: t.Optional[str], *, format: t.Literal["yaml", "json"], output:
 class Transformer:
     def transform(self, doc: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
         self._omit_toplevel_parameters(doc)
+
         self._omit_use_ref(doc, part="responses")
         self._omit_use_ref(doc, part="parameters")
         self._omit_use_ref(doc, part="examples")
@@ -33,6 +35,8 @@ class Transformer:
         self._omit_use_ref(doc, part="links")
         self._omit_use_ref(doc, part="callbacks")
         self._omit_use_ref(doc, part="pathItems")
+
+        self._omit_allof(doc)
         return doc
 
     def _omit_toplevel_parameters(self, doc: t.Dict[str, t.Any]) -> None:
@@ -67,6 +71,20 @@ class Transformer:
                 sd.pop("$ref")
                 sd.update(definition)
         components.pop(part)
+
+    def _omit_allof(self, doc: t.Dict[str, t.Any]) -> None:
+        for path, sd in DictWalker(["allOf"]).walk(doc):
+            definition = sd.pop("allOf")
+            d = {}
+            for target in definition:
+                ref = target.get("$ref")
+                while ref is not None:
+                    target = doc
+                    for k in ref[2:].split("/"):  # #/components/schemas -> components/schemas
+                        target = target[k]
+                    ref = target.get("$ref")
+                d = deepmerge(d, target, method="append")
+            sd.update(d)
 
 
 def main(argv: t.Optional[t.List[str]] = None) -> t.Any:
