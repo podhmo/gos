@@ -1,0 +1,14 @@
+components:
+  schemas:
+    db:
+      type: object
+      properties:
+        name:
+          $ref: 'primitive.yaml#/components/schemas/name'
+        port:
+          type: integer
+        host:
+          type: string
+      required:
+        - host
+        - name
