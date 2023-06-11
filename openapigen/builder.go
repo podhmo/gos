@@ -595,6 +595,53 @@ func (b *_ObjectBuilder[R]) Strict(value bool) R {
 
 // end setter of Object --------------------
 
+// _Container builds Type for _Container
+func (b *Builder) _Container() *_Container {
+	t := &_Container{
+		__ContainerBuilder: &__ContainerBuilder[*_Container]{
+			_Type:    &_Type[*_Container]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "container", goType: "_Container"}},
+			metadata: &_ContainerMetadata{},
+		},
+	}
+	t.ret = t
+	return t
+}
+
+type _Container struct {
+	*__ContainerBuilder[*_Container]
+}
+
+func (t *_Container) GetMetadata() *_ContainerMetadata {
+	return t.metadata
+}
+
+type __ContainerBuilder[R TypeBuilder] struct {
+	*_Type[R]
+	metadata *_ContainerMetadata
+}
+
+// begin setter of _Container --------------------
+
+// Op set Metadata.Op
+func (b *__ContainerBuilder[R]) Op(value string) R {
+	b.metadata.Op = value
+	return b.ret
+}
+
+// Types set Metadata.Types
+func (b *__ContainerBuilder[R]) Types(value []Type) R {
+	b.metadata.Types = value
+	return b.ret
+}
+
+// Discriminator set Metadata.Discriminator
+func (b *__ContainerBuilder[R]) Discriminator(value string) R {
+	b.metadata.Discriminator = value
+	return b.ret
+}
+
+// end setter of _Container --------------------
+
 // Action builds Type for Action
 func (b *Builder) Action(name string, inputoroutput ...InputOrOutput) *Action {
 	t := &Action{
@@ -921,6 +968,8 @@ func (t *Object) typ() {}
 func (t *Array[Items]) typ() {}
 
 func (t *Map[Items]) typ() {}
+
+func (t *_Container) typ() {}
 
 func (t *TypeRef) typ() {}
 

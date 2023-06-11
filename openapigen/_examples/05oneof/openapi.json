@@ -1,0 +1,92 @@
+{
+  "paths": {
+    "/pets": {
+      "patch": {
+        "operationId": "UpdatePet",
+        "description": "",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Cat"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Dog"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "pet_store"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "default": {
+            "description": "default error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "tags": null
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cat": {
+        "type": "object",
+        "properties": {
+          "hunts": {
+            "type": "boolean"
+          },
+          "age": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "hunts",
+          "age"
+        ],
+        "additionalProperties": false
+      },
+      "Dog": {
+        "type": "object",
+        "properties": {
+          "bark": {
+            "type": "boolean"
+          },
+          "breed": {
+            "type": "string",
+            "enum": [
+              "Dingo",
+              "Husky",
+              "Retriever",
+              "Sheperd"
+            ]
+          }
+        },
+        "required": [
+          "bark",
+          "breed"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

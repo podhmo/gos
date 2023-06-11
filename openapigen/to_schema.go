@@ -220,6 +220,35 @@ func (t TypeRef) toSchemaInternal(b *Builder) *orderedmap.OrderedMap {
 	return doc
 }
 
+func (t *_Container) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
+	doc, cached := _toRefSchemaIfNamed(b, t._Type, useRef)
+	if doc != nil {
+		if !cached {
+			for _, typ := range t.metadata.Types {
+				typ.toSchema(b, true /* useRef */)
+			}
+		}
+		return doc
+	}
+
+	doc = orderedmap.New()
+	types := make([]*orderedmap.OrderedMap, len(t.metadata.Types))
+	for i, typ := range t.metadata.Types {
+		types[i] = typ.toSchema(b, useRef)
+	}
+	doc.Set(t.metadata.Op, types)
+	if discriminator := t.metadata.Discriminator; discriminator != "" {
+		v := orderedmap.New()
+		v.Set("propertyName", discriminator)
+		doc.Set("discriminator", v)
+	}
+	doc, err := maplib.Merge(doc, t.metadata)
+	if err != nil {
+		panic(err)
+	}
+	return doc
+}
+
 func (t *Action) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	doc.Set("operationId", t.metadata.Name)

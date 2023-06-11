@@ -61,6 +61,16 @@ func (b *Builder) IntFromEnum(enum *enumgen.Int) *Int {
 	return typ
 }
 
+func (b *Builder) OneOf(types ...Type) *_Container {
+	return b._Container().Op("oneOf").Types(types)
+}
+func (b *Builder) AllOf(types ...Type) *_Container {
+	return b._Container().Op("allOf").Types(types)
+}
+func (b *Builder) AnyOf(types ...Type) *_Container {
+	return b._Container().Op("anyOf").Types(types)
+}
+
 func (t *Object) OnlyFields(names ...string) []*Field {
 	fields := make([]*Field, 0, len(t.metadata.Fields))
 	for _, f := range t.metadata.Fields {

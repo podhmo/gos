@@ -117,6 +117,15 @@ type ObjectMetadata struct {
 	Strict bool `json:"-"`
 }
 
+// the container for allOf, anyOf, oneOf
+type _ContainerMetadata struct {
+	Op string `json:"-"`
+
+	Types []Type `json:"-"`
+
+	Discriminator string `json:"-"`
+}
+
 type ActionMetadata struct {
 	Name string `json:"-"`
 

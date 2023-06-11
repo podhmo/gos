@@ -22,6 +22,11 @@ run-example: 00 01 02 03 04
 # generate pagination example (extend schema by a helper function)
 04:
 	go run ./_examples/04pagination > ./_examples/04pagination/openapi.json
+.PHONY: 04
+# oneOf example
+05:
+	go run ./_examples/05oneof > ./_examples/05oneof/openapi.json
+.PHONY: 05
 
 _validate:
 	go run github.com/getkin/kin-openapi/cmd/validate@latest ./_examples/01router/openapi.json
