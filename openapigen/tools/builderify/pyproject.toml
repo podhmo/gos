@@ -24,7 +24,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = ["dictknife[load]", "prestring"]
 
 [project.urls]
 Documentation = "https://github.com/unknown/builderify#readme"
