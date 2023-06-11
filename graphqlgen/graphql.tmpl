@@ -1,0 +1,14 @@
+{{define "Object"}}{{with $root := .}}{{with $tm := $root.GetTypeMetadata}}{{with $m := $root.GetMetadata}}
+
+type {{$tm.Name}} {
+{{- range $_, $field := $m.Fields}}{{with $fm := $field.GetMetadata}}
+    {{if true}}{{$fm.Name | toTitle}}: {{$fm.Typ | toGraphqlType}}{{if (not $fm.Nullable)}}!{{end}}{{end -}}
+{{end}}{{end}}
+}
+{{end}}{{end}}{{end}}{{end}}
+
+--------------------------------------------------------------------------------
+
+{{define "Type"}}{{with $root := .}}{{with $tm := $root.GetTypeMetadata}}{{with $m := $root.GetMetadata}}
+"{{$tm.Name}}"
+{{end}}{{end}}{{end}}{{end}}
