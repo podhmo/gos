@@ -1,0 +1,8 @@
+components:
+  schemas:
+    person:
+      $ref: 'person.yaml#/components/schemas/person'
+    people:
+      $ref: 'person.yaml#/components/schemas/people'
+    db:
+      $ref: 'db.yaml#/components/schemas/db'

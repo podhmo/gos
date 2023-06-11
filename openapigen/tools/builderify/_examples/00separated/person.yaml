@@ -1,0 +1,15 @@
+components:
+  schemas:
+    person:
+      type: object
+      properties:
+        name:
+          $ref: 'primitive.yaml#/components/schemas/name'
+        age:
+          type: integer
+        value:
+          type: integer
+    people:
+      type: array
+      items:
+        $ref: '#/components/schemas/person'
