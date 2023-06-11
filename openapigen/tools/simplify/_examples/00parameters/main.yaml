@@ -1,0 +1,43 @@
+openapi: 3.0.3
+info:
+  title: foo
+  version: 0.0.0
+components:
+  schemas:
+    foo:
+      properties:
+        text:
+          type: string
+paths:
+  /foo/{id}:
+    parameters: # this
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getFoo
+      description: ""
+      parameters:
+        - name: verbose
+          in: query
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/foo"
+    delete:
+      operationId: deleteFoo
+      description: ""
+      responses:
+        204:
+          description: ""
+          content:
+            application/json: {}
+
+
