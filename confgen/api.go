@@ -23,7 +23,6 @@ func DefaultConfig() *Config {
 func ToJSONSchema(b *Builder, typ Type) (*orderedmap.OrderedMap, error) {
 	doc := orderedmap.New()
 	doc.Set("$schema", "http://json-schema.org/draft-07/schema#")
-	doc.Set("$id", "")
 	useRef := false
 	return ToSchemaWith(doc, b, typ, useRef)
 }

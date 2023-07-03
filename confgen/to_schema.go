@@ -177,13 +177,14 @@ func (t TypeRef) toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap {
 func (t TypeRef) toSchemaInternal(b *Builder) *orderedmap.OrderedMap {
 	doc := orderedmap.New()
 	typ := t.getType()
-	if typ == nil {
-		log.Printf("#/components/schemas/%s is not found", t.Name)
-		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", t.Name))
-	} else {
-		doc.Set("$ref", fmt.Sprintf("#/components/schemas/%s", typ.GetTypeMetadata().Name))
-	}
 
+	// in draft-2020-12 $defs
+	if typ == nil {
+		log.Printf("#/definitions/%s is not found", t.Name)
+		doc.Set("$ref", fmt.Sprintf("#/definitions/%s", t.Name))
+	} else {
+		doc.Set("$ref", fmt.Sprintf("#/definitions/%s", typ.GetTypeMetadata().Name))
+	}
 	return doc
 }
 

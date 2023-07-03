@@ -54,6 +54,8 @@ func run() error {
 	// - Applicator: if, then, else, not, dependentSchemas, propertyNames, prefixItems, contains
 	// - Validation: dependentRequired, maxContains, minContains
 	// - set zero value (e.g. `exclusiveMin: 0`)
+	// - $ref (recursion) https://json-schema.org/understanding-json-schema/structuring.html?highlight=defs#recursion
+	// - $ref with definitions (bundling) https://json-schema.org/understanding-json-schema/structuring.html?highlight=defs#bundling
 
 	Bool := b.Type("Bool",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
