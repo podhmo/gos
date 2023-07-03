@@ -150,6 +150,12 @@ func (b *_BoolBuilder[R]) Default(value bool) R {
 	return b.ret
 }
 
+// Const set Metadata.Const
+func (b *_BoolBuilder[R]) Const(value bool) R {
+	b.metadata.Const = value
+	return b.ret
+}
+
 // end setter of Bool --------------------
 
 // Int builds Type for Int
@@ -197,6 +203,12 @@ func (b *_IntBuilder[R]) Default(value int64) R {
 	return b.ret
 }
 
+// Const set Metadata.Const
+func (b *_IntBuilder[R]) Const(value int64) R {
+	b.metadata.Const = value
+	return b.ret
+}
+
 // Maximum set Metadata.Maximum
 func (b *_IntBuilder[R]) Maximum(value int64) R {
 	b.metadata.Maximum = value
@@ -210,13 +222,13 @@ func (b *_IntBuilder[R]) Minimum(value int64) R {
 }
 
 // ExclusiveMin set Metadata.ExclusiveMin
-func (b *_IntBuilder[R]) ExclusiveMin(value bool) R {
+func (b *_IntBuilder[R]) ExclusiveMin(value int64) R {
 	b.metadata.ExclusiveMin = value
 	return b.ret
 }
 
 // ExclusiveMax set Metadata.ExclusiveMax
-func (b *_IntBuilder[R]) ExclusiveMax(value bool) R {
+func (b *_IntBuilder[R]) ExclusiveMax(value int64) R {
 	b.metadata.ExclusiveMax = value
 	return b.ret
 }
@@ -257,8 +269,14 @@ func (b *_FloatBuilder[R]) Format(value string) R {
 }
 
 // Default set Metadata.Default
-func (b *_FloatBuilder[R]) Default(value string) R {
+func (b *_FloatBuilder[R]) Default(value float64) R {
 	b.metadata.Default = value
+	return b.ret
+}
+
+// Const set Metadata.Const
+func (b *_FloatBuilder[R]) Const(value float64) R {
+	b.metadata.Const = value
 	return b.ret
 }
 
@@ -281,13 +299,13 @@ func (b *_FloatBuilder[R]) MultipleOf(value float64) R {
 }
 
 // ExclusiveMin set Metadata.ExclusiveMin
-func (b *_FloatBuilder[R]) ExclusiveMin(value bool) R {
+func (b *_FloatBuilder[R]) ExclusiveMin(value float64) R {
 	b.metadata.ExclusiveMin = value
 	return b.ret
 }
 
 // ExclusiveMax set Metadata.ExclusiveMax
-func (b *_FloatBuilder[R]) ExclusiveMax(value bool) R {
+func (b *_FloatBuilder[R]) ExclusiveMax(value float64) R {
 	b.metadata.ExclusiveMax = value
 	return b.ret
 }
@@ -336,6 +354,12 @@ func (b *_StringBuilder[R]) Enum(value []string) R {
 // Default set Metadata.Default
 func (b *_StringBuilder[R]) Default(value string) R {
 	b.metadata.Default = value
+	return b.ret
+}
+
+// Const set Metadata.Const
+func (b *_StringBuilder[R]) Const(value string) R {
+	b.metadata.Const = value
 	return b.ret
 }
 
@@ -517,37 +541,6 @@ func (b *_FieldBuilder[R]) Doc(stmts ...string) R {
 }
 
 // end setter of Field --------------------
-
-// Extension builds Type for Extension
-func (b *Builder) Extension(name string, value any) *Extension {
-	t := &Extension{
-		_ExtensionBuilder: &_ExtensionBuilder[*Extension]{
-			_Type: &_Type[*Extension]{rootbuilder: b, metadata: &TypeMetadata{Name: "", underlying: "extension", goType: "Extension"}},
-			metadata: &ExtensionMetadata{
-				Name: name, Value: value,
-			},
-		},
-	}
-	t.ret = t
-	return t
-}
-
-type Extension struct {
-	*_ExtensionBuilder[*Extension]
-}
-
-func (t *Extension) GetMetadata() *ExtensionMetadata {
-	return t.metadata
-}
-
-type _ExtensionBuilder[R TypeBuilder] struct {
-	*_Type[R]
-	metadata *ExtensionMetadata
-}
-
-// begin setter of Extension --------------------
-
-// end setter of Extension --------------------
 
 // Object builds Type for Object
 func (b *Builder) Object(fields ...*Field) *Object {

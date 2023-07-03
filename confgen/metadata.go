@@ -17,6 +17,8 @@ type BoolMetadata struct {
 	Format string `json:"format,omitempty"`
 
 	Default bool `json:"default,omitempty"`
+
+	Const bool `json:"const,omitempty"`
 }
 
 type IntMetadata struct {
@@ -26,19 +28,23 @@ type IntMetadata struct {
 
 	Default int64 `json:"default,omitempty"`
 
+	Const int64 `json:"const,omitempty"`
+
 	Maximum int64 `json:"maximum,omitempty"`
 
 	Minimum int64 `json:"minimum,omitempty"`
 
-	ExclusiveMin bool `json:"exclusiveMin,omitempty"`
+	ExclusiveMin int64 `json:"exclusiveMin,omitempty"`
 
-	ExclusiveMax bool `json:"exclusiveMax,omitempty"`
+	ExclusiveMax int64 `json:"exclusiveMax,omitempty"`
 }
 
 type FloatMetadata struct {
 	Format string `json:"format,omitempty"`
 
-	Default string `json:"default,omitempty"`
+	Default float64 `json:"default,omitempty"`
+
+	Const float64 `json:"const,omitempty"`
 
 	Maximum float64 `json:"maximum,omitempty"`
 
@@ -46,9 +52,9 @@ type FloatMetadata struct {
 
 	MultipleOf float64 `json:"multipleOf,omitempty"`
 
-	ExclusiveMin bool `json:"exclusiveMin,omitempty"`
+	ExclusiveMin float64 `json:"exclusiveMin,omitempty"`
 
-	ExclusiveMax bool `json:"exclusiveMax,omitempty"`
+	ExclusiveMax float64 `json:"exclusiveMax,omitempty"`
 }
 
 type StringMetadata struct {
@@ -57,6 +63,8 @@ type StringMetadata struct {
 	Enum []string `json:"enum,omitempty"`
 
 	Default string `json:"default,omitempty"`
+
+	Const string `json:"const,omitempty"`
 
 	Pattern string `json:"pattern,omitempty"`
 
@@ -95,13 +103,6 @@ type FieldMetadata struct {
 	AllowEmptyValue bool `json:"allowEmptyValue,omitempty"`
 
 	Deprecated bool `json:"deprecated,omitempty"`
-}
-
-// for x-<extension-name>
-type ExtensionMetadata struct {
-	Name string
-
-	Value any
 }
 
 type ObjectMetadata struct {
