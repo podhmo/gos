@@ -12,30 +12,10 @@ type toSchemer interface {
 	toSchema(b *Builder, useRef bool) *orderedmap.OrderedMap
 }
 
-func ToSchemaWith(doc *orderedmap.OrderedMap, b *Builder, useRef bool) (*orderedmap.OrderedMap, error) {
-	components := orderedmap.New()
-	doc.Set("components", components)
-
-	schemas := orderedmap.New()
-	components.Set("schemas", schemas)
-
-	if err := b.EachTypes(func(t TypeBuilder) error {
-		name := t.GetTypeMetadata().Name
-		if t, ok := t.(toSchemer); ok {
-			schemas.Set(name, t.toSchema(b, useRef))
-		} else {
-			schemas.Set(name, orderedmap.New())
-		}
-		return nil
-	}); err != nil {
-		return doc, fmt.Errorf("each types -- %w", err)
-	}
-	return doc, nil
-}
-func ToSchema(b *Builder) (*orderedmap.OrderedMap, error) {
-	doc := orderedmap.New()
-	useRef := false
-	return ToSchemaWith(doc, b, useRef)
+func ToSchemaWith(doc *orderedmap.OrderedMap, b *Builder, t Type, useRef bool) (*orderedmap.OrderedMap, error) {
+	name := t.GetTypeMetadata().Name
+	doc.Set("title", name)
+	return maplib.Merge(doc, t.toSchema(b, useRef))
 }
 
 func _toRefSchemaIfNamed[R TypeBuilder](b *Builder, t *_Type[R], useRef bool) (doc *orderedmap.OrderedMap, cached bool) {
