@@ -53,6 +53,7 @@ func run() error {
 	// todo:
 	// - Applicator: if, then, else, not, dependentSchemas, propertyNames, prefixItems, contains
 	// - Validation: dependentRequired, maxContains, minContains
+	// - set zero value (e.g. `exclusiveMin: 0`)
 
 	Bool := b.Type("Bool",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),

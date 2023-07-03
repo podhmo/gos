@@ -15,7 +15,7 @@
         },
         "price": {
             "type": "number",
-            "description": "The price of the product\n(TODO: exclsiveMinimum: 0)"
+            "description": "The price of the product"
         },
         "tags": {
             "type": "array",

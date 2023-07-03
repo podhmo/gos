@@ -15,7 +15,7 @@ func main() {
 	Product := confgen.Define("Product", b.Object(
 		b.Field("productId", b.Int()).Doc(`The unique identifier for a product`),
 		b.Field("productName", b.String()).Doc(`Name of the product`),
-		b.Field("price", b.Float()).Doc(`The price of the product`, "(TODO: exclsiveMinimum: 0)"),
+		b.Field("price", b.Float().ExclusiveMin(0)).Doc(`The price of the product`),
 		b.Field("tags", b.Array(b.String()).MinItems(1).UniqueItems(true)).Required(false).Doc(`tags for the product`),
 		b.Field("dimensions", b.Object(
 			b.Field("length", b.Float()),
