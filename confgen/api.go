@@ -2,16 +2,26 @@
 //go:generate go fmt .
 package confgen
 
-import "io"
+import (
+	"github.com/iancoleman/orderedmap"
+)
 
 type Config struct {
+
+	// for to schema
+	defs []TypeBuilder
+	seen map[int]*TypeRef
 }
 
 func DefaultConfig() *Config {
-	c := &Config{}
+	c := &Config{
+		seen: map[int]*TypeRef{},
+	}
 	return c
 }
 
-func EmitSchema(w io.Writer, t Type) error {
-	return nil
+func ToJSONSchema(b *Builder, typ Type) (*orderedmap.OrderedMap, error) {
+	doc := orderedmap.New()
+	useRef := false
+	return ToSchemaWith(doc, b, useRef)
 }

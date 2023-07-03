@@ -12,6 +12,7 @@ import (
 type TypeBuilder interface {
 	GetTypeMetadata() *TypeMetadata
 	writeType(io.Writer) error // see: ./stringer.go
+	toSchemer                  // see: ./to_schema.go
 }
 
 // Define names Type value.

@@ -40,6 +40,10 @@ func run() error {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	}))
 
+	b.InterfaceMethods(
+		"toSchemer // see: ./to_schema.go",
+	)
+
 	// ----------------------------------------
 	// types
 	// ----------------------------------------
