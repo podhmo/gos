@@ -28,7 +28,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	doc.Set("$id", "https://example.com/product.schema.json")
 
 	w := os.Stdout
 	enc := json.NewEncoder(w)
