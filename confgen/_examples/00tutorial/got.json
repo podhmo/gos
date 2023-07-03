@@ -1,19 +1,14 @@
 {
-  "components": {
-    "schemas": {
-      "Product": {
-        "type": "object",
-        "properties": {
-          "productId": {
-            "type": "integer",
-            "description": "The unique identifier for a product"
-          }
-        },
-        "required": [
-          "productId"
-        ],
-        "additionalProperties": false
-      }
+  "title": "Product",
+  "type": "object",
+  "properties": {
+    "productId": {
+      "type": "integer",
+      "description": "The unique identifier for a product"
     }
-  }
+  },
+  "required": [
+    "productId"
+  ],
+  "additionalProperties": false
 }
