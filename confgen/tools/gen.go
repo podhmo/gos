@@ -48,34 +48,42 @@ func run() error {
 	// types
 	// ----------------------------------------
 	//
-	// - not, if
+	// see: https://www.learnjsonschema.com/
+	//
+	// todo:
+	// - Applicator: if, then, else, not, dependentSchemas, propertyNames, prefixItems, contains
+	// - Validation: dependentRequired, maxContains, minContains
 
 	Bool := b.Type("Bool",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Default", seed.Symbol("bool")).Tag(`json:"default,omitempty"`),
+		b.Field("Const", seed.Symbol("bool")).Tag(`json:"const,omitempty"`),
 	).NeedBuilder().Underlying("boolean").GoType("bool")
 	Int := b.Type("Int",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Enum", seed.Symbol("[]int64")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("int64")).Tag(`json:"default,omitempty"`),
+		b.Field("Const", seed.Symbol("int64")).Tag(`json:"const,omitempty"`),
 		b.Field("Maximum", seed.Symbol("int64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("int64")).Tag(`json:"minimum,omitempty"`),
-		b.Field("ExclusiveMin", seed.Symbol("bool")).Tag(`json:"exclusiveMin,omitempty"`),
-		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
+		b.Field("ExclusiveMin", seed.Symbol("int64")).Tag(`json:"exclusiveMin,omitempty"`),
+		b.Field("ExclusiveMax", seed.Symbol("int64")).Tag(`json:"exclusiveMax,omitempty"`),
 	).NeedBuilder().Underlying("integer").GoType("int64")
 	Float := b.Type("Float",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
-		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
+		b.Field("Default", seed.Symbol("float64")).Tag(`json:"default,omitempty"`),
+		b.Field("Const", seed.Symbol("float64")).Tag(`json:"const,omitempty"`),
 		b.Field("Maximum", seed.Symbol("float64")).Tag(`json:"maximum,omitempty"`),
 		b.Field("Minimum", seed.Symbol("float64")).Tag(`json:"minimum,omitempty"`),
 		b.Field("MultipleOf", seed.Symbol("float64")).Tag(`json:"multipleOf,omitempty"`),
-		b.Field("ExclusiveMin", seed.Symbol("bool")).Tag(`json:"exclusiveMin,omitempty"`),
-		b.Field("ExclusiveMax", seed.Symbol("bool")).Tag(`json:"exclusiveMax,omitempty"`),
+		b.Field("ExclusiveMin", seed.Symbol("float64")).Tag(`json:"exclusiveMin,omitempty"`),
+		b.Field("ExclusiveMax", seed.Symbol("float64")).Tag(`json:"exclusiveMax,omitempty"`),
 	).NeedBuilder().Underlying("number").GoType("float64")
 	String := b.Type("String",
 		b.Field("Format", seed.Symbol("string")).Tag(`json:"format,omitempty"`),
 		b.Field("Enum", seed.Symbol("[]string")).Tag(`json:"enum,omitempty"`),
 		b.Field("Default", seed.Symbol("string")).Tag(`json:"default,omitempty"`),
+		b.Field("Const", seed.Symbol("string")).Tag(`json:"const,omitempty"`),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
 		b.Field("MaxLength", seed.Symbol("int64")).Tag(`json:"maxLength,omitempty"`),
 		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minLength,omitempty"`),
@@ -84,6 +92,8 @@ func run() error {
 		b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
 		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxItems,omitempty"`),
 		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minItems,omitempty"`),
+		// b.Field("MaxContains", seed.Symbol("int64")).Tag(`json:"maxContains,omitempty"`),
+		// b.Field("MinContains", seed.Symbol("int64")).Tag(`json:"minContains	,omitempty"`),
 	).NeedBuilder().Underlying("array")
 	Map := b.Type("Map", b.TypeVar("Items", seed.Symbol("Type")),
 		b.Field("Pattern", seed.Symbol("string")).Tag(`json:"pattern,omitempty"`),
@@ -106,16 +116,9 @@ func run() error {
 		return fmt.Sprintf(`strings.Join(%s, "\n")`, stmts)
 	})).NeedBuilder().Underlying("field") //?
 
-	b.Type("Extension",
-		b.Field("Name", seed.Symbol("string")),
-		b.Field("Value", seed.Symbol("any")),
-	).Constructor(
-		b.Arg("Name", seed.Symbol("string")),
-		b.Arg("Value", seed.Symbol("any")),
-	).NeedBuilder().Underlying("extension").Doc("for x-<extension-name>")
-
 	Object := b.Type("Object",
 		b.Field("Fields", seed.Symbol("[]*Field")).Tag(`json:"-"`),
+		// b.Field("DependentRequired", seed.Symbol("uint64")).Tag(`json:"maxProeprties,omitempty"`),
 		b.Field("MaxProperties", seed.Symbol("uint64")).Tag(`json:"maxProeprties,omitempty"`),
 		b.Field("MinProperties", seed.Symbol("uint64")).Tag(`json:"minProeprties,omitempty"`),
 		b.Field("Strict", seed.Symbol("bool")).Tag(`json:"-"`).Default("true"),
