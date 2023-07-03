@@ -66,6 +66,8 @@ type StringMetadata struct {
 }
 
 type ArrayMetadata struct {
+	UniqueItems bool `json:"uniqueItems,omitempty"`
+
 	MaxItems int64 `json:"maxItems,omitempty"`
 
 	MinItems int64 `json:"minItems,omitempty"`

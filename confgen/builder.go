@@ -388,6 +388,12 @@ type _ArrayBuilder[Items Type, R TypeBuilder] struct {
 
 // begin setter of Array --------------------
 
+// UniqueItems set Metadata.UniqueItems
+func (b *_ArrayBuilder[Items, R]) UniqueItems(value bool) R {
+	b.metadata.UniqueItems = value
+	return b.ret
+}
+
 // MaxItems set Metadata.MaxItems
 func (b *_ArrayBuilder[Items, R]) MaxItems(value int64) R {
 	b.metadata.MaxItems = value

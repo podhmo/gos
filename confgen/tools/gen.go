@@ -81,7 +81,7 @@ func run() error {
 		b.Field("MinLength", seed.Symbol("int64")).Tag(`json:"minLength,omitempty"`),
 	).NeedBuilder().Underlying("string").GoType("string")
 	Array := b.Type("Array", b.TypeVar("Items", seed.Symbol("Type")),
-		// b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
+		b.Field("UniqueItems", seed.Symbol("bool")).Tag(`json:"uniqueItems,omitempty"`),
 		b.Field("MaxItems", seed.Symbol("int64")).Tag(`json:"maxItems,omitempty"`),
 		b.Field("MinItems", seed.Symbol("int64")).Tag(`json:"minItems,omitempty"`),
 	).NeedBuilder().Underlying("array")
