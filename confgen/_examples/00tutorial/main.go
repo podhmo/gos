@@ -2,13 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/podhmo/gos/confgen"
 )
 
 func main() {
-	b := confgen.NewBuilder(confgen.DefaultConfig())
+	c := confgen.DefaultConfig()
+	b := confgen.NewBuilder(c)
 
 	// https://json-schema.org/learn/getting-started-step-by-step.html
 
@@ -34,5 +36,14 @@ func main() {
 	enc.SetIndent("", "    ")
 	if err := enc.Encode(doc); err != nil {
 		panic(err)
+	}
+
+	{
+		w := os.Stderr
+		fmt.Fprintln(os.Stderr, "----------------------------------------")
+		fmt.Fprintln(w, "package M")
+		if err := c.ToGoCode(w, Product); err != nil {
+			panic(err)
+		}
 	}
 }

@@ -81,7 +81,7 @@ func (c *Config) ToGoCode(w io.Writer, tb TypeBuilder) error {
 	return nil
 }
 
-func ToGocode(w io.Writer, b *Builder) error {
+func ToGoCode(w io.Writer, b *Builder) error {
 	c := b.Config
 	return b.EachTypes(func(tb TypeBuilder) error {
 		return c.ToGoCode(w, tb)
